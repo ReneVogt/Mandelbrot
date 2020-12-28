@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Collections.Generic;
 using System.Threading;
 
 namespace MandelbrotGenerator
@@ -11,19 +9,19 @@ namespace MandelbrotGenerator
         internal double Imaginary { get; }
         internal bool Set { get; }
         internal int Iterations { get; }
-        internal double LastMagnitude { get; }
+        internal double SquaredMagnitude { get; }
         MandelbrotPoint(double real, double imaginary)
             : this(real, imaginary, 0, 0)
         {
             Set = true;
         }
-        MandelbrotPoint(double real, double imaginary, int iterations, double lastMagnitude)
+        MandelbrotPoint(double real, double imaginary, int iterations, double squaredMagnitude)
         {
             Real = real;
             Imaginary = imaginary;
             Set = false;
             Iterations = iterations;
-            LastMagnitude = lastMagnitude;
+            SquaredMagnitude = squaredMagnitude;
         }
         internal static MandelbrotPoint Calculate(double real, double imaginary, int maxIterations, CancellationToken cancellationToken = default)
         {
@@ -33,7 +31,7 @@ namespace MandelbrotGenerator
                 (r, i)
             };
 
-            for (int iteration = maxIterations; iteration > 0; iteration--)
+            for (int iteration = 0; iteration < maxIterations; iteration++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 double r2 = r * r - i * i + real;
@@ -45,7 +43,7 @@ namespace MandelbrotGenerator
 
                 double d = r * r + i * i;
                 if (d > 4)
-                    return new MandelbrotPoint(real, imaginary, iteration, Math.Sqrt(d));
+                    return new MandelbrotPoint(real, imaginary, iteration, d);
             }
 
             return new MandelbrotPoint(real, imaginary);

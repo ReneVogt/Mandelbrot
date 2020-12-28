@@ -2,22 +2,34 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using MandelbrotGenerator.Exceptions;
 
 namespace MandelbrotGenerator
 {
-    public static class MandelbrotImageGenerator
+    public class MandelbrotImageGenerator
     {
-        public static Color[] CreateImage(int width, int height,
+        int progress, pixels;
+        public int MaxDegreeOfParallelism { get; set; } = -1;
+        public MandelbrotColorizer? Colorizer { get; set; }
+        public int MaximumNumberOfIterations { get; set; } = 100;
+        public int Progress
+        {
+            get
+            {
+                var p = pixels;
+                if (p == 0) return 0;
+                return progress * 100 / p;
+            }
+        }
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Color[] CreateImage(int width, int height,
                                           double realMin = -2,
                                           double realMax = 1,
                                           double imaginaryMin = -1,
                                           double imaginaryMax = 1,
-                                          int maxIterations = 100,
-                                          MandelbrotColorizer colorizer = null!,
-                                          int degreeOfParallelism = -1, 
                                           CancellationToken cancellationToken = default)
         {
             if (width < 0)
@@ -30,15 +42,12 @@ namespace MandelbrotGenerator
                 throw new ArgumentException("The real minimum must be less than the real maximum.");
             if (imaginaryMin >= imaginaryMax)
                 throw new ArgumentException("The imaginary minimum must be less than the imaginary maximum.");
-            if (maxIterations <= 0)
-                throw new ArgumentOutOfRangeException(paramName: nameof(maxIterations), message: "Parameter 'maxIterations' must be greater than zero.",
-                                                      actualValue: maxIterations);
 
             if (realMax - realMin < width * double.Epsilon ||
                 imaginaryMax - imaginaryMin <= height * double.Epsilon)
                 throw new MandelbrotPrecisionException();
 
-            colorizer ??= DefaultColorizer;
+            var colorizer = Colorizer ?? MandelbrotColorizer.Default;
             double dx = realMax - realMin;
             double dy = imaginaryMax - imaginaryMin;
 
@@ -50,47 +59,38 @@ namespace MandelbrotGenerator
             var options = new ParallelOptions
             {
                 CancellationToken = cancellationToken,
-                MaxDegreeOfParallelism = degreeOfParallelism
+                MaxDegreeOfParallelism = MaxDegreeOfParallelism
             };
+            var maxIterations = MaximumNumberOfIterations;
+            pixels = height * width;
+            progress = 0;
             Parallel.ForEach(pixelSource, options, (pixel) =>
             {
                 var m = MandelbrotPoint.Calculate(realMin + pixel.x * dx / width, imaginaryMax - pixel.y * dy / height, maxIterations,
                                                   cancellationToken);
-                result[pixel.y * width + pixel.x] = colorizer(m.Iterations, maxIterations, m.LastMagnitude);
+                result[pixel.y * width + pixel.x] = m.Set ? colorizer.GetInsideColor() : colorizer.GetOutsideColor(m.Iterations, maxIterations, m.SquaredMagnitude);
+                Interlocked.Increment(ref progress);
             });
-
+            progress = 0;
             return result;
         }
-        public static Bitmap CreateBitmap(int width, int height,
-                                          double realMin = -2,
-                                          double realMax = 1,
-                                          double imaginaryMin = -1,
-                                          double imaginaryMax = 1,
-                                          int maxIterations = 100,
-                                          MandelbrotColorizer colorizer = null!,
-                                          int degreeOfParallelism = -1,
-                                          CancellationToken cancellationToken = default)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Bitmap CreateBitmap(int width, int height,
+                                   double realMin = -2,
+                                   double realMax = 1,
+                                   double imaginaryMin = -1,
+                                   double imaginaryMax = 1,
+                                   CancellationToken cancellationToken = default)
         {
             var colors = CreateImage(width: width, height: height, 
                                      realMin: realMin, realMax: realMax,
                 imaginaryMin: imaginaryMin, imaginaryMax: imaginaryMax,
-                maxIterations: maxIterations,
-                colorizer: colorizer,
-                degreeOfParallelism: degreeOfParallelism,
                 cancellationToken: cancellationToken);
             var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
             for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 bitmap.SetPixel(x, y, colors[y * width + x]);
             return bitmap;
-
-        }
-        static Color DefaultColorizer(int remainingIterations, int maxIterations, double magnitude)
-        {
-            if (remainingIterations == 0) return Color.Black;
-
-            int r = 256 * (maxIterations - remainingIterations) / maxIterations;
-            return Color.FromArgb(r, r, r);
         }
     }
 }
