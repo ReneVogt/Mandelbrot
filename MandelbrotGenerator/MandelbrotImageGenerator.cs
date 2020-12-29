@@ -15,7 +15,7 @@ namespace MandelbrotGenerator
         int progress, pixels;
         public int MaxDegreeOfParallelism { get; set; } = -1;
         public MandelbrotColorizer? Colorizer { get; set; }
-        public int MaximumNumberOfIterations { get; set; } = 150;
+        public int MaximumNumberOfIterations { get; set; } = 500;
         public int Progress
         {
             get
