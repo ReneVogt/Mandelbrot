@@ -31,19 +31,26 @@ namespace MandelbrotGenerator
                 (r, i)
             };
 
+            double oldR2 = r * r;
+            double oldI2 = i * i;
+            double magnitude = oldR2 + oldI2;
+            if (magnitude > 4)
+                return new MandelbrotPoint(real, imaginary, 0, magnitude);
+
             for (int iteration = 0; iteration < maxIterations; iteration++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                double r2 = r * r - i * i + real;
                 i = 2 * r * i + imaginary;
-                r = r2;
+                r = oldR2 - oldI2 + real;
 
                 if (!knownPoints.Add((r, i)))
                     return new MandelbrotPoint(real, imaginary);
 
-                double d = r * r + i * i;
-                if (d > 4)
-                    return new MandelbrotPoint(real, imaginary, iteration, d);
+                oldR2 = r * r;
+                oldI2 = i * i;
+                magnitude = oldR2 + oldI2;
+                if (magnitude > 4)
+                    return new MandelbrotPoint(real, imaginary, iteration, magnitude);
             }
 
             return new MandelbrotPoint(real, imaginary);

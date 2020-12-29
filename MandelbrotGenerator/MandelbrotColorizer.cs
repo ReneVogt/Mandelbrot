@@ -10,7 +10,6 @@ namespace MandelbrotGenerator
         {
             int r = 256 * neededIterations / maximumIterations;
             return Color.FromArgb(r, r, r);
-
         }
     }
 }

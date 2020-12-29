@@ -1,7 +1,7 @@
 ﻿
 namespace Mandelbrot
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Erforderliche Designervariable.
@@ -29,13 +29,34 @@ namespace Mandelbrot
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.mandelbrotControl1 = new Mandelbrot.MandelbrotControl();
+            this.SuspendLayout();
+            // 
+            // mandelbrotControl1
+            // 
+            this.mandelbrotControl1.BackColor = System.Drawing.Color.Black;
+            this.mandelbrotControl1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.mandelbrotControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mandelbrotControl1.Location = new System.Drawing.Point(0, 0);
+            this.mandelbrotControl1.Name = "mandelbrotControl1";
+            this.mandelbrotControl1.Size = new System.Drawing.Size(800, 450);
+            this.mandelbrotControl1.TabIndex = 0;
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.mandelbrotControl1);
+            this.Name = "MainForm";
             this.Text = "Form1";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private MandelbrotControl mandelbrotControl1;
     }
 }
 
