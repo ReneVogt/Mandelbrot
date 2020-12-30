@@ -9,6 +9,9 @@ namespace Mandelbrot
     public partial class ControlForm : Form
     {
         public event EventHandler? RefreshClicked;
+        public event EventHandler? AdjustImaginaryAxisClicked;
+        public event EventHandler? AdjustRealAxisClicked;
+        public event EventHandler? ReturnToTotalViewClicked;
 
         public int MaximumNumberOfIterations
         {
@@ -52,6 +55,18 @@ namespace Mandelbrot
         void btRefresh_Click(object sender, EventArgs e)
         {
             RefreshClicked?.Invoke(this, e);
+        }
+        private void btAdjustImaginary_Click(object sender, EventArgs e)
+        {
+            AdjustImaginaryAxisClicked?.Invoke(this, e);
+        }
+        private void btAdjustReal_Click(object sender, EventArgs e)
+        {
+            AdjustRealAxisClicked?.Invoke(this, e);
+        }
+        private void btStartScreen_Click(object sender, EventArgs e)
+        {
+            ReturnToTotalViewClicked?.Invoke(this, e);
         }
     }
 }

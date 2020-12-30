@@ -39,6 +39,9 @@ namespace Mandelbrot
             controlForm.SetCurrentSelection(realMin, realMax, imaginaryMin, imaginaryMax);
             controlForm.MaximumNumberOfIterations = 100;
             controlForm.RefreshClicked += (sender, e) => Recalculate();
+            controlForm.AdjustImaginaryAxisClicked += (sender, e) => AdjustToImaginaryAxis();
+            controlForm.AdjustRealAxisClicked += (sender, e) => AdjustToRealAxis();
+            controlForm.ReturnToTotalViewClicked += (sender, e) => ReturnToTotalView();
         }
 
         void Recalculate()
@@ -173,6 +176,22 @@ namespace Mandelbrot
             var old = BackgroundImage;
             BackgroundImage = bitmap;
             old?.Dispose();
+        }
+        void ReturnToTotalView()
+        {
+            _ = Calculate(-2, -1, 1, 1);
+        }
+        void AdjustToImaginaryAxis()
+        {
+            double h = 0.5 * (realMax - realMin) * Height / Width;
+            double m = (imaginaryMax + imaginaryMin) / 2;
+            _ = Calculate(realMin, m - h, realMax, m + h);
+        }
+        void AdjustToRealAxis()
+        {
+            double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
+            double m = (realMax + realMin) / 2;
+            _ = Calculate(m - w, imaginaryMin, m + w, imaginaryMax);
         }
         (double minR, double maxR, double minI, double maxI) GetBoundsFromRect(Rectangle rect)
         {

@@ -43,6 +43,9 @@ namespace Mandelbrot
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.btRefresh = new System.Windows.Forms.Button();
+            this.btStartScreen = new System.Windows.Forms.Button();
+            this.btAdjustReal = new System.Windows.Forms.Button();
+            this.btAdjustImaginary = new System.Windows.Forms.Button();
             this.gbCalculation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.gbCurrentView.SuspendLayout();
@@ -109,7 +112,7 @@ namespace Mandelbrot
             this.gbCurrentView.Location = new System.Drawing.Point(12, 94);
             this.gbCurrentView.Name = "gbCurrentView";
             this.gbCurrentView.Size = new System.Drawing.Size(322, 63);
-            this.gbCurrentView.TabIndex = 2;
+            this.gbCurrentView.TabIndex = 10;
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
             // 
@@ -160,7 +163,7 @@ namespace Mandelbrot
             this.gbCurrentSelection.Location = new System.Drawing.Point(12, 163);
             this.gbCurrentSelection.Name = "gbCurrentSelection";
             this.gbCurrentSelection.Size = new System.Drawing.Size(322, 63);
-            this.gbCurrentSelection.TabIndex = 12;
+            this.gbCurrentSelection.TabIndex = 20;
             this.gbCurrentSelection.TabStop = false;
             this.gbCurrentSelection.Text = "Current selection";
             // 
@@ -204,19 +207,58 @@ namespace Mandelbrot
             // 
             this.btRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRefresh.Location = new System.Drawing.Point(21, 233);
+            this.btRefresh.Location = new System.Drawing.Point(21, 321);
             this.btRefresh.Name = "btRefresh";
             this.btRefresh.Size = new System.Drawing.Size(322, 23);
-            this.btRefresh.TabIndex = 14;
+            this.btRefresh.TabIndex = 60;
             this.btRefresh.Text = "Refresh";
             this.btRefresh.UseVisualStyleBackColor = true;
             this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
+            // 
+            // btStartScreen
+            // 
+            this.btStartScreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btStartScreen.Location = new System.Drawing.Point(21, 292);
+            this.btStartScreen.Name = "btStartScreen";
+            this.btStartScreen.Size = new System.Drawing.Size(322, 23);
+            this.btStartScreen.TabIndex = 50;
+            this.btStartScreen.Text = "Return to total view";
+            this.btStartScreen.UseVisualStyleBackColor = true;
+            this.btStartScreen.Click += new System.EventHandler(this.btStartScreen_Click);
+            // 
+            // btAdjustReal
+            // 
+            this.btAdjustReal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btAdjustReal.Location = new System.Drawing.Point(21, 263);
+            this.btAdjustReal.Name = "btAdjustReal";
+            this.btAdjustReal.Size = new System.Drawing.Size(322, 23);
+            this.btAdjustReal.TabIndex = 40;
+            this.btAdjustReal.Text = "Adjust real axis";
+            this.btAdjustReal.UseVisualStyleBackColor = true;
+            this.btAdjustReal.Click += new System.EventHandler(this.btAdjustReal_Click);
+            // 
+            // btAdjustImaginary
+            // 
+            this.btAdjustImaginary.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btAdjustImaginary.Location = new System.Drawing.Point(21, 234);
+            this.btAdjustImaginary.Name = "btAdjustImaginary";
+            this.btAdjustImaginary.Size = new System.Drawing.Size(322, 23);
+            this.btAdjustImaginary.TabIndex = 30;
+            this.btAdjustImaginary.Text = "Adjust imaginary axis";
+            this.btAdjustImaginary.UseVisualStyleBackColor = true;
+            this.btAdjustImaginary.Click += new System.EventHandler(this.btAdjustImaginary_Click);
             // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(355, 265);
+            this.ClientSize = new System.Drawing.Size(355, 353);
+            this.Controls.Add(this.btAdjustImaginary);
+            this.Controls.Add(this.btAdjustReal);
+            this.Controls.Add(this.btStartScreen);
             this.Controls.Add(this.btRefresh);
             this.Controls.Add(this.gbCurrentSelection);
             this.Controls.Add(this.gbCurrentView);
@@ -255,5 +297,8 @@ namespace Mandelbrot
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btRefresh;
+        private System.Windows.Forms.Button btStartScreen;
+        private System.Windows.Forms.Button btAdjustReal;
+        private System.Windows.Forms.Button btAdjustImaginary;
     }
 }

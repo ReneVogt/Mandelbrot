@@ -44,15 +44,6 @@ namespace MandelbrotGenerator
             if (imaginaryMin >= imaginaryMax)
                 throw new ArgumentException("The imaginary minimum must be less than the imaginary maximum.");
 
-            if (realMin < -2)
-                throw new ArgumentOutOfRangeException(nameof(realMin), realMin, "The real part must not be less than -2!");
-            if (realMax > 1)
-                throw new ArgumentOutOfRangeException(nameof(realMax), realMax, "The real part must not be greater than 1!");
-            if (imaginaryMin < -1)
-                throw new ArgumentOutOfRangeException(nameof(imaginaryMin), imaginaryMin, "The imaginary part must not be less than -1!");
-            if (imaginaryMax > 1)
-                throw new ArgumentOutOfRangeException(nameof(imaginaryMax), imaginaryMax, "The imaginary part must not be greater than 1!");
-
             if (realMax - realMin < width * double.Epsilon ||
                 imaginaryMax - imaginaryMin <= height * double.Epsilon)
                 throw new MandelbrotPrecisionException();
