@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mandelbrot.Properties;
 using MandelbrotGenerator;
 using MandelbrotGenerator.Exceptions;
 
@@ -25,6 +26,7 @@ namespace Mandelbrot
                 Generator = generator;
             }
         }
+        readonly Cursor waitCursor = new Cursor(Resources.WaitCursor.GetHicon());
         readonly ControlForm controlForm = new ControlForm();
         CalculationContext? context;
         double realMin = -2, realMax = 1, imaginaryMin = -1, imaginaryMax = 1;
@@ -34,6 +36,7 @@ namespace Mandelbrot
         public MandelbrotControl()
         {
             InitializeComponent();
+
             controlForm.SetCurrentScope(realMin, realMax, imaginaryMin, imaginaryMax);
             controlForm.SetCurrentSelection(realMin, realMax, imaginaryMin, imaginaryMax);
             controlForm.MaximumNumberOfIterations = 100;
@@ -53,6 +56,8 @@ namespace Mandelbrot
         {
             if (InvokeRequired)
                 throw new InvalidOperationException($"Illegal cross thread call in {nameof(MandelbrotControl)} '{Name}'!");
+
+            Cursor = waitCursor;
 
             if (context != null)
             {
@@ -81,6 +86,7 @@ namespace Mandelbrot
             finally
             {
                 context = null;
+                Cursor = Cursors.Default;
             }
         }
         Bitmap Calculate(double minR, double minI, double maxR, double maxI, int width, int height, CancellationToken cancellationToken)
@@ -91,7 +97,6 @@ namespace Mandelbrot
         {
             MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        /// <inheritdoc />
         protected override void OnHandleDestroyed(EventArgs e)
         {
             context?.Cts.Cancel();
@@ -160,13 +165,11 @@ namespace Mandelbrot
         {
             base.OnMouseClick(e);
             if (e.Button == MouseButtons.Right)
-                controlForm.Show(this);
-        }
-        void OnProgressTimer(object sender, EventArgs e)
-        {
-            var p = context?.Generator.Progress ?? 0;
-            pnProgress.Visible = p != 0;
-            calculationProgressBar.Value = p;
+            {
+                if (!controlForm.Visible)
+                    controlForm.Show(this);
+                controlForm.BringToFront();
+            }
         }
         void SwapImages(Bitmap? bitmap)
         {

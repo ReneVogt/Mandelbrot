@@ -3,13 +3,13 @@ using System.Threading;
 
 namespace MandelbrotGenerator
 {
-    readonly struct MandelbrotPoint
+    public readonly struct MandelbrotPoint
     {
-        internal double Real { get; }
-        internal double Imaginary { get; }
-        internal bool Set { get; }
-        internal int Iterations { get; }
-        internal double SquaredMagnitude { get; }
+        public double Real { get; }
+        public double Imaginary { get; }
+        public bool Set { get; }
+        public int Iterations { get; }
+        public double SquaredMagnitude { get; }
         MandelbrotPoint(double real, double imaginary)
             : this(real, imaginary, 0, 0)
         {
