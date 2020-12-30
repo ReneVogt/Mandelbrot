@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
+using Mandelbrot.Properties;
+
+#nullable enable
 
 namespace Mandelbrot
 {
@@ -10,6 +13,7 @@ namespace Mandelbrot
         readonly FullScreen fullScreen;
         public MainForm()
         {
+            Icon = Resources.Mandelbrot;
             InitializeComponent();
             fullScreen = new FullScreen(this);
         }

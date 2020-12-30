@@ -73,6 +73,7 @@ namespace Mandelbrot
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.Controls.Add(this.pnProgress);
+            this.DoubleBuffered = true;
             this.Name = "MandelbrotControl";
             this.Size = new System.Drawing.Size(752, 518);
             this.pnProgress.ResumeLayout(false);

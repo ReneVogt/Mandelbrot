@@ -39,17 +39,18 @@ namespace Mandelbrot
             this.mandelbrotControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mandelbrotControl1.Location = new System.Drawing.Point(0, 0);
             this.mandelbrotControl1.Name = "mandelbrotControl1";
-            this.mandelbrotControl1.Size = new System.Drawing.Size(800, 450);
+            this.mandelbrotControl1.Size = new System.Drawing.Size(788, 575);
             this.mandelbrotControl1.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(788, 575);
             this.Controls.Add(this.mandelbrotControl1);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Mandelbrot set viewer";
             this.ResumeLayout(false);
 
         }

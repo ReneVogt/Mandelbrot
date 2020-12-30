@@ -25,13 +25,20 @@ namespace Mandelbrot
                 Generator = generator;
             }
         }
+        readonly ControlForm controlForm = new ControlForm();
         readonly AnalyticColorizer colorizer = new AnalyticColorizer();
         CalculationContext? context;
         double realMin = -2, realMax = 1, imaginaryMin = -1, imaginaryMax = 1;
+        Point? mouseStartingPoint;
+        Rectangle? mouseSelection;
 
         public MandelbrotControl()
         {
             InitializeComponent();
+            controlForm.SetCurrentScope(realMin, realMax, imaginaryMin, imaginaryMax);
+            controlForm.SetCurrentSelection(realMin, realMax, imaginaryMin, imaginaryMax);
+            controlForm.MaximumNumberOfIterations = 100;
+            controlForm.RefreshClicked += (sender, e) => Recalculate();
         }
 
         void Recalculate()
@@ -52,7 +59,7 @@ namespace Mandelbrot
             }
             var cts = new CancellationTokenSource();
             var task = new Task<Bitmap>(() => Calculate(minR, minI, maxR, maxI, Width, Height, cts.Token));
-            context = new CalculationContext(task, cts, new MandelbrotImageGenerator {Colorizer = colorizer});
+            context = new CalculationContext(task, cts, new MandelbrotImageGenerator {Colorizer = colorizer, MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations});
             colorizer.Reset();
             task.Start();
             try
@@ -63,6 +70,8 @@ namespace Mandelbrot
                 realMin = minR;
                 imaginaryMax = maxI;
                 imaginaryMin = minI;
+                controlForm.SetCurrentScope(realMin, realMax, imaginaryMin, imaginaryMax);
+                controlForm.SetCurrentSelection(realMin, realMax, imaginaryMin, imaginaryMax);
             }
             catch (OperationCanceledException) { }
             catch (MandelbrotException mbe)
@@ -82,6 +91,11 @@ namespace Mandelbrot
         {
             MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+        /// <inheritdoc />
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            context?.Cts.Cancel();
+        }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -96,8 +110,57 @@ namespace Mandelbrot
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            if (mouseSelection != null)
+                e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
             if (BackgroundImage is null && context?.Cts.IsCancellationRequested != false)
                 Recalculate();
+        }
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            if (e.Button == MouseButtons.Left && mouseSelection.HasValue)
+            {
+                var selection = GetBoundsFromRect(mouseSelection.Value);
+                _ = Calculate(selection.minR, selection.minI, selection.maxR, selection.maxI);
+            }
+            mouseSelection = null;
+            mouseStartingPoint = null;
+            Invalidate();
+        }
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (e.Button != MouseButtons.Left)
+            {
+                mouseSelection = null;
+                mouseStartingPoint = null;
+            }
+            else
+            {
+                mouseStartingPoint ??= e.Location;
+
+                Point topLeft = new Point(Math.Min(mouseStartingPoint.Value.X, e.Location.X), Math.Min(e.Location.Y, mouseStartingPoint.Value.Y));
+                Size width = new Size(Math.Abs(e.Location.X - mouseStartingPoint.Value.X), Math.Abs(e.Location.Y - mouseStartingPoint.Value.Y));
+                mouseSelection = new Rectangle(topLeft, width);
+                Invalidate();
+            }
+
+            if (mouseSelection != null)
+            {
+                var (minr, maxr, mini, maxi) = GetBoundsFromRect(mouseSelection.Value);
+                controlForm.SetCurrentSelection(minr, maxr, mini, maxi);
+            }
+            else
+            {
+                var (r, i) = GetComplexFromPoint(e.Location);
+                controlForm.SetCurrentSelection(r, r, i, i);
+            }
+        }
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            base.OnMouseClick(e);
+            if (e.Button == MouseButtons.Right)
+                controlForm.Show(this);
         }
         void OnProgressTimer(object sender, EventArgs e)
         {
@@ -111,5 +174,13 @@ namespace Mandelbrot
             BackgroundImage = bitmap;
             old?.Dispose();
         }
+        (double minR, double maxR, double minI, double maxI) GetBoundsFromRect(Rectangle rect)
+        {
+            var topLeft = GetComplexFromPoint(rect.Location);
+            var bottomRight = GetComplexFromPoint(rect.Location + rect.Size);
+            return (topLeft.r, bottomRight.r, bottomRight.i, topLeft.i);
+        }
+        (double r, double i) GetComplexFromPoint(Point p) => (realMin + (realMax - realMin) * p.X / Width,
+                                                                 imaginaryMax - (imaginaryMax - imaginaryMin) * p.Y / Height);
     }
 }

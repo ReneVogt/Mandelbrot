@@ -36,6 +36,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Mandelbrot.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,6 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalyticColorizer.cs" />
+    <Compile Include="ControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlForm.Designer.cs">
+      <DependentUpon>ControlForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FullScreen.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -69,6 +78,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ControlForm.resx">
+      <DependentUpon>ControlForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -83,6 +95,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -107,6 +120,10 @@
       <Project>{32cd8b0d-c4aa-4208-8c12-01b393d37164}</Project>
       <Name>MandelbrotGenerator</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\Mandelbrot.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
