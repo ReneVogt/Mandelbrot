@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalyticColorizer.cs" />
     <Compile Include="ControlForm.cs">
       <SubType>Form</SubType>
     </Compile>

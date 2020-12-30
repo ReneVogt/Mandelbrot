@@ -21,8 +21,11 @@ namespace MandelbrotGenerator
             get
             {
                 var p = pixels;
-                if (p == 0) return 0;
-                return progress * 100 / p;
+                return p == 0
+                           ? 0
+                           : progress <= p
+                               ? progress * 95 / p
+                               : 95 + (progress - p) * 5 / p;
             }
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -56,7 +59,6 @@ namespace MandelbrotGenerator
                                from x in Enumerable.Range(0, width)
                                select (x, y);
 
-            Color[] result = new Color[width * height];
             var options = new ParallelOptions
             {
                 CancellationToken = cancellationToken,
@@ -65,15 +67,22 @@ namespace MandelbrotGenerator
             var maxIterations = MaximumNumberOfIterations;
             pixels = height * width;
             progress = 0;
+            MandelbrotPoint[] iteratedPoints = new MandelbrotPoint[pixels];
             Parallel.ForEach(pixelSource, options, pixel =>
             {
-                var m = MandelbrotPoint.Calculate(realMin + pixel.x * dx / width, imaginaryMax - pixel.y * dy / height, maxIterations,
-                                                  cancellationToken);
-                result[pixel.y * width + pixel.x] = m.Set ? colorizer.GetInsideColor() : colorizer.GetOutsideColor(m.Iterations, maxIterations, m.SquaredMagnitude);
+                iteratedPoints[pixel.y * width + pixel.x] = MandelbrotPoint.Calculate(realMin + pixel.x * dx / width, imaginaryMax - pixel.y * dy / height, maxIterations,
+                                                                                      cancellationToken);
+                Interlocked.Increment(ref progress);
+            });
+            Color[] colors = new Color[pixels];
+            var statistics = new MandelbrotStatistics(maxIterations, iteratedPoints);
+            Parallel.ForEach(iteratedPoints.Select((m, i) => (m, i)), options, m =>
+            {
+                colors[m.i] = colorizer.Colorize(m.m.Iterations, m.m.SquaredMagnitude, statistics);
                 Interlocked.Increment(ref progress);
             });
             progress = 0;
-            return result;
+            return colors;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Bitmap CreateBitmap(int width, int height,

@@ -26,7 +26,6 @@ namespace Mandelbrot
             }
         }
         readonly ControlForm controlForm = new ControlForm();
-        readonly AnalyticColorizer colorizer = new AnalyticColorizer();
         CalculationContext? context;
         double realMin = -2, realMax = 1, imaginaryMin = -1, imaginaryMax = 1;
         Point? mouseStartingPoint;
@@ -62,13 +61,11 @@ namespace Mandelbrot
             }
             var cts = new CancellationTokenSource();
             var task = new Task<Bitmap>(() => Calculate(minR, minI, maxR, maxI, Width, Height, cts.Token));
-            context = new CalculationContext(task, cts, new MandelbrotImageGenerator {Colorizer = colorizer, MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations});
-            colorizer.Reset();
+            context = new CalculationContext(task, cts, new MandelbrotImageGenerator {MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations});
             task.Start();
             try
             {
                 SwapImages(await task);
-                colorizer.DumpAnalytics();
                 realMax = maxR;
                 realMin = minR;
                 imaginaryMax = maxI;
@@ -123,8 +120,8 @@ namespace Mandelbrot
             base.OnMouseUp(e);
             if (e.Button == MouseButtons.Left && mouseSelection.HasValue)
             {
-                var selection = GetBoundsFromRect(mouseSelection.Value);
-                _ = Calculate(selection.minR, selection.minI, selection.maxR, selection.maxI);
+                (double minR, double maxR, double minI, double maxI) = GetBoundsFromRect(mouseSelection.Value);
+                _ = Calculate(minR, minI, maxR, maxI);
             }
             mouseSelection = null;
             mouseStartingPoint = null;
@@ -195,9 +192,9 @@ namespace Mandelbrot
         }
         (double minR, double maxR, double minI, double maxI) GetBoundsFromRect(Rectangle rect)
         {
-            var topLeft = GetComplexFromPoint(rect.Location);
-            var bottomRight = GetComplexFromPoint(rect.Location + rect.Size);
-            return (topLeft.r, bottomRight.r, bottomRight.i, topLeft.i);
+            (double rmin, double imax) = GetComplexFromPoint(rect.Location);
+            (double rmax, double imin) = GetComplexFromPoint(rect.Location + rect.Size);
+            return (rmin, rmax, imin, imax);
         }
         (double r, double i) GetComplexFromPoint(Point p) => (realMin + (realMax - realMin) * p.X / Width,
                                                                  imaginaryMax - (imaginaryMax - imaginaryMin) * p.Y / Height);

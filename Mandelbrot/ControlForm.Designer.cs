@@ -253,6 +253,7 @@ namespace Mandelbrot
             // 
             // ControlForm
             // 
+            this.AcceptButton = this.btRefresh;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(355, 353);
@@ -269,7 +270,6 @@ namespace Mandelbrot
             this.Name = "ControlForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Mandelbrot controller";
-            this.TopMost = true;
             this.gbCalculation.ResumeLayout(false);
             this.gbCalculation.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).EndInit();
