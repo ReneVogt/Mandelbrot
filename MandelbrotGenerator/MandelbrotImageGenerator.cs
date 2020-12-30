@@ -58,7 +58,7 @@ namespace MandelbrotGenerator
                                                                 cancellationToken));
             Color[] colors = new Color[pixels];
             var statistics = new MandelbrotStatistics(maxIterations, iteratedPoints);
-            Parallel.ForEach(iteratedPoints.Select((m, i) => (m, i)), options, m => colors[m.i] = colorizer.Colorize(m.m.Iterations, m.m.SquaredMagnitude, statistics));
+            Parallel.ForEach(iteratedPoints.Select((m, i) => (m, i)), options, m => colors[m.i] = m.m.Set ? colorizer.SetColor : colorizer.Colorize(m.m.Iterations, m.m.SquaredMagnitude, statistics));
             return colors;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]

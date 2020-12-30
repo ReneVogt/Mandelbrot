@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mandelbrot", "Mandelbrot\Ma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MandelbrotGenerator", "MandelbrotGenerator\MandelbrotGenerator.csproj", "{32CD8B0D-C4AA-4208-8C12-01B393D37164}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MandelbrotGeneratorTests", "MandelbrotGeneratorTests\MandelbrotGeneratorTests.csproj", "{C54DED69-B551-4925-B646-51492FCEC595}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{32CD8B0D-C4AA-4208-8C12-01B393D37164}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32CD8B0D-C4AA-4208-8C12-01B393D37164}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32CD8B0D-C4AA-4208-8C12-01B393D37164}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C54DED69-B551-4925-B646-51492FCEC595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C54DED69-B551-4925-B646-51492FCEC595}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C54DED69-B551-4925-B646-51492FCEC595}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C54DED69-B551-4925-B646-51492FCEC595}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,7 +9,7 @@ namespace MandelbrotGenerator
         public virtual Color SetColor => Color.Black;
         public virtual Color Colorize(int neededIterations, double squaredMagnitude, MandelbrotStatistics statistics)
         {
-            double lowerLimit = statistics.AverageNeededIterations - Math.Sqrt(statistics.IterationVariance) / 2;
+            double lowerLimit = Math.Max(1, statistics.AverageNeededIterations - Math.Sqrt(statistics.IterationVariance) / 2);
             double iterationIndex = neededIterations - Math.Min(1, squaredMagnitude / 30d);
             if (iterationIndex < lowerLimit) return Color.Black;
 

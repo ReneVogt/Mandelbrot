@@ -37,7 +37,7 @@ namespace MandelbrotGenerator
             if (magnitude > 4)
                 return new MandelbrotPoint(real, imaginary, 0, magnitude);
 
-            for (int iteration = 0; iteration < maxIterations; iteration++)
+            for (int iteration = 1; iteration <= maxIterations; iteration++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 i = 2 * r * i + imaginary;
