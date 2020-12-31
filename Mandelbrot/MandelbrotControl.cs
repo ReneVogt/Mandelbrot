@@ -72,6 +72,10 @@ namespace Mandelbrot
             {
                 OnCalculationError(mbe);
             }
+            catch (ArgumentException ae)
+            {
+                OnCalculationError(ae);
+            }
         }
         void OnCalculationFinished(Bitmap bitmap, MandelbrotArea area)
         {
@@ -120,11 +124,6 @@ namespace Mandelbrot
         protected override void OnHandleDestroyed(EventArgs e)
         {
             cancellationTokenSource?.Cancel();
-        }
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            Recalculate();
         }
         protected override void OnClientSizeChanged(EventArgs e)
         {
