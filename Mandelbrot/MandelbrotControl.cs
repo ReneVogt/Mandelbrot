@@ -187,6 +187,7 @@ namespace Mandelbrot
                 if (!controlForm.Visible)
                     controlForm.Show(this);
                 controlForm.BringToFront();
+                controlForm.Location = PointToScreen(e.Location);
             }
         }
         void SwapImages(Bitmap? bitmap)
@@ -204,14 +205,14 @@ namespace Mandelbrot
             var (realMin, realMax, imaginaryMin, imaginaryMax) = currentArea;
             double h = 0.5 * (realMax - realMin) * Height / Width;
             double m = (imaginaryMax + imaginaryMin) / 2;
-            StartCalculation((realMin, m - h, realMax, m + h));
+            StartCalculation((realMin, realMax, m - h, m + h));
         }
         void AdjustToRealAxis()
         {
             var (realMin, realMax, imaginaryMin, imaginaryMax) = currentArea;
             double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
             double m = (realMax + realMin) / 2;
-            StartCalculation((m - w, imaginaryMin, m + w, imaginaryMax));
+            StartCalculation((m - w, m + w, imaginaryMin, imaginaryMax));
         }
         MandelbrotArea GetMandelbrotAreaFromRect(Rectangle rect)
         {
