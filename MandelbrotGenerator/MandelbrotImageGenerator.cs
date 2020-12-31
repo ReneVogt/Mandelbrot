@@ -16,12 +16,7 @@ namespace MandelbrotGenerator
         public MandelbrotColorizer? Colorizer { get; set; }
         public int MaximumNumberOfIterations { get; set; } = 500;
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Color[] CreateImage(int width, int height,
-                                          double realMin = -2,
-                                          double realMax = 1,
-                                          double imaginaryMin = -1,
-                                          double imaginaryMax = 1,
-                                          CancellationToken cancellationToken = default)
+        public Color[] CreateImage(int width, int height, MandelbrotArea area, CancellationToken cancellationToken = default)
         {
             if (width < 0)
                 throw new ArgumentOutOfRangeException(paramName: nameof(width), message: "Parameter 'width' must be greater than or equal to zero.",
@@ -29,6 +24,8 @@ namespace MandelbrotGenerator
             if (height < 0)
                 throw new ArgumentOutOfRangeException(paramName: nameof(height), message: "Parameter 'height' must be greater than or equal to zero.",
                                                       actualValue: height);
+
+            var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
             if (realMin >= realMax)
                 throw new ArgumentException("The real minimum must be less than the real maximum.");
             if (imaginaryMin >= imaginaryMax)
@@ -62,17 +59,9 @@ namespace MandelbrotGenerator
             return colors;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Bitmap CreateBitmap(int width, int height,
-                                   double realMin = -2,
-                                   double realMax = 1,
-                                   double imaginaryMin = -1,
-                                   double imaginaryMax = 1,
-                                   CancellationToken cancellationToken = default)
+        public Bitmap CreateBitmap(int width, int height, MandelbrotArea area, CancellationToken cancellationToken = default)
         {
-            var colors = CreateImage(width: width, height: height, 
-                                     realMin: realMin, realMax: realMax,
-                imaginaryMin: imaginaryMin, imaginaryMax: imaginaryMax,
-                cancellationToken: cancellationToken);
+            var colors = CreateImage(width, height, area, cancellationToken);
             
             var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
             var lockBits = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);

@@ -13,23 +13,11 @@ namespace Mandelbrot
 {
     public partial class MandelbrotControl : UserControl
     {
-        readonly struct CalculationContext
-        {
-            public Task<Bitmap> Task { get; }
-            public CancellationTokenSource Cts { get; }
-            public MandelbrotImageGenerator Generator { get; }
-
-            public CalculationContext(Task<Bitmap> task, CancellationTokenSource cts, MandelbrotImageGenerator generator)
-            {
-                Task = task;
-                Cts = cts;
-                Generator = generator;
-            }
-        }
         readonly Cursor waitCursor = new Cursor(Resources.WaitCursor.GetHicon());
         readonly ControlForm controlForm = new ControlForm();
-        CalculationContext? context;
-        double realMin = -2, realMax = 1, imaginaryMin = -1, imaginaryMax = 1;
+        CancellationTokenSource? cancellationTokenSource;
+        MandelbrotArea? nextCalculation;
+        MandelbrotArea currentArea = MandelbrotArea.Default;
         Point? mouseStartingPoint;
         Rectangle? mouseSelection;
 
@@ -37,8 +25,8 @@ namespace Mandelbrot
         {
             InitializeComponent();
 
-            controlForm.SetCurrentScope(realMin, realMax, imaginaryMin, imaginaryMax);
-            controlForm.SetCurrentSelection(realMin, realMax, imaginaryMin, imaginaryMax);
+            controlForm.SetCurrentScope(currentArea);
+            controlForm.SetCurrentSelection(currentArea);
             controlForm.MaximumNumberOfIterations = 100;
             controlForm.RefreshClicked += (sender, e) => Recalculate();
             controlForm.AdjustImaginaryAxisClicked += (sender, e) => AdjustToImaginaryAxis();
@@ -50,56 +38,88 @@ namespace Mandelbrot
         {
             if (DesignMode)
                 return;
-            _ = Calculate(realMin, imaginaryMin, realMax, imaginaryMax);
+            StartCalculation(currentArea);
         }
-        async Task Calculate(double minR, double minI, double maxR, double maxI)
+        void StartCalculation(MandelbrotArea area)
         {
             if (InvokeRequired)
                 throw new InvalidOperationException($"Illegal cross thread call in {nameof(MandelbrotControl)} '{Name}'!");
 
-            Cursor = waitCursor;
-
-            if (context != null)
+            if (cancellationTokenSource is {})
             {
-                context.Value.Cts.Cancel();
-                await context.Value.Task;
+                nextCalculation = area;
+                cancellationTokenSource.Cancel();
+                return;
             }
+
+            nextCalculation = null;
+            Cursor = waitCursor;
             var cts = new CancellationTokenSource();
-            var task = new Task<Bitmap>(() => Calculate(minR, minI, maxR, maxI, Width, Height, cts.Token));
-            context = new CalculationContext(task, cts, new MandelbrotImageGenerator {MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations});
-            task.Start();
+            _ = Task.Run(() => CalculateAsync(new MandelbrotImageGenerator {MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations}, Width, Height, area, cts.Token), cts.Token);
+        }
+        void CalculateAsync(MandelbrotImageGenerator generator, int width, int height, MandelbrotArea area, CancellationToken cancellationToken)
+        {
             try
             {
-                SwapImages(await task);
-                realMax = maxR;
-                realMin = minR;
-                imaginaryMax = maxI;
-                imaginaryMin = minI;
-                controlForm.SetCurrentScope(realMin, realMax, imaginaryMin, imaginaryMax);
-                controlForm.SetCurrentSelection(realMin, realMax, imaginaryMin, imaginaryMax);
+                var bmp = generator.CreateBitmap(width, height, area, cancellationToken);
+                OnCalculationFinished(bmp, area);
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+                OnCalculationAborted();
+            }
             catch (MandelbrotException mbe)
             {
-                ReportError(mbe);
+                OnCalculationError(mbe);
             }
-            finally
+        }
+        void OnCalculationFinished(Bitmap bitmap, MandelbrotArea area)
+        {
+            if (InvokeRequired)
             {
-                context = null;
-                Cursor = Cursors.Default;
+                BeginInvoke((Action<Bitmap,MandelbrotArea>)OnCalculationFinished, bitmap, area);
+                return;
             }
+
+            if (cancellationTokenSource?.IsCancellationRequested == true)
+            {
+                OnCalculationAborted();
+                return;
+            }
+
+            Cursor = Cursors.Default;
+            cancellationTokenSource = null;
+            currentArea = area;
+            controlForm.SetCurrentScope(area);
+            controlForm.SetCurrentSelection(area);
+            SwapImages(bitmap);
         }
-        Bitmap Calculate(double minR, double minI, double maxR, double maxI, int width, int height, CancellationToken cancellationToken)
+        void OnCalculationError(Exception error)
         {
-            return context!.Value.Generator.CreateBitmap(width, height, minR, maxR, minI, maxI, cancellationToken);
-        }
-        void ReportError(Exception error)
-        {
+            if (InvokeRequired)
+            {
+                BeginInvoke((Action<Exception>)OnCalculationError, error);
+                return;
+            }
+            if (cancellationTokenSource?.IsCancellationRequested == true)
+            {
+                OnCalculationAborted();
+                return;
+            }
+            Cursor = Cursors.Default;
+            cancellationTokenSource = null;
             MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        void OnCalculationAborted()
+        {
+            Cursor = Cursors.Default;
+            cancellationTokenSource = null;
+            if (nextCalculation is {}) 
+                StartCalculation(nextCalculation.Value);
         }
         protected override void OnHandleDestroyed(EventArgs e)
         {
-            context?.Cts.Cancel();
+            cancellationTokenSource?.Cancel();
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -108,7 +128,7 @@ namespace Mandelbrot
         }
         protected override void OnClientSizeChanged(EventArgs e)
         {
-            context?.Cts.Cancel();
+            cancellationTokenSource?.Cancel();
             SwapImages(null);
             base.OnClientSizeChanged(e);
         }
@@ -117,17 +137,19 @@ namespace Mandelbrot
             base.OnPaint(e);
             if (mouseSelection != null)
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
-            if (BackgroundImage is null && context?.Cts.IsCancellationRequested != false)
+            if (BackgroundImage is null && cancellationTokenSource?.IsCancellationRequested != false)
                 Recalculate();
+        }
+        protected override void OnMouseDoubleClick(MouseEventArgs e)
+        {
+            base.OnMouseDoubleClick(e);
+            ReturnToTotalView();
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
             if (e.Button == MouseButtons.Left && mouseSelection.HasValue)
-            {
-                (double minR, double maxR, double minI, double maxI) = GetBoundsFromRect(mouseSelection.Value);
-                _ = Calculate(minR, minI, maxR, maxI);
-            }
+                StartCalculation(GetMandelbrotAreaFromRect(mouseSelection.Value));
             mouseSelection = null;
             mouseStartingPoint = null;
             Invalidate();
@@ -151,14 +173,11 @@ namespace Mandelbrot
             }
 
             if (mouseSelection != null)
-            {
-                var (minr, maxr, mini, maxi) = GetBoundsFromRect(mouseSelection.Value);
-                controlForm.SetCurrentSelection(minr, maxr, mini, maxi);
-            }
+                controlForm.SetCurrentSelection(GetMandelbrotAreaFromRect(mouseSelection.Value));
             else
             {
                 var (r, i) = GetComplexFromPoint(e.Location);
-                controlForm.SetCurrentSelection(r, r, i, i);
+                controlForm.SetCurrentSelection((r, r, i, i));
             }
         }
         protected override void OnMouseClick(MouseEventArgs e)
@@ -179,27 +198,29 @@ namespace Mandelbrot
         }
         void ReturnToTotalView()
         {
-            _ = Calculate(-2, -1, 1, 1);
+            StartCalculation(MandelbrotArea.Default);
         }
         void AdjustToImaginaryAxis()
         {
+            var (realMin, realMax, imaginaryMin, imaginaryMax) = currentArea;
             double h = 0.5 * (realMax - realMin) * Height / Width;
             double m = (imaginaryMax + imaginaryMin) / 2;
-            _ = Calculate(realMin, m - h, realMax, m + h);
+            StartCalculation((realMin, m - h, realMax, m + h));
         }
         void AdjustToRealAxis()
         {
+            var (realMin, realMax, imaginaryMin, imaginaryMax) = currentArea;
             double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
             double m = (realMax + realMin) / 2;
-            _ = Calculate(m - w, imaginaryMin, m + w, imaginaryMax);
+            StartCalculation((m - w, imaginaryMin, m + w, imaginaryMax));
         }
-        (double minR, double maxR, double minI, double maxI) GetBoundsFromRect(Rectangle rect)
+        MandelbrotArea GetMandelbrotAreaFromRect(Rectangle rect)
         {
             (double rmin, double imax) = GetComplexFromPoint(rect.Location);
             (double rmax, double imin) = GetComplexFromPoint(rect.Location + rect.Size);
             return (rmin, rmax, imin, imax);
         }
-        (double r, double i) GetComplexFromPoint(Point p) => (realMin + (realMax - realMin) * p.X / Width,
-                                                                 imaginaryMax - (imaginaryMax - imaginaryMin) * p.Y / Height);
+        (double r, double i) GetComplexFromPoint(Point p) => (currentArea.RealMin + (currentArea.RealMax - currentArea.RealMin) * p.X / Width,
+                                                                 currentArea.ImaginaryMax - (currentArea.ImaginaryMax - currentArea.ImaginaryMin) * p.Y / Height);
     }
 }

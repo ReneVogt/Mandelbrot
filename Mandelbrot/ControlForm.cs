@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
+using MandelbrotGenerator;
 
 #nullable enable
+#pragma warning disable IDE1006 // Benennungsstile
 
 namespace Mandelbrot
 {
@@ -40,17 +43,19 @@ namespace Mandelbrot
             }
             base.OnFormClosing(e);
         }
-        public void SetCurrentScope(double minR, double maxR, double minI, double maxI)
+        public void SetCurrentScope(MandelbrotArea area)
         {
-            lbCurrentReal.Text = CreateAxisString(minR, maxR);
-            lbCurrentImaginary.Text = CreateAxisString(minI, maxI);
+            lbCurrentReal.Text = CreateAxisString(area.RealMin, area.RealMax);
+            lbCurrentImaginary.Text = CreateAxisString(area.ImaginaryMin, area.ImaginaryMax);
         }
-        public void SetCurrentSelection(double minR, double maxR, double minI, double maxI)
+        public void SetCurrentSelection(MandelbrotArea area)
         {
-            lbSelectionReal.Text = CreateAxisString(minR, maxR);
-            lbSelectionImaginary.Text = CreateAxisString(minI, maxI);
+            lbSelectionReal.Text = CreateAxisString(area.RealMin, area.RealMax);
+            lbSelectionImaginary.Text = CreateAxisString(area.ImaginaryMin, area.ImaginaryMax);
         }
-        static string CreateAxisString(double min, double max) => $"{min:G17} to {max:G17}";
+        static string CreateAxisString(double min, double max) => min.Equals(max) ? FormatDouble(min) : $"{FormatDouble(min)} to {FormatDouble(max)}";
+        static string FormatDouble(double d) =>
+            d.ToString("G17").TrimEnd('0').TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToCharArray());
 
         void btRefresh_Click(object sender, EventArgs e)
         {
