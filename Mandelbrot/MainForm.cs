@@ -1,21 +1,22 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Windows.Forms;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Mandelbrot.Properties;
 
 #nullable enable
 
 namespace Mandelbrot
 {
-    public partial class MainForm : Form
+    public partial class MainForm : FullscreenableForm
     {
-        // ReSharper disable once NotAccessedField.Local
-        [SuppressMessage("CodeQuality", "IDE0052:Ungelesene private Member entfernen", Justification = "Necessary for fullscreen mode, should not be GCed.")]
-        readonly FullScreen fullScreen;
         public MainForm()
         {
             Icon = Resources.Mandelbrot;
             InitializeComponent();
-            fullScreen = new FullScreen(this);
+        }
+        protected override void OnFullscreenChanged(EventArgs e)
+        {
+            base.OnFullscreenChanged(e);
+            mandelbrotControl1.ControlForm.Fullscreen = Fullscreen;
         }
     }
 }

@@ -14,24 +14,30 @@ namespace Mandelbrot
     public partial class MandelbrotControl : UserControl
     {
         readonly Cursor waitCursor = new Cursor(Resources.WaitCursor.GetHicon());
-        readonly ControlForm controlForm = new ControlForm();
         CancellationTokenSource? cancellationTokenSource;
         MandelbrotArea? nextCalculation;
         MandelbrotArea currentArea = MandelbrotArea.Default;
         Point? mouseStartingPoint;
         Rectangle? mouseSelection;
 
+        public ControlForm ControlForm { get; } = new ControlForm();
+
         public MandelbrotControl()
         {
             InitializeComponent();
 
-            controlForm.SetCurrentScope(currentArea);
-            controlForm.SetCurrentSelection(currentArea);
-            controlForm.MaximumNumberOfIterations = 100;
-            controlForm.RefreshClicked += (sender, e) => Recalculate();
-            controlForm.AdjustImaginaryAxisClicked += (sender, e) => AdjustToImaginaryAxis();
-            controlForm.AdjustRealAxisClicked += (sender, e) => AdjustToRealAxis();
-            controlForm.ReturnToTotalViewClicked += (sender, e) => ReturnToTotalView();
+            ControlForm.SetCurrentScope(currentArea);
+            ControlForm.SetCurrentSelection(currentArea);
+            ControlForm.MaximumNumberOfIterations = 100;
+            ControlForm.RefreshClicked += (sender, e) => Recalculate();
+            ControlForm.AdjustImaginaryAxisClicked += (sender, e) => AdjustToImaginaryAxis();
+            ControlForm.AdjustRealAxisClicked += (sender, e) => AdjustToRealAxis();
+            ControlForm.ReturnToTotalViewClicked += (sender, e) => ReturnToTotalView();
+            ControlForm.FullscreenChanged += (sender, e) =>
+            {
+                if (ParentForm is FullscreenableForm fsf)
+                    fsf.Fullscreen = ControlForm.Fullscreen;
+            };
         }
 
         void Recalculate()
@@ -55,7 +61,7 @@ namespace Mandelbrot
             nextCalculation = null;
             Cursor = waitCursor;
             var cts = new CancellationTokenSource();
-            _ = Task.Run(() => CalculateAsync(new MandelbrotImageGenerator {MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations}, Width, Height, area, cts.Token), cts.Token);
+            _ = Task.Run(() => CalculateAsync(new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations}, Width, Height, area, cts.Token), cts.Token);
         }
         void CalculateAsync(MandelbrotImageGenerator generator, int width, int height, MandelbrotArea area, CancellationToken cancellationToken)
         {
@@ -94,8 +100,8 @@ namespace Mandelbrot
             Cursor = Cursors.Default;
             cancellationTokenSource = null;
             currentArea = area;
-            controlForm.SetCurrentScope(area);
-            controlForm.SetCurrentSelection(area);
+            ControlForm.SetCurrentScope(area);
+            ControlForm.SetCurrentSelection(area);
             SwapImages(bitmap);
         }
         void OnCalculationError(Exception error)
@@ -172,11 +178,11 @@ namespace Mandelbrot
             }
 
             if (mouseSelection != null)
-                controlForm.SetCurrentSelection(GetMandelbrotAreaFromRect(mouseSelection.Value));
+                ControlForm.SetCurrentSelection(GetMandelbrotAreaFromRect(mouseSelection.Value));
             else
             {
                 var (r, i) = GetComplexFromPoint(e.Location);
-                controlForm.SetCurrentSelection((r, r, i, i));
+                ControlForm.SetCurrentSelection((r, r, i, i));
             }
         }
         protected override void OnMouseClick(MouseEventArgs e)
@@ -184,10 +190,10 @@ namespace Mandelbrot
             base.OnMouseClick(e);
             if (e.Button == MouseButtons.Right)
             {
-                if (!controlForm.Visible)
-                    controlForm.Show(this);
-                controlForm.BringToFront();
-                controlForm.Location = PointToScreen(e.Location);
+                if (!ControlForm.Visible)
+                    ControlForm.Show(this);
+                ControlForm.BringToFront();
+                ControlForm.Location = PointToScreen(e.Location);
             }
         }
         void SwapImages(Bitmap? bitmap)

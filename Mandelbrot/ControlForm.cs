@@ -15,6 +15,7 @@ namespace Mandelbrot
         public event EventHandler? AdjustImaginaryAxisClicked;
         public event EventHandler? AdjustRealAxisClicked;
         public event EventHandler? ReturnToTotalViewClicked;
+        public event EventHandler? FullscreenChanged;
 
         public int MaximumNumberOfIterations
         {
@@ -27,6 +28,11 @@ namespace Mandelbrot
                 }
                 catch(ArgumentOutOfRangeException){}
             }
+        }
+        public bool Fullscreen
+        {
+            get => cbFullscreen.Checked;
+            set => cbFullscreen.Checked = value;
         }
 
         public ControlForm()
@@ -72,6 +78,11 @@ namespace Mandelbrot
         private void btStartScreen_Click(object sender, EventArgs e)
         {
             ReturnToTotalViewClicked?.Invoke(this, e);
+        }
+
+        private void cbFullscreen_CheckedChanged(object sender, EventArgs e)
+        {
+            FullscreenChanged?.Invoke(this, e);
         }
     }
 }

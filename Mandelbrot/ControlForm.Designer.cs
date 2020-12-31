@@ -30,7 +30,7 @@ namespace Mandelbrot
         private void InitializeComponent()
         {
             this.gbCalculation = new System.Windows.Forms.GroupBox();
-            this.nupIterations = new System.Windows.Forms.NumericUpDown();
+            this.nupIterations = new LogarithmicUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
             this.lbCurrentImaginary = new System.Windows.Forms.Label();
@@ -46,6 +46,7 @@ namespace Mandelbrot
             this.btStartScreen = new System.Windows.Forms.Button();
             this.btAdjustReal = new System.Windows.Forms.Button();
             this.btAdjustImaginary = new System.Windows.Forms.Button();
+            this.cbFullscreen = new System.Windows.Forms.CheckBox();
             this.gbCalculation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.gbCurrentView.SuspendLayout();
@@ -207,10 +208,10 @@ namespace Mandelbrot
             // 
             this.btRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRefresh.Location = new System.Drawing.Point(21, 321);
+            this.btRefresh.Location = new System.Drawing.Point(21, 351);
             this.btRefresh.Name = "btRefresh";
             this.btRefresh.Size = new System.Drawing.Size(322, 23);
-            this.btRefresh.TabIndex = 60;
+            this.btRefresh.TabIndex = 70;
             this.btRefresh.Text = "Refresh";
             this.btRefresh.UseVisualStyleBackColor = true;
             this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
@@ -219,7 +220,7 @@ namespace Mandelbrot
             // 
             this.btStartScreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btStartScreen.Location = new System.Drawing.Point(21, 292);
+            this.btStartScreen.Location = new System.Drawing.Point(21, 293);
             this.btStartScreen.Name = "btStartScreen";
             this.btStartScreen.Size = new System.Drawing.Size(322, 23);
             this.btStartScreen.TabIndex = 50;
@@ -231,7 +232,7 @@ namespace Mandelbrot
             // 
             this.btAdjustReal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btAdjustReal.Location = new System.Drawing.Point(21, 263);
+            this.btAdjustReal.Location = new System.Drawing.Point(21, 264);
             this.btAdjustReal.Name = "btAdjustReal";
             this.btAdjustReal.Size = new System.Drawing.Size(322, 23);
             this.btAdjustReal.TabIndex = 40;
@@ -243,7 +244,7 @@ namespace Mandelbrot
             // 
             this.btAdjustImaginary.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btAdjustImaginary.Location = new System.Drawing.Point(21, 234);
+            this.btAdjustImaginary.Location = new System.Drawing.Point(21, 235);
             this.btAdjustImaginary.Name = "btAdjustImaginary";
             this.btAdjustImaginary.Size = new System.Drawing.Size(322, 23);
             this.btAdjustImaginary.TabIndex = 30;
@@ -251,12 +252,25 @@ namespace Mandelbrot
             this.btAdjustImaginary.UseVisualStyleBackColor = true;
             this.btAdjustImaginary.Click += new System.EventHandler(this.btAdjustImaginary_Click);
             // 
+            // cbFullscreen
+            // 
+            this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cbFullscreen.Location = new System.Drawing.Point(21, 322);
+            this.cbFullscreen.Name = "cbFullscreen";
+            this.cbFullscreen.Size = new System.Drawing.Size(322, 24);
+            this.cbFullscreen.TabIndex = 60;
+            this.cbFullscreen.Text = "Fullscreen";
+            this.cbFullscreen.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cbFullscreen.UseVisualStyleBackColor = true;
+            this.cbFullscreen.CheckedChanged += new System.EventHandler(this.cbFullscreen_CheckedChanged);
+            // 
             // ControlForm
             // 
             this.AcceptButton = this.btRefresh;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(355, 353);
+            this.ClientSize = new System.Drawing.Size(355, 383);
+            this.Controls.Add(this.cbFullscreen);
             this.Controls.Add(this.btAdjustImaginary);
             this.Controls.Add(this.btAdjustReal);
             this.Controls.Add(this.btStartScreen);
@@ -284,7 +298,7 @@ namespace Mandelbrot
         #endregion
 
         private System.Windows.Forms.GroupBox gbCalculation;
-        private System.Windows.Forms.NumericUpDown nupIterations;
+        LogarithmicUpDown nupIterations;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox gbCurrentView;
         private System.Windows.Forms.Label lbCurrentImaginary;
@@ -300,5 +314,6 @@ namespace Mandelbrot
         private System.Windows.Forms.Button btStartScreen;
         private System.Windows.Forms.Button btAdjustReal;
         private System.Windows.Forms.Button btAdjustImaginary;
+        private System.Windows.Forms.CheckBox cbFullscreen;
     }
 }
