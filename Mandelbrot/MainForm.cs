@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Mandelbrot.Properties;
 
 #nullable enable

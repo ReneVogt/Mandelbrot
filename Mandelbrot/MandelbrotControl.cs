@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Mandelbrot.Properties;
 using MandelbrotGenerator;
 using MandelbrotGenerator.Exceptions;
 
@@ -13,12 +13,15 @@ namespace Mandelbrot
 {
     public partial class MandelbrotControl : UserControl
     {
-        readonly Cursor waitCursor = new Cursor(Resources.WaitCursor.GetHicon());
+        readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
+        
         CancellationTokenSource? cancellationTokenSource;
         MandelbrotArea? nextCalculation;
         MandelbrotArea currentArea = MandelbrotArea.Default;
         Point? mouseStartingPoint;
         Rectangle? mouseSelection;
+        MandelbrotImageGenerator? currentGenerator;
+        int progress = -1;
 
         public ControlForm ControlForm { get; } = new ControlForm();
 
@@ -39,7 +42,6 @@ namespace Mandelbrot
                     fsf.Fullscreen = ControlForm.Fullscreen;
             };
         }
-
         void Recalculate()
         {
             if (DesignMode)
@@ -53,15 +55,17 @@ namespace Mandelbrot
 
             if (cancellationTokenSource is {})
             {
+                Debug.WriteLine("CANCELLING CALCULATION");
                 nextCalculation = area;
                 cancellationTokenSource.Cancel();
                 return;
             }
 
+            Debug.WriteLine("STARTING CALCULATION");
             nextCalculation = null;
-            Cursor = waitCursor;
-            var cts = new CancellationTokenSource();
-            _ = Task.Run(() => CalculateAsync(new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations}, Width, Height, area, cts.Token), cts.Token);
+            var generator = currentGenerator = new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations};
+            var cts = cancellationTokenSource = new CancellationTokenSource();
+            _ = Task.Run(() => CalculateAsync(generator, Width, Height, area, cts.Token), cts.Token);
         }
         void CalculateAsync(MandelbrotImageGenerator generator, int width, int height, MandelbrotArea area, CancellationToken cancellationToken)
         {
@@ -85,6 +89,7 @@ namespace Mandelbrot
         }
         void OnCalculationFinished(Bitmap bitmap, MandelbrotArea area)
         {
+            Debug.WriteLine("CALCULATION FINISHED");
             if (InvokeRequired)
             {
                 BeginInvoke((Action<Bitmap,MandelbrotArea>)OnCalculationFinished, bitmap, area);
@@ -97,8 +102,9 @@ namespace Mandelbrot
                 return;
             }
 
-            Cursor = Cursors.Default;
             cancellationTokenSource = null;
+            currentGenerator = null;
+            progress = -1;
             currentArea = area;
             ControlForm.SetCurrentScope(area);
             ControlForm.SetCurrentSelection(area);
@@ -106,6 +112,7 @@ namespace Mandelbrot
         }
         void OnCalculationError(Exception error)
         {
+            Debug.WriteLine($"CALCULATION ERROR: Invoke: {InvokeRequired} Cancel: {cancellationTokenSource?.IsCancellationRequested.ToString() ?? "null"} Error: {error}");
             if (InvokeRequired)
             {
                 BeginInvoke((Action<Exception>)OnCalculationError, error);
@@ -116,17 +123,32 @@ namespace Mandelbrot
                 OnCalculationAborted();
                 return;
             }
-            Cursor = Cursors.Default;
             cancellationTokenSource = null;
+            currentGenerator = null;
+            progress = -1;
             MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         void OnCalculationAborted()
         {
-            Cursor = Cursors.Default;
+            Debug.WriteLine("CALCULATION ABORTED");
             cancellationTokenSource = null;
+            currentGenerator = null;
+            progress = -1;
             if (nextCalculation is {}) 
                 StartCalculation(nextCalculation.Value);
         }
+        void OnProgressTimer(object sender, EventArgs e)
+        {
+            var p = currentGenerator?.Progress ?? -1;
+            if (p != -1 || progress != -1) Debug.WriteLine($"ONPROGRESSTIMER: {p} {progress}");
+            if (p != progress)
+            {
+                Debug.WriteLine("ONPROGRESSTIMER: invalidate");
+                progress = p;
+                Invalidate();
+            }
+        }
+
         protected override void OnHandleDestroyed(EventArgs e)
         {
             cancellationTokenSource?.Cancel();
@@ -144,6 +166,20 @@ namespace Mandelbrot
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
             if (BackgroundImage is null && cancellationTokenSource?.IsCancellationRequested != false)
                 Recalculate();
+            Debug.WriteLine($"ONPAINT: {progress} {cancellationTokenSource?.IsCancellationRequested.ToString() ?? "null"} {currentGenerator?.ToString() ?? "null"}");
+            if (progress > -1 && cancellationTokenSource?.IsCancellationRequested != true && currentGenerator != null)
+            {
+                Debug.WriteLine("ONPAINT: Painting");
+                var text = $"{progress}%";
+                var textSize = e.Graphics.MeasureString(text, progressFont);
+                var textRect = new RectangleF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2, textSize.Width, textSize.Height);
+                var s = Math.Max(textSize.Width, textSize.Height) + 50;
+                var backRect = new RectangleF(textRect.Left + textRect.Width / 2 - s / 2, textRect.Top + textRect.Height/2 - s / 2, s, s);
+                e.Graphics.FillEllipse(Brushes.Black, backRect);
+                e.Graphics.DrawString(text, progressFont, Brushes.Green, textRect);
+            }
+            else
+                Debug.WriteLine("ONPAINT: Not painting");
         }
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {

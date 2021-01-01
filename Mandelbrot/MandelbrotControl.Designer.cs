@@ -29,8 +29,16 @@ namespace Mandelbrot
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.progressTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
+            // 
+            // progressTimer
+            // 
+            this.progressTimer.Enabled = true;
+            this.progressTimer.Interval = 40;
+            this.progressTimer.Tick += new System.EventHandler(this.OnProgressTimer);
             // 
             // MandelbrotControl
             // 
@@ -48,5 +56,6 @@ namespace Mandelbrot
         #endregion
 
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Timer progressTimer;
     }
 }

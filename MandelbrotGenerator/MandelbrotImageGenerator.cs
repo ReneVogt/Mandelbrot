@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -12,6 +13,20 @@ namespace MandelbrotGenerator
 {
     public class MandelbrotImageGenerator
     {
+        int iteratingProgress, colorizingProgress, pixels;
+        public int Progress
+        {
+            get
+            {
+                int c = pixels, ip = iteratingProgress, cp = colorizingProgress;
+                Debug.WriteLine($"PROGRESS: {ip} {cp} {c}");
+                if (c <= 0) return 0;
+                if (cp <= 0)
+                    return ip * 80 / c;
+                return 80 + cp * 20 / c;
+            }
+        }
+
         public int MaxDegreeOfParallelism { get; set; } = -1;
         public MandelbrotColorizer? Colorizer { get; set; }
         public int MaximumNumberOfIterations { get; set; } = 500;
@@ -49,13 +64,24 @@ namespace MandelbrotGenerator
                 MaxDegreeOfParallelism = MaxDegreeOfParallelism
             };
             var maxIterations = MaximumNumberOfIterations;
-            var pixels = height * width;
+            pixels = height * width;
+            iteratingProgress = colorizingProgress = 0;
             MandelbrotPoint[] iteratedPoints = new MandelbrotPoint[pixels];
-            Parallel.ForEach(pixelSource, options, pixel => iteratedPoints[pixel.y * width + pixel.x] = MandelbrotPoint.Calculate(realMin + pixel.x * dx / width, imaginaryMax - pixel.y * dy / height, maxIterations,
-                                                                cancellationToken));
+            Parallel.ForEach(pixelSource, options, pixel =>
+            {
+                iteratedPoints[pixel.y * width + pixel.x] = MandelbrotPoint.Calculate(realMin + pixel.x * dx / width,
+                                                                                      imaginaryMax - pixel.y * dy / height, maxIterations,
+                                                                                      cancellationToken);
+                Interlocked.Increment(ref iteratingProgress);
+            });
             Color[] colors = new Color[pixels];
             var statistics = new MandelbrotStatistics(maxIterations, iteratedPoints);
-            Parallel.ForEach(iteratedPoints.Select((m, i) => (m, i)), options, m => colors[m.i] = m.m.Set ? colorizer.SetColor : colorizer.Colorize(m.m.Iterations, m.m.SquaredMagnitude, statistics));
+            Parallel.ForEach(iteratedPoints.Select((m, i) => (m, i)), options, m =>
+            {
+                colors[m.i] = m.m.Set ? colorizer.SetColor : colorizer.Colorize(m.m.Iterations, m.m.SquaredMagnitude, statistics);
+                Interlocked.Increment(ref colorizingProgress);
+            });
+            iteratingProgress = colorizingProgress = 0;
             return colors;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
