@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ namespace Mandelbrot
     public partial class MandelbrotControl : UserControl
     {
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
+        readonly Stack<MandelbrotArea> rewindStack = new Stack<MandelbrotArea>(), forwardStack = new Stack<MandelbrotArea>();
         
         CancellationTokenSource? cancellationTokenSource;
         MandelbrotArea? nextCalculation;
@@ -33,8 +34,7 @@ namespace Mandelbrot
             ControlForm.SetCurrentSelection(currentArea);
             ControlForm.MaximumNumberOfIterations = 100;
             ControlForm.RefreshClicked += (sender, e) => Recalculate();
-            ControlForm.AdjustImaginaryAxisClicked += (sender, e) => AdjustToImaginaryAxis();
-            ControlForm.AdjustRealAxisClicked += (sender, e) => AdjustToRealAxis();
+            ControlForm.AdjustmentChanged += (sender, e) => Recalculate();
             ControlForm.ReturnToTotalViewClicked += (sender, e) => ReturnToTotalView();
             ControlForm.FullscreenChanged += (sender, e) =>
             {
@@ -61,6 +61,20 @@ namespace Mandelbrot
             }
 
             nextCalculation = null;
+
+            if (ControlForm.Adjustment == Adjustment.Imaginary)
+            {
+                var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
+                double h = 0.5 * (realMax - realMin) * Height / Width;
+                double m = (imaginaryMax + imaginaryMin) / 2;
+                area = (realMin, realMax, m - h, m + h);
+            } else if (ControlForm.Adjustment == Adjustment.Real)
+            {
+                var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
+                double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
+                double m = (realMax + realMin) / 2;
+                area = ((m - w, m + w, imaginaryMin, imaginaryMax));
+            }
             var generator = currentGenerator = new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations};
             var cts = cancellationTokenSource = new CancellationTokenSource();
             _ = Task.Run(() => CalculateAsync(generator, Width, Height, area, cts.Token), cts.Token);
@@ -126,6 +140,11 @@ namespace Mandelbrot
         }
         void OnCalculationAborted()
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke((Action)OnCalculationAborted);
+                return;
+            }
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
@@ -230,20 +249,6 @@ namespace Mandelbrot
         void ReturnToTotalView()
         {
             StartCalculation(MandelbrotArea.Default);
-        }
-        void AdjustToImaginaryAxis()
-        {
-            var (realMin, realMax, imaginaryMin, imaginaryMax) = currentArea;
-            double h = 0.5 * (realMax - realMin) * Height / Width;
-            double m = (imaginaryMax + imaginaryMin) / 2;
-            StartCalculation((realMin, realMax, m - h, m + h));
-        }
-        void AdjustToRealAxis()
-        {
-            var (realMin, realMax, imaginaryMin, imaginaryMax) = currentArea;
-            double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
-            double m = (realMax + realMin) / 2;
-            StartCalculation((m - w, m + w, imaginaryMin, imaginaryMax));
         }
         MandelbrotArea GetMandelbrotAreaFromRect(Rectangle rect)
         {

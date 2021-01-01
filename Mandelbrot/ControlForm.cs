@@ -11,10 +11,13 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
+        Adjustment adjustment = Adjustment.None;
+
         public event EventHandler? RefreshClicked;
-        public event EventHandler? AdjustImaginaryAxisClicked;
-        public event EventHandler? AdjustRealAxisClicked;
+        public event EventHandler? AdjustmentChanged;
         public event EventHandler? ReturnToTotalViewClicked;
+        public event EventHandler? PreviousClicked;
+        public event EventHandler? NextClicked;
         public event EventHandler? FullscreenChanged;
 
         public int MaximumNumberOfIterations
@@ -29,6 +32,20 @@ namespace Mandelbrot
                 catch(ArgumentOutOfRangeException){}
             }
         }
+        public Adjustment Adjustment
+        {
+            get => rbAdjustToReal.Checked ? Adjustment.Real : rbAdjustToImaginary.Checked ? Adjustment.Imaginary : Adjustment.None;
+            set
+            {
+                var rb = value switch
+                {
+                    Adjustment.Imaginary => rbAdjustToImaginary,
+                    Adjustment.Real => rbAdjustToReal,
+                    _ => rbAdjustToNone
+                };
+                rb.Checked = true;
+            }
+        }
         public bool Fullscreen
         {
             get => cbFullscreen.Checked;
@@ -39,6 +56,9 @@ namespace Mandelbrot
         {
             Icon = Resources.Mandelbrot;
             InitializeComponent();
+            rbAdjustToNone.Tag = Adjustment.None;
+            rbAdjustToReal.Tag = Adjustment.Real;
+            rbAdjustToImaginary.Tag = Adjustment.Imaginary;
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -67,22 +87,23 @@ namespace Mandelbrot
         {
             RefreshClicked?.Invoke(this, e);
         }
-        private void btAdjustImaginary_Click(object sender, EventArgs e)
-        {
-            AdjustImaginaryAxisClicked?.Invoke(this, e);
-        }
-        private void btAdjustReal_Click(object sender, EventArgs e)
-        {
-            AdjustRealAxisClicked?.Invoke(this, e);
-        }
         private void btStartScreen_Click(object sender, EventArgs e)
         {
             ReturnToTotalViewClicked?.Invoke(this, e);
         }
-
         private void cbFullscreen_CheckedChanged(object sender, EventArgs e)
         {
             FullscreenChanged?.Invoke(this, e);
+        }
+
+        private void OnAdjustmentChanged(object sender, EventArgs e)
+        {
+            if (!(sender is RadioButton rb)) return;
+            if (!rb.Checked) return;
+            var old = adjustment;
+            adjustment = (Adjustment)rb.Tag;
+            if (old == adjustment || old != Adjustment.None) return;
+            AdjustmentChanged?.Invoke(this, e);
         }
     }
 }
