@@ -55,13 +55,11 @@ namespace Mandelbrot
 
             if (cancellationTokenSource is {})
             {
-                Debug.WriteLine("CANCELLING CALCULATION");
                 nextCalculation = area;
                 cancellationTokenSource.Cancel();
                 return;
             }
 
-            Debug.WriteLine("STARTING CALCULATION");
             nextCalculation = null;
             var generator = currentGenerator = new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations};
             var cts = cancellationTokenSource = new CancellationTokenSource();
@@ -89,7 +87,6 @@ namespace Mandelbrot
         }
         void OnCalculationFinished(Bitmap bitmap, MandelbrotArea area)
         {
-            Debug.WriteLine("CALCULATION FINISHED");
             if (InvokeRequired)
             {
                 BeginInvoke((Action<Bitmap,MandelbrotArea>)OnCalculationFinished, bitmap, area);
@@ -112,7 +109,6 @@ namespace Mandelbrot
         }
         void OnCalculationError(Exception error)
         {
-            Debug.WriteLine($"CALCULATION ERROR: Invoke: {InvokeRequired} Cancel: {cancellationTokenSource?.IsCancellationRequested.ToString() ?? "null"} Error: {error}");
             if (InvokeRequired)
             {
                 BeginInvoke((Action<Exception>)OnCalculationError, error);
@@ -130,7 +126,6 @@ namespace Mandelbrot
         }
         void OnCalculationAborted()
         {
-            Debug.WriteLine("CALCULATION ABORTED");
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
@@ -140,10 +135,8 @@ namespace Mandelbrot
         void OnProgressTimer(object sender, EventArgs e)
         {
             var p = currentGenerator?.Progress ?? -1;
-            if (p != -1 || progress != -1) Debug.WriteLine($"ONPROGRESSTIMER: {p} {progress}");
             if (p != progress)
             {
-                Debug.WriteLine("ONPROGRESSTIMER: invalidate");
                 progress = p;
                 Invalidate();
             }
@@ -166,10 +159,8 @@ namespace Mandelbrot
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
             if (BackgroundImage is null && cancellationTokenSource?.IsCancellationRequested != false)
                 Recalculate();
-            Debug.WriteLine($"ONPAINT: {progress} {cancellationTokenSource?.IsCancellationRequested.ToString() ?? "null"} {currentGenerator?.ToString() ?? "null"}");
             if (progress > -1 && cancellationTokenSource?.IsCancellationRequested != true && currentGenerator != null)
             {
-                Debug.WriteLine("ONPAINT: Painting");
                 var text = $"{progress}%";
                 var textSize = e.Graphics.MeasureString(text, progressFont);
                 var textRect = new RectangleF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2, textSize.Width, textSize.Height);
@@ -178,8 +169,6 @@ namespace Mandelbrot
                 e.Graphics.FillEllipse(Brushes.Black, backRect);
                 e.Graphics.DrawString(text, progressFont, Brushes.Green, textRect);
             }
-            else
-                Debug.WriteLine("ONPAINT: Not painting");
         }
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {

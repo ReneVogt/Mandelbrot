@@ -19,7 +19,6 @@ namespace MandelbrotGenerator
             get
             {
                 int c = pixels, ip = iteratingProgress, cp = colorizingProgress;
-                Debug.WriteLine($"PROGRESS: {ip} {cp} {c}");
                 if (c <= 0) return 0;
                 if (cp <= 0)
                     return ip * 80 / c;
