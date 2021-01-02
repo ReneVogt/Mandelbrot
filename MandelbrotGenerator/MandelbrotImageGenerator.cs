@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -80,7 +79,6 @@ namespace MandelbrotGenerator
                 colors[m.i] = m.m.Set ? colorizer.SetColor : colorizer.Colorize(m.m.Iterations, m.m.SquaredMagnitude, statistics);
                 Interlocked.Increment(ref colorizingProgress);
             });
-            iteratingProgress = colorizingProgress = 0;
             return colors;
         }
         [MethodImpl(MethodImplOptions.Synchronized)]

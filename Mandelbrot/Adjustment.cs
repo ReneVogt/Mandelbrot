@@ -3,7 +3,7 @@
     public enum Adjustment
     {
         None,
-        Real,
-        Imaginary
+        ToReal,
+        ToImaginary
     }
 }

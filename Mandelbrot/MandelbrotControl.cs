@@ -18,7 +18,7 @@ namespace Mandelbrot
         
         CancellationTokenSource? cancellationTokenSource;
         MandelbrotArea? nextCalculation;
-        MandelbrotArea currentArea = MandelbrotArea.Default;
+        MandelbrotArea currentArea;
         Point? mouseStartingPoint;
         Rectangle? mouseSelection;
         MandelbrotImageGenerator? currentGenerator;
@@ -30,18 +30,23 @@ namespace Mandelbrot
         {
             InitializeComponent();
 
+            currentArea = AdjustArea(MandelbrotArea.Default);
+
             ControlForm.SetCurrentScope(currentArea);
             ControlForm.SetCurrentSelection(currentArea);
             ControlForm.MaximumNumberOfIterations = 100;
             ControlForm.RefreshClicked += (sender, e) => Recalculate();
-            ControlForm.AdjustmentChanged += (sender, e) => Recalculate();
+            ControlForm.AdjustmentChanged += (sender, e) => StartCalculation(AdjustArea(currentArea));
             ControlForm.ReturnToTotalViewClicked += (sender, e) => ReturnToTotalView();
             ControlForm.FullscreenChanged += (sender, e) =>
             {
                 if (ParentForm is FullscreenableForm fsf)
                     fsf.Fullscreen = ControlForm.Fullscreen;
             };
+            ControlForm.PreviousClicked += (sender, e) => OnGotoPrevious();
+            ControlForm.NextClicked += (sender, e) => OnGotoNext();
         }
+
         void Recalculate()
         {
             if (DesignMode)
@@ -62,21 +67,9 @@ namespace Mandelbrot
 
             nextCalculation = null;
 
-            if (ControlForm.Adjustment == Adjustment.Imaginary)
-            {
-                var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
-                double h = 0.5 * (realMax - realMin) * Height / Width;
-                double m = (imaginaryMax + imaginaryMin) / 2;
-                area = (realMin, realMax, m - h, m + h);
-            } else if (ControlForm.Adjustment == Adjustment.Real)
-            {
-                var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
-                double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
-                double m = (realMax + realMin) / 2;
-                area = ((m - w, m + w, imaginaryMin, imaginaryMax));
-            }
             var generator = currentGenerator = new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations};
             var cts = cancellationTokenSource = new CancellationTokenSource();
+            Cursor = Cursors.AppStarting;
             _ = Task.Run(() => CalculateAsync(generator, Width, Height, area, cts.Token), cts.Token);
         }
         void CalculateAsync(MandelbrotImageGenerator generator, int width, int height, MandelbrotArea area, CancellationToken cancellationToken)
@@ -113,6 +106,7 @@ namespace Mandelbrot
                 return;
             }
 
+            Cursor = Cursors.Default;
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
@@ -133,6 +127,8 @@ namespace Mandelbrot
                 OnCalculationAborted();
                 return;
             }
+
+            Cursor = Cursors.Default;
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
@@ -145,6 +141,7 @@ namespace Mandelbrot
                 BeginInvoke((Action)OnCalculationAborted);
                 return;
             }
+            Cursor = Cursors.Default;
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
@@ -198,7 +195,7 @@ namespace Mandelbrot
         {
             base.OnMouseUp(e);
             if (e.Button == MouseButtons.Left && mouseSelection.HasValue)
-                StartCalculation(GetMandelbrotAreaFromRect(mouseSelection.Value));
+                StartCalculation(AdjustArea(GetMandelbrotAreaFromRect(mouseSelection.Value)));
             mouseSelection = null;
             mouseStartingPoint = null;
             Invalidate();
@@ -240,6 +237,14 @@ namespace Mandelbrot
                 ControlForm.Location = PointToScreen(e.Location);
             }
         }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (!e.Control) return;
+            if (e.KeyCode == Keys.Z) OnGotoPrevious();
+            if (e.KeyCode == Keys.Y) OnGotoNext();
+        }
+
         void SwapImages(Bitmap? bitmap)
         {
             var old = BackgroundImage;
@@ -248,7 +253,34 @@ namespace Mandelbrot
         }
         void ReturnToTotalView()
         {
-            StartCalculation(MandelbrotArea.Default);
+            StartCalculation(AdjustArea(MandelbrotArea.Default));
+        }
+        void OnGotoPrevious()
+        {
+            MessageBox.Show(nameof(OnGotoPrevious));
+        }
+        void OnGotoNext()
+        {
+            MessageBox.Show(nameof(OnGotoNext));
+        }
+
+        MandelbrotArea AdjustArea(MandelbrotArea area)
+        {
+            var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
+            if (ControlForm.Adjustment == Adjustment.ToReal)
+            {
+                double h = 0.5 * (realMax - realMin) * Height / Width;
+                double m = (imaginaryMax + imaginaryMin) / 2;
+                return (realMin, realMax, m - h, m + h);
+            }
+            if (ControlForm.Adjustment == Adjustment.ToImaginary)
+            {
+                double w = 0.5 * (imaginaryMax - imaginaryMin) * Width / Height;
+                double m = (realMax + realMin) / 2;
+                return (m - w, m + w, imaginaryMin, imaginaryMax);
+            }
+
+            return area;
         }
         MandelbrotArea GetMandelbrotAreaFromRect(Rectangle rect)
         {

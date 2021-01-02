@@ -34,17 +34,27 @@ namespace Mandelbrot
         }
         public Adjustment Adjustment
         {
-            get => rbAdjustToReal.Checked ? Adjustment.Real : rbAdjustToImaginary.Checked ? Adjustment.Imaginary : Adjustment.None;
+            get => rbAdjustToReal.Checked ? Adjustment.ToReal : rbAdjustToImaginary.Checked ? Adjustment.ToImaginary : Adjustment.None;
             set
             {
                 var rb = value switch
                 {
-                    Adjustment.Imaginary => rbAdjustToImaginary,
-                    Adjustment.Real => rbAdjustToReal,
+                    Adjustment.ToImaginary => rbAdjustToImaginary,
+                    Adjustment.ToReal => rbAdjustToReal,
                     _ => rbAdjustToNone
                 };
                 rb.Checked = true;
             }
+        }
+        public bool CanGotoPrevious
+        {
+            get => btPrevioius.Enabled;
+            set => btPrevioius.Enabled = value;
+        }
+        public bool CanGotoNext
+        {
+            get => btNext.Enabled;
+            set => btNext.Enabled = value;
         }
         public bool Fullscreen
         {
@@ -57,8 +67,8 @@ namespace Mandelbrot
             Icon = Resources.Mandelbrot;
             InitializeComponent();
             rbAdjustToNone.Tag = Adjustment.None;
-            rbAdjustToReal.Tag = Adjustment.Real;
-            rbAdjustToImaginary.Tag = Adjustment.Imaginary;
+            rbAdjustToReal.Tag = Adjustment.ToReal;
+            rbAdjustToImaginary.Tag = Adjustment.ToImaginary;
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -83,6 +93,15 @@ namespace Mandelbrot
         static string FormatDouble(double d) =>
             d.ToString("G17").TrimEnd('0').TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToCharArray());
 
+
+        private void btPrevioius_Click(object sender, EventArgs e)
+        {
+            PreviousClicked?.Invoke(this, e);
+        }
+        private void btNext_Click(object sender, EventArgs e)
+        {
+            NextClicked?.Invoke(this, e);
+        }
         void btRefresh_Click(object sender, EventArgs e)
         {
             RefreshClicked?.Invoke(this, e);
