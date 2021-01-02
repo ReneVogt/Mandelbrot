@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MandelbrotGenerator</name>
+    </assembly>
+    <members>
+        <member name="M:MandelbrotGenerator.MandelbrotArea.Equals(MandelbrotGenerator.MandelbrotArea)">
+            <inheritdoc />
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotArea.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotArea.GetHashCode">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

@@ -111,6 +111,7 @@ namespace Mandelbrot
             currentGenerator = null;
             progress = -1;
             currentArea = area;
+            RemoveCurrentAreaFromStack();
             ControlForm.SetCurrentScope(area);
             ControlForm.SetCurrentSelection(area);
             SwapImages(bitmap);
@@ -132,6 +133,7 @@ namespace Mandelbrot
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
+            RemoveCurrentAreaFromStack();
             MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         void OnCalculationAborted()
@@ -145,6 +147,7 @@ namespace Mandelbrot
             cancellationTokenSource = null;
             currentGenerator = null;
             progress = -1;
+            RemoveCurrentAreaFromStack();
             if (nextCalculation is {}) 
                 StartCalculation(nextCalculation.Value);
         }
@@ -156,6 +159,15 @@ namespace Mandelbrot
                 progress = p;
                 Invalidate();
             }
+        }
+        void RemoveCurrentAreaFromStack()
+        {
+            while (rewindStack.Count > 0 && rewindStack.Peek() == currentArea)
+                rewindStack.Pop();
+            while (forwardStack.Count > 0 && forwardStack.Peek() == currentArea)
+                forwardStack.Pop();
+            ControlForm.CanGotoNext = forwardStack.Count > 0;
+            ControlForm.CanGotoPrevious = rewindStack.Count > 0;
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
@@ -195,7 +207,11 @@ namespace Mandelbrot
         {
             base.OnMouseUp(e);
             if (e.Button == MouseButtons.Left && mouseSelection.HasValue)
+            {
+                rewindStack.Push(currentArea);
+                forwardStack.Clear();
                 StartCalculation(AdjustArea(GetMandelbrotAreaFromRect(mouseSelection.Value)));
+            }
             mouseSelection = null;
             mouseStartingPoint = null;
             Invalidate();
@@ -253,15 +269,23 @@ namespace Mandelbrot
         }
         void ReturnToTotalView()
         {
+            rewindStack.Push(currentArea);
+            forwardStack.Clear();
             StartCalculation(AdjustArea(MandelbrotArea.Default));
         }
         void OnGotoPrevious()
         {
-            MessageBox.Show(nameof(OnGotoPrevious));
+            if (rewindStack.Count <= 0) return;
+            var area = rewindStack.Pop();
+            forwardStack.Push(currentArea);
+            StartCalculation(area);
         }
         void OnGotoNext()
         {
-            MessageBox.Show(nameof(OnGotoNext));
+            if (forwardStack.Count <= 0) return;
+            var area = forwardStack.Pop();
+            rewindStack.Push(currentArea);
+            StartCalculation(area);
         }
 
         MandelbrotArea AdjustArea(MandelbrotArea area)
