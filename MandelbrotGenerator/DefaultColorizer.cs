@@ -10,7 +10,8 @@ namespace MandelbrotGenerator
         public override Color ImmediateColorization(int x, int y, double r, double i, int neededIterations, int maxIterations, double squaredMagnitude)
         {
             if (neededIterations <= 0) return Color.Black;
-            double iterationIndex = neededIterations - Math.Min(1, squaredMagnitude / 30d);
+            double d = Math.Min(1, Math.Log(squaredMagnitude) / Math.Log(2) / 6);
+            double iterationIndex = neededIterations - d;
             double v = Math.Sqrt(iterationIndex / maxIterations);
             double hue = 360d * v;
             return ConvertHsvToRgb(hue, 1, v);
