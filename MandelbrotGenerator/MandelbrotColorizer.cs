@@ -1,18 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace MandelbrotGenerator
 {
-    public abstract class MandelbrotColorizer
+    public class MandelbrotColorizer
     {
-        public static MandelbrotColorizer Default { get; } = new DefaultColorizer();
-        public abstract bool UsePostCalculationColorization{ get; }
-        public abstract Color SetColor { get; }
-        public abstract Color ImmediateColorization(int x, int y, double r, double i, int neededIterations, int maxIterations,
-                                                    double squaredMagnitude);
-        public abstract void InitializePostCalculationColorization(MandelbrotPoint[] rawData, int maxIterations);
-        public abstract Color PostCalculationColorization(int x, int y, double r, double i, int neededIterations, int maxIterations,
-                                                    double squaredMagnitude);
+        public static MandelbrotColorizer Default { get; } = new MandelbrotColorizer();
+        public bool UsePostCalculationColorization{ get; }
+        
+        public virtual Color SetColor { get; } = Color.Black;
+
+        public MandelbrotColorizer(bool usePostCalculationColorization = false) => UsePostCalculationColorization = usePostCalculationColorization;
+
+        public Color GetColor(int x, int y, double r, double i, int neededIterations, int maxIterations,
+                              double squaredMagnitude) => UsePostCalculationColorization
+                                                              ? throw new InvalidOperationException(
+                                                                    $"This {GetType().Name} does not support immediate colorization!")
+                                                              : GetImmediateColor(x, y, r, i, neededIterations, maxIterations, squaredMagnitude);
+        public void PostCalculation_Initialize(IReadOnlyList<MandelbrotPoint> rawData, int maxIterations)
+        {
+            if (!UsePostCalculationColorization) throw new InvalidOperationException($"This {GetType().Name} does not support post calculation colorization!");
+            InitializePostCalculationColorization(rawData, maxIterations);
+        }
+        public Color PostCalculation_GetColor(int x, int y, double r, double i, int neededIterations,
+                                              double squaredMagnitude) => UsePostCalculationColorization
+                                                                              ? GetPostCalculationColor(
+                                                                                  x, y, r, i, neededIterations, squaredMagnitude)
+                                                                              : throw new InvalidOperationException(
+                                                                                    $"This {GetType().Name} does not support post calculation colorization!");
+
+        protected virtual Color GetImmediateColor(int x, int y, double r, double i, int neededIterations, int maxIterations,
+                                                  double squaredMagnitude) => UsePostCalculationColorization
+                                                                                  ? throw new InvalidOperationException(
+                                                                                        $"This {GetType().Name} does not support immediate colorization!")
+                                                                                  : neededIterations == 0
+                                                                                      ? Color.Black
+                                                                                      : Color.White;
+        protected virtual void InitializePostCalculationColorization(IReadOnlyList<MandelbrotPoint> rawData, int maxIterations)
+        {
+            if (!UsePostCalculationColorization) throw new InvalidOperationException($"This {GetType().Name} does not support post calculation colorization!");
+        }
+        protected virtual Color GetPostCalculationColor(int x, int y, double r, double i, int neededIterations,
+                                                        double squaredMagnitude) => UsePostCalculationColorization
+                                                                                        ? neededIterations == 0 ? Color.Black : Color.White
+                                                                                        : throw new InvalidOperationException(
+                                                                                              $"This {GetType().Name} does not support post calculation colorization!");
         protected static Color ConvertHsvToRgb(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;

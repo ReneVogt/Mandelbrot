@@ -51,6 +51,7 @@ namespace Mandelbrot
             this.rbAdjustToNone = new System.Windows.Forms.RadioButton();
             this.btPrevioius = new System.Windows.Forms.Button();
             this.btNext = new System.Windows.Forms.Button();
+            this.btSave = new System.Windows.Forms.Button();
             this.gbCalculation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.gbCurrentView.SuspendLayout();
@@ -213,10 +214,10 @@ namespace Mandelbrot
             // 
             this.btRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRefresh.Location = new System.Drawing.Point(12, 380);
+            this.btRefresh.Location = new System.Drawing.Point(12, 435);
             this.btRefresh.Name = "btRefresh";
             this.btRefresh.Size = new System.Drawing.Size(331, 23);
-            this.btRefresh.TabIndex = 80;
+            this.btRefresh.TabIndex = 90;
             this.btRefresh.Text = "Refresh";
             this.btRefresh.UseVisualStyleBackColor = true;
             this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
@@ -225,7 +226,7 @@ namespace Mandelbrot
             // 
             this.btStartScreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btStartScreen.Location = new System.Drawing.Point(12, 321);
+            this.btStartScreen.Location = new System.Drawing.Point(12, 346);
             this.btStartScreen.Name = "btStartScreen";
             this.btStartScreen.Size = new System.Drawing.Size(331, 23);
             this.btStartScreen.TabIndex = 60;
@@ -238,7 +239,7 @@ namespace Mandelbrot
             this.cbFullscreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cbFullscreen.Location = new System.Drawing.Point(12, 350);
+            this.cbFullscreen.Location = new System.Drawing.Point(12, 375);
             this.cbFullscreen.Name = "cbFullscreen";
             this.cbFullscreen.Size = new System.Drawing.Size(331, 24);
             this.cbFullscreen.TabIndex = 70;
@@ -303,7 +304,7 @@ namespace Mandelbrot
             this.btPrevioius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btPrevioius.Enabled = false;
-            this.btPrevioius.Location = new System.Drawing.Point(12, 293);
+            this.btPrevioius.Location = new System.Drawing.Point(12, 318);
             this.btPrevioius.Name = "btPrevioius";
             this.btPrevioius.Size = new System.Drawing.Size(163, 23);
             this.btPrevioius.TabIndex = 40;
@@ -316,7 +317,7 @@ namespace Mandelbrot
             this.btNext.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btNext.Enabled = false;
-            this.btNext.Location = new System.Drawing.Point(180, 293);
+            this.btNext.Location = new System.Drawing.Point(180, 318);
             this.btNext.Name = "btNext";
             this.btNext.Size = new System.Drawing.Size(163, 23);
             this.btNext.TabIndex = 50;
@@ -324,12 +325,25 @@ namespace Mandelbrot
             this.btNext.UseVisualStyleBackColor = true;
             this.btNext.Click += new System.EventHandler(this.btNext_Click);
             // 
+            // btSave
+            // 
+            this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btSave.Location = new System.Drawing.Point(12, 406);
+            this.btSave.Name = "btSave";
+            this.btSave.Size = new System.Drawing.Size(331, 23);
+            this.btSave.TabIndex = 80;
+            this.btSave.Text = "Save bitmap...";
+            this.btSave.UseVisualStyleBackColor = true;
+            this.btSave.Click += new System.EventHandler(this.btSave_Click);
+            // 
             // ControlForm
             // 
             this.AcceptButton = this.btRefresh;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(355, 412);
+            this.ClientSize = new System.Drawing.Size(355, 465);
+            this.Controls.Add(this.btSave);
             this.Controls.Add(this.btNext);
             this.Controls.Add(this.btPrevioius);
             this.Controls.Add(this.gbAdjustment);
@@ -382,5 +396,6 @@ namespace Mandelbrot
         private System.Windows.Forms.RadioButton rbAdjustToNone;
         private System.Windows.Forms.Button btPrevioius;
         private System.Windows.Forms.Button btNext;
+        private System.Windows.Forms.Button btSave;
     }
 }

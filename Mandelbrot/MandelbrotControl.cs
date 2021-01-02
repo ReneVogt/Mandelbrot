@@ -13,6 +13,7 @@ namespace Mandelbrot
 {
     public partial class MandelbrotControl : UserControl
     {
+        readonly MandelbrotColorizer colorizer = new Colorizer();
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
         readonly Stack<MandelbrotArea> rewindStack = new Stack<MandelbrotArea>(), forwardStack = new Stack<MandelbrotArea>();
         
@@ -45,6 +46,7 @@ namespace Mandelbrot
             };
             ControlForm.PreviousClicked += (sender, e) => OnGotoPrevious();
             ControlForm.NextClicked += (sender, e) => OnGotoNext();
+            ControlForm.SaveClicked += (sender, e) => OnSaveBitmap();
         }
 
         void Recalculate()
@@ -67,7 +69,7 @@ namespace Mandelbrot
 
             nextCalculation = null;
 
-            var generator = currentGenerator = new MandelbrotImageGenerator {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations};
+            var generator = currentGenerator = new MandelbrotImageGenerator(colorizer) {MaximumNumberOfIterations = ControlForm.MaximumNumberOfIterations};
             var cts = cancellationTokenSource = new CancellationTokenSource();
             Cursor = Cursors.AppStarting;
             _ = Task.Run(() => CalculateAsync(generator, Width, Height, area, cts.Token), cts.Token);
@@ -286,6 +288,40 @@ namespace Mandelbrot
             var area = forwardStack.Pop();
             rewindStack.Push(currentArea);
             StartCalculation(area);
+        }
+        void OnSaveBitmap()
+        {
+            var bmp = BackgroundImage;
+            if (bmp == null) return;
+
+            using var imageFormatDialog = new DlgSelectImageFormat();
+            if (imageFormatDialog.ShowDialog(this) != DialogResult.OK) return;
+            var imageFormatName = imageFormatDialog.ImageFormatName;
+            var imageFormat = imageFormatDialog.ImageFormat;
+
+            using var saveFileDialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                CheckPathExists = true,
+                DefaultExt = "bmp",
+                Filter = $"{imageFormatName} files (*.{imageFormatName})|*.{imageFormatName}|All files (*.*)|*",
+                FilterIndex = 1,
+                OverwritePrompt = true,
+                RestoreDirectory = true,
+                Title = "Save Mandelbrot image"
+            };
+            if (saveFileDialog.ShowDialog(this) != DialogResult.OK) return;
+
+            try
+            {
+                bmp.Save(saveFileDialog.FileName, imageFormat);
+                MessageBox.Show(this, $"Successfully saved image as {imageFormatName} in {saveFileDialog.FileName}.", "Mandelbrot image",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(this, $"Failed to save image: {e}", "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         MandelbrotArea AdjustArea(MandelbrotArea area)

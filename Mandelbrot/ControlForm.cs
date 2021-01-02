@@ -19,6 +19,7 @@ namespace Mandelbrot
         public event EventHandler? PreviousClicked;
         public event EventHandler? NextClicked;
         public event EventHandler? FullscreenChanged;
+        public event EventHandler? SaveClicked;
 
         public int MaximumNumberOfIterations
         {
@@ -114,7 +115,10 @@ namespace Mandelbrot
         {
             FullscreenChanged?.Invoke(this, e);
         }
-
+        private void btSave_Click(object sender, EventArgs e)
+        {
+            SaveClicked?.Invoke(this, e);
+        }
         private void OnAdjustmentChanged(object sender, EventArgs e)
         {
             if (!(sender is RadioButton rb)) return;
@@ -124,5 +128,6 @@ namespace Mandelbrot
             if (old == adjustment || old != Adjustment.None) return;
             AdjustmentChanged?.Invoke(this, e);
         }
+
     }
 }

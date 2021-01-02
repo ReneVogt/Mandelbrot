@@ -87,15 +87,15 @@ namespace MandelbrotGenerator
                                                                                           cancellationToken);
                     Interlocked.Increment(ref iteratingProgress);
                 });
-                colorizer.InitializePostCalculationColorization(iteratedPoints, maxIterations);
+                colorizer.PostCalculation_Initialize(iteratedPoints, maxIterations);
                 Parallel.ForEach(pixelSource, options, pixel =>
                 {
                     int index = pixel.y * width + pixel.x;
                     var iteratedPoint = iteratedPoints[index];
                     colors[index] = iteratedPoint.Set
                                         ? colorizer.SetColor
-                                        : colorizer.PostCalculationColorization(pixel.x, pixel.y, iteratedPoint.Real, iteratedPoint.Imaginary,
-                                                                                iteratedPoint.Iterations, maxIterations,
+                                        : colorizer.PostCalculation_GetColor(pixel.x, pixel.y, iteratedPoint.Real, iteratedPoint.Imaginary,
+                                                                                iteratedPoint.Iterations,
                                                                                 iteratedPoint.SquaredMagnitude);
                     Interlocked.Increment(ref colorizingProgress);
                 });
@@ -109,8 +109,8 @@ namespace MandelbrotGenerator
                     var m = MandelbrotPoint.Calculate(realMin + pixel.x * dx / width,
                                                                                           imaginaryMax - pixel.y * dy / height, maxIterations,
                                                                                           cancellationToken);
-                    colors[pixel.y * width + pixel.x] =
-                        colorizer.ImmediateColorization(pixel.x, pixel.y, m.Real, m.Imaginary, m.Iterations, maxIterations, m.SquaredMagnitude);
+                    colors[pixel.y * width + pixel.x] = m.Set ? colorizer.SetColor :
+                        colorizer.GetColor(pixel.x, pixel.y, m.Real, m.Imaginary, m.Iterations, maxIterations, m.SquaredMagnitude);
                     Interlocked.Increment(ref iteratingProgress);
                 });
                 return colors;
