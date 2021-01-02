@@ -37,7 +37,12 @@ namespace Mandelbrot
             ControlForm.SetCurrentSelection(currentArea);
             ControlForm.MaximumNumberOfIterations = 100;
             ControlForm.RefreshClicked += (sender, e) => Recalculate();
-            ControlForm.AdjustmentChanged += (sender, e) => StartCalculation(AdjustArea(currentArea));
+            ControlForm.AdjustmentChanged += (sender, e) =>
+            {
+                rewindStack.Push(currentArea);
+                forwardStack.Clear();
+                StartCalculation(AdjustArea(currentArea));
+            };
             ControlForm.ReturnToTotalViewClicked += (sender, e) => ReturnToTotalView();
             ControlForm.FullscreenChanged += (sender, e) =>
             {
