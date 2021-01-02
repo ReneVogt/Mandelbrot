@@ -3,23 +3,17 @@ using System.Drawing;
 
 namespace MandelbrotGenerator
 {
-    public class MandelbrotColorizer
+    public abstract class MandelbrotColorizer
     {
-        public static MandelbrotColorizer Default { get; } = new MandelbrotColorizer();
-        public virtual Color SetColor => Color.Black;
-        public virtual Color Colorize(int neededIterations, double squaredMagnitude, MandelbrotStatistics statistics)
-        {
-            double lowerLimit = Math.Max(1, statistics.AverageNeededIterations - Math.Sqrt(statistics.IterationVariance) / 2);
-            double iterationIndex = neededIterations - Math.Min(1, squaredMagnitude / 30d);
-            if (iterationIndex < lowerLimit) return Color.Black;
-
-            double v = (iterationIndex - lowerLimit) / (statistics.MaximumNumberOfIterations - lowerLimit);
-            double hue = 360d * iterationIndex;// - 60;
-            if (hue >= 360) hue -= 360;
-            if (hue < 0) hue += 360;
-            return ColorFromHSV(hue, 1, v);
-        }
-        static Color ColorFromHSV(double hue, double saturation, double value)
+        public static MandelbrotColorizer Default { get; } = new DefaultColorizer();
+        public abstract bool UsePostCalculationColorization{ get; }
+        public abstract Color SetColor { get; }
+        public abstract Color ImmediateColorization(int x, int y, double r, double i, int neededIterations, int maxIterations,
+                                                    double squaredMagnitude);
+        public abstract void InitializePostCalculationColorization(MandelbrotPoint[] rawData, int maxIterations);
+        public abstract Color PostCalculationColorization(int x, int y, double r, double i, int neededIterations, int maxIterations,
+                                                    double squaredMagnitude);
+        protected static Color ConvertHsvToRgb(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
             double f = hue / 60 - Math.Floor(hue / 60);
