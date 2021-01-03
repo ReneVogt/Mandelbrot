@@ -16,6 +16,7 @@ namespace Mandelbrot
         readonly MandelbrotColorizer colorizer = new Colorizer();
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
         readonly Stack<MandelbrotArea> rewindStack = new Stack<MandelbrotArea>(), forwardStack = new Stack<MandelbrotArea>();
+        readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
         
         CancellationTokenSource? cancellationTokenSource;
         MandelbrotArea? nextCalculation;
@@ -195,15 +196,7 @@ namespace Mandelbrot
             if (BackgroundImage is null && cancellationTokenSource?.IsCancellationRequested != false)
                 Recalculate();
             if (progress > -1 && cancellationTokenSource?.IsCancellationRequested != true && currentGenerator != null)
-            {
-                var text = $"{progress}%";
-                var textSize = e.Graphics.MeasureString(text, progressFont);
-                var textRect = new RectangleF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2, textSize.Width, textSize.Height);
-                var s = Math.Max(textSize.Width, textSize.Height) + 50;
-                var backRect = new RectangleF(textRect.Left + textRect.Width / 2 - s / 2, textRect.Top + textRect.Height/2 - s / 2, s, s);
-                e.Graphics.FillEllipse(Brushes.Black, backRect);
-                e.Graphics.DrawString(text, progressFont, Brushes.Green, textRect);
-            }
+                DrawProgress(e.Graphics);
         }
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
@@ -329,6 +322,18 @@ namespace Mandelbrot
             }
         }
 
+        void DrawProgress(Graphics graphics)
+        {
+            var text = $"{progress}%";
+            var textSize = graphics.MeasureString(text, progressFont);
+            var textRect = new RectangleF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2, textSize.Width, textSize.Height);
+            var s = Math.Max(textSize.Width, textSize.Height) + 50;
+            var backRect = new Rectangle((int)(textRect.Left + textRect.Width / 2 - s / 2), (int)(textRect.Top + textRect.Height / 2 - s / 2), (int)s, (int)s);
+            graphics.DrawEllipse(progressWheelPen, backRect);
+            graphics.FillPie(Brushes.Black, backRect, 3.6f * progress - 90, 3.6f * (100 - progress));
+            graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progress);
+            graphics.DrawString(text, progressFont, Brushes.White, textRect);
+        }
         MandelbrotArea AdjustArea(MandelbrotArea area)
         {
             var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
