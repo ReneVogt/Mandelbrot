@@ -10,6 +10,7 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
+        readonly MandelbrotColorizer[] colorizers = {MandelbrotColorizer.Default, new IterationRatioColorizer(), new RoundTripColorizer()};
         bool calculationRunning;
 
         public event EventHandler? RecalculateClicked;
@@ -33,6 +34,7 @@ namespace Mandelbrot
                 catch(ArgumentOutOfRangeException){}
             }
         }
+        public MandelbrotColorizer Colorizer => colorizers[cmbColorizer.SelectedIndex];
         public bool CanGotoPrevious
         {
             get => btPrevioius.Enabled;
@@ -62,6 +64,7 @@ namespace Mandelbrot
         public ControlForm()
         {
             InitializeComponent();
+            cmbColorizer.SelectedIndex = 0;
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

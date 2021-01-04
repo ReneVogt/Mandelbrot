@@ -17,7 +17,6 @@ namespace Mandelbrot
     public partial class MandelbrotForm : FullscreenableForm
     {
         readonly ControlForm controlForm = new ControlForm();
-        readonly MandelbrotColorizer colorizer = new Colorizer();
         readonly Stack<MandelbrotArea> rewindStack = new Stack<MandelbrotArea>(), forwardStack = new Stack<MandelbrotArea>();
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
         readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
@@ -181,7 +180,7 @@ namespace Mandelbrot
         {
             cancellationTokenSource?.Cancel();
             var cts = cancellationTokenSource = new CancellationTokenSource();
-            var generator = currentGenerator = new MandelbrotImageGenerator(colorizer)
+            var generator = currentGenerator = new MandelbrotImageGenerator(controlForm.Colorizer)
                                 {MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations};
             var pixels = Pixels;
             try

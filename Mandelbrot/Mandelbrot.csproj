@@ -56,7 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Colorizer.cs" />
+    <Compile Include="RoundTripColorizer.cs" />
+    <Compile Include="IterationRatioColorizer.cs" />
     <Compile Include="ControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
