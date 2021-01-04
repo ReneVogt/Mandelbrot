@@ -30,6 +30,8 @@ namespace Mandelbrot
         private void InitializeComponent()
         {
             this.gbCalculation = new System.Windows.Forms.GroupBox();
+            this.cmbColorizer = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.nupIterations = new Mandelbrot.LogarithmicUpDown();
             this.label1 = new System.Windows.Forms.Label();
@@ -50,8 +52,6 @@ namespace Mandelbrot
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cbFullscreen = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cmbColorizer = new System.Windows.Forms.ComboBox();
             this.gbCalculation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.gbCurrentView.SuspendLayout();
@@ -74,6 +74,28 @@ namespace Mandelbrot
             this.gbCalculation.TabIndex = 0;
             this.gbCalculation.TabStop = false;
             this.gbCalculation.Text = "Calculation";
+            // 
+            // cmbColorizer
+            // 
+            this.cmbColorizer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbColorizer.FormattingEnabled = true;
+            this.cmbColorizer.Items.AddRange(new object[] {
+            "Black & White",
+            "Based on iteration ratio",
+            "Based on iteration round trip"});
+            this.cmbColorizer.Location = new System.Drawing.Point(161, 47);
+            this.cmbColorizer.Name = "cmbColorizer";
+            this.cmbColorizer.Size = new System.Drawing.Size(163, 21);
+            this.cmbColorizer.TabIndex = 10;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 50);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(64, 13);
+            this.label3.TabIndex = 92;
+            this.label3.Text = "Colorization:";
             // 
             // pbProgress
             // 
@@ -304,28 +326,6 @@ namespace Mandelbrot
             this.cbFullscreen.UseVisualStyleBackColor = true;
             this.cbFullscreen.CheckedChanged += new System.EventHandler(this.cbFullscreen_CheckedChanged);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 50);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(64, 13);
-            this.label3.TabIndex = 92;
-            this.label3.Text = "Colorization:";
-            // 
-            // cmbColorizer
-            // 
-            this.cmbColorizer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbColorizer.FormattingEnabled = true;
-            this.cmbColorizer.Items.AddRange(new object[] {
-            "Black & White",
-            "Based on iteration ratio",
-            "Based on iteration round trip"});
-            this.cmbColorizer.Location = new System.Drawing.Point(161, 47);
-            this.cmbColorizer.Name = "cmbColorizer";
-            this.cmbColorizer.Size = new System.Drawing.Size(163, 21);
-            this.cmbColorizer.TabIndex = 10;
-            // 
             // ControlForm
             // 
             this.AcceptButton = this.btRecalculate;
@@ -340,6 +340,8 @@ namespace Mandelbrot
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ControlForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Mandelbrot controller";
             this.gbCalculation.ResumeLayout(false);

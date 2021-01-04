@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Forms;
+using Mandelbrot.Properties;
 using MandelbrotGenerator;
 
 #nullable enable
@@ -64,10 +65,19 @@ namespace Mandelbrot
         public ControlForm()
         {
             InitializeComponent();
+            MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
             cmbColorizer.SelectedIndex = 0;
+            try
+            {
+                cmbColorizer.SelectedIndex = Settings.Default.Colorizer;
+            }
+            catch(ArgumentException){}
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            Settings.Default.MaximumNumberOfIterations = MaximumNumberOfIterations;
+            Settings.Default.Colorizer = cmbColorizer.SelectedIndex;
+            Settings.Default.Save();
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;

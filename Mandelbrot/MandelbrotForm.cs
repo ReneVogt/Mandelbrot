@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace Mandelbrot
         readonly Stack<MandelbrotArea> rewindStack = new Stack<MandelbrotArea>(), forwardStack = new Stack<MandelbrotArea>();
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
         readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
+        readonly Brush progressBackBrush = new SolidBrush(Color.FromArgb(96, Color.Black));
 
         int progress = -1;
         MandelbrotImageGenerator? currentGenerator;
@@ -71,6 +73,11 @@ namespace Mandelbrot
             base.OnLoad(e);
             controlForm.Location = PointToScreen(new Point((Width - controlForm.Width) / 2, (Height - controlForm.Height) / 2));
             controlForm.Show(this);
+        }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            cancellationTokenSource?.Cancel();
         }
         protected override void OnResizeBegin(EventArgs e)
         {
@@ -230,7 +237,7 @@ namespace Mandelbrot
             var backRect = new Rectangle((int)(textRect.Left + textRect.Width / 2 - s / 2), (int)(textRect.Top + textRect.Height / 2 - s / 2), (int)s,
                                          (int)s);
             graphics.DrawEllipse(progressWheelPen, backRect);
-            graphics.FillPie(Brushes.Black, backRect, 3.6f * progress - 90, 3.6f * (100 - progress));
+            graphics.FillPie(progressBackBrush, backRect, 3.6f * progress - 90, 3.6f * (100 - progress));
             graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progress);
             graphics.DrawString(text, progressFont, Brushes.White, textRect);
         }
