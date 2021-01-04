@@ -82,7 +82,7 @@ namespace Mandelbrot
             this.cmbColorizer.Items.AddRange(new object[] {
             "Black & White",
             "Based on iteration ratio",
-            "Based on iteration round trip"});
+            "Based on iteration modulo"});
             this.cmbColorizer.Location = new System.Drawing.Point(161, 47);
             this.cmbColorizer.Name = "cmbColorizer";
             this.cmbColorizer.Size = new System.Drawing.Size(163, 21);

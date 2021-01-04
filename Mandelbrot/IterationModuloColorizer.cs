@@ -6,7 +6,7 @@ using MandelbrotGenerator;
 
 namespace Mandelbrot
 {
-    sealed class IterationRoundTripColorizer : MandelbrotColorizer
+    sealed class IterationModuloColorizer : MandelbrotColorizer
     {
         public override Color SetColor => Color.Black;
         protected override Color GetImmediateColor(int x, int y, double r, double i, int neededIterations, int maxIterations, double squaredMagnitude)
