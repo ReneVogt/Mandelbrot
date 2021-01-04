@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Forms;
-using Mandelbrot.Properties;
 using MandelbrotGenerator;
 
 #nullable enable
@@ -11,11 +10,12 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
-        Adjustment adjustment = Adjustment.None;
+        bool calculationRunning;
 
-        public event EventHandler? RefreshClicked;
-        public event EventHandler? AdjustmentChanged;
-        public event EventHandler? ReturnToTotalViewClicked;
+        public event EventHandler? RecalculateClicked;
+        public event EventHandler? CancelClicked;
+        public event EventHandler? AdjustClicked;
+        public event EventHandler? TotalClicked;
         public event EventHandler? PreviousClicked;
         public event EventHandler? NextClicked;
         public event EventHandler? FullscreenChanged;
@@ -33,20 +33,6 @@ namespace Mandelbrot
                 catch(ArgumentOutOfRangeException){}
             }
         }
-        public Adjustment Adjustment
-        {
-            get => rbAdjustToReal.Checked ? Adjustment.ToReal : rbAdjustToImaginary.Checked ? Adjustment.ToImaginary : Adjustment.None;
-            set
-            {
-                var rb = value switch
-                {
-                    Adjustment.ToImaginary => rbAdjustToImaginary,
-                    Adjustment.ToReal => rbAdjustToReal,
-                    _ => rbAdjustToNone
-                };
-                rb.Checked = true;
-            }
-        }
         public bool CanGotoPrevious
         {
             get => btPrevioius.Enabled;
@@ -62,14 +48,20 @@ namespace Mandelbrot
             get => cbFullscreen.Checked;
             set => cbFullscreen.Checked = value;
         }
+        public int Progress
+        {
+            get => calculationRunning ? pbProgress.Value : -1;
+            set
+            {
+                calculationRunning = value >= 0;
+                btRecalculate.Text = calculationRunning ? "Cancel" : "Recalculate";
+                pbProgress.Value = calculationRunning ? value : 0;
+            }
+        }
 
         public ControlForm()
         {
-            Icon = Resources.Mandelbrot;
             InitializeComponent();
-            rbAdjustToNone.Tag = Adjustment.None;
-            rbAdjustToReal.Tag = Adjustment.ToReal;
-            rbAdjustToImaginary.Tag = Adjustment.ToImaginary;
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -95,6 +87,14 @@ namespace Mandelbrot
             d.ToString("G17").TrimEnd('0').TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToCharArray());
 
 
+        void btRecalculate_Click(object sender, EventArgs e)
+        {
+            if (calculationRunning)
+                CancelClicked?.Invoke(this, e);
+            else
+                RecalculateClicked?.Invoke(this, e);
+        }
+
         private void btPrevioius_Click(object sender, EventArgs e)
         {
             PreviousClicked?.Invoke(this, e);
@@ -103,13 +103,13 @@ namespace Mandelbrot
         {
             NextClicked?.Invoke(this, e);
         }
-        void btRefresh_Click(object sender, EventArgs e)
+        private void btAdjust_Click(object sender, EventArgs e)
         {
-            RefreshClicked?.Invoke(this, e);
+            AdjustClicked?.Invoke(this, e);
         }
         private void btStartScreen_Click(object sender, EventArgs e)
         {
-            ReturnToTotalViewClicked?.Invoke(this, e);
+            TotalClicked?.Invoke(this, e);
         }
         private void cbFullscreen_CheckedChanged(object sender, EventArgs e)
         {
@@ -119,15 +119,5 @@ namespace Mandelbrot
         {
             SaveClicked?.Invoke(this, e);
         }
-        private void OnAdjustmentChanged(object sender, EventArgs e)
-        {
-            if (!(sender is RadioButton rb)) return;
-            if (!rb.Checked) return;
-            var old = adjustment;
-            adjustment = (Adjustment)rb.Tag;
-            if (old == adjustment || old != Adjustment.None) return;
-            AdjustmentChanged?.Invoke(this, e);
-        }
-
     }
 }

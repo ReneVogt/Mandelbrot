@@ -30,41 +30,40 @@ namespace Mandelbrot
         private void InitializeComponent()
         {
             this.gbCalculation = new System.Windows.Forms.GroupBox();
-            this.nupIterations = new Mandelbrot.LogarithmicUpDown();
+            this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
+            this.btRecalculate = new System.Windows.Forms.Button();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
+            this.btAdjust = new System.Windows.Forms.Button();
+            this.btSave = new System.Windows.Forms.Button();
             this.lbCurrentImaginary = new System.Windows.Forms.Label();
+            this.btNext = new System.Windows.Forms.Button();
             this.lbCurrentReal = new System.Windows.Forms.Label();
+            this.btPrevioius = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.btStartScreen = new System.Windows.Forms.Button();
             this.gbCurrentSelection = new System.Windows.Forms.GroupBox();
             this.lbSelectionImaginary = new System.Windows.Forms.Label();
             this.lbSelectionReal = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.btRefresh = new System.Windows.Forms.Button();
-            this.btStartScreen = new System.Windows.Forms.Button();
             this.cbFullscreen = new System.Windows.Forms.CheckBox();
-            this.gbAdjustment = new System.Windows.Forms.GroupBox();
-            this.rbAdjustToImaginary = new System.Windows.Forms.RadioButton();
-            this.rbAdjustToReal = new System.Windows.Forms.RadioButton();
-            this.rbAdjustToNone = new System.Windows.Forms.RadioButton();
-            this.btPrevioius = new System.Windows.Forms.Button();
-            this.btNext = new System.Windows.Forms.Button();
-            this.btSave = new System.Windows.Forms.Button();
+            this.nupIterations = new Mandelbrot.LogarithmicUpDown();
             this.gbCalculation.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.gbCurrentView.SuspendLayout();
             this.gbCurrentSelection.SuspendLayout();
-            this.gbAdjustment.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.SuspendLayout();
             // 
             // gbCalculation
             // 
             this.gbCalculation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCalculation.Controls.Add(this.pbProgress);
             this.gbCalculation.Controls.Add(this.nupIterations);
             this.gbCalculation.Controls.Add(this.label1);
+            this.gbCalculation.Controls.Add(this.btRecalculate);
             this.gbCalculation.Location = new System.Drawing.Point(12, 12);
             this.gbCalculation.Name = "gbCalculation";
             this.gbCalculation.Size = new System.Drawing.Size(331, 76);
@@ -72,56 +71,73 @@ namespace Mandelbrot
             this.gbCalculation.TabStop = false;
             this.gbCalculation.Text = "Calculation";
             // 
-            // nupIterations
+            // pbProgress
             // 
-            this.nupIterations.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.nupIterations.Location = new System.Drawing.Point(9, 41);
-            this.nupIterations.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.nupIterations.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nupIterations.Name = "nupIterations";
-            this.nupIterations.Size = new System.Drawing.Size(78, 20);
-            this.nupIterations.TabIndex = 1;
-            this.nupIterations.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
+            this.pbProgress.Location = new System.Drawing.Point(9, 47);
+            this.pbProgress.Name = "pbProgress";
+            this.pbProgress.Size = new System.Drawing.Size(315, 23);
+            this.pbProgress.TabIndex = 91;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 25);
+            this.label1.Location = new System.Drawing.Point(6, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(149, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Maximum number of iterations:";
             // 
+            // btRecalculate
+            // 
+            this.btRecalculate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btRecalculate.Location = new System.Drawing.Point(249, 19);
+            this.btRecalculate.Name = "btRecalculate";
+            this.btRecalculate.Size = new System.Drawing.Size(75, 23);
+            this.btRecalculate.TabIndex = 90;
+            this.btRecalculate.Text = "Recalculate";
+            this.btRecalculate.UseVisualStyleBackColor = true;
+            this.btRecalculate.Click += new System.EventHandler(this.btRecalculate_Click);
+            // 
             // gbCurrentView
             // 
             this.gbCurrentView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCurrentView.Controls.Add(this.btAdjust);
+            this.gbCurrentView.Controls.Add(this.btSave);
             this.gbCurrentView.Controls.Add(this.lbCurrentImaginary);
+            this.gbCurrentView.Controls.Add(this.btNext);
             this.gbCurrentView.Controls.Add(this.lbCurrentReal);
+            this.gbCurrentView.Controls.Add(this.btPrevioius);
             this.gbCurrentView.Controls.Add(this.label9);
             this.gbCurrentView.Controls.Add(this.label2);
+            this.gbCurrentView.Controls.Add(this.btStartScreen);
             this.gbCurrentView.Location = new System.Drawing.Point(12, 94);
             this.gbCurrentView.Name = "gbCurrentView";
-            this.gbCurrentView.Size = new System.Drawing.Size(331, 63);
+            this.gbCurrentView.Size = new System.Drawing.Size(331, 146);
             this.gbCurrentView.TabIndex = 10;
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
+            // 
+            // btAdjust
+            // 
+            this.btAdjust.Location = new System.Drawing.Point(9, 89);
+            this.btAdjust.Name = "btAdjust";
+            this.btAdjust.Size = new System.Drawing.Size(75, 23);
+            this.btAdjust.TabIndex = 20;
+            this.btAdjust.Text = "Adjust axes";
+            this.btAdjust.UseVisualStyleBackColor = true;
+            this.btAdjust.Click += new System.EventHandler(this.btAdjust_Click);
+            // 
+            // btSave
+            // 
+            this.btSave.Location = new System.Drawing.Point(9, 117);
+            this.btSave.Name = "btSave";
+            this.btSave.Size = new System.Drawing.Size(75, 23);
+            this.btSave.TabIndex = 40;
+            this.btSave.Text = "Save...";
+            this.btSave.UseVisualStyleBackColor = true;
+            this.btSave.Click += new System.EventHandler(this.btSave_Click);
             // 
             // lbCurrentImaginary
             // 
@@ -132,6 +148,17 @@ namespace Mandelbrot
             this.lbCurrentImaginary.TabIndex = 11;
             this.lbCurrentImaginary.Text = "-1 to 1";
             // 
+            // btNext
+            // 
+            this.btNext.Enabled = false;
+            this.btNext.Location = new System.Drawing.Point(90, 60);
+            this.btNext.Name = "btNext";
+            this.btNext.Size = new System.Drawing.Size(75, 23);
+            this.btNext.TabIndex = 10;
+            this.btNext.Text = ">>";
+            this.btNext.UseVisualStyleBackColor = true;
+            this.btNext.Click += new System.EventHandler(this.btNext_Click);
+            // 
             // lbCurrentReal
             // 
             this.lbCurrentReal.AutoSize = true;
@@ -140,6 +167,17 @@ namespace Mandelbrot
             this.lbCurrentReal.Size = new System.Drawing.Size(37, 13);
             this.lbCurrentReal.TabIndex = 10;
             this.lbCurrentReal.Text = "-2 to 1";
+            // 
+            // btPrevioius
+            // 
+            this.btPrevioius.Enabled = false;
+            this.btPrevioius.Location = new System.Drawing.Point(9, 60);
+            this.btPrevioius.Name = "btPrevioius";
+            this.btPrevioius.Size = new System.Drawing.Size(75, 23);
+            this.btPrevioius.TabIndex = 0;
+            this.btPrevioius.Text = "<<";
+            this.btPrevioius.UseVisualStyleBackColor = true;
+            this.btPrevioius.Click += new System.EventHandler(this.btPrevioius_Click);
             // 
             // label9
             // 
@@ -159,6 +197,17 @@ namespace Mandelbrot
             this.label2.TabIndex = 0;
             this.label2.Text = "R:";
             // 
+            // btStartScreen
+            // 
+            this.btStartScreen.AutoSize = true;
+            this.btStartScreen.Location = new System.Drawing.Point(90, 89);
+            this.btStartScreen.Name = "btStartScreen";
+            this.btStartScreen.Size = new System.Drawing.Size(75, 23);
+            this.btStartScreen.TabIndex = 30;
+            this.btStartScreen.Text = "Total";
+            this.btStartScreen.UseVisualStyleBackColor = true;
+            this.btStartScreen.Click += new System.EventHandler(this.btStartScreen_Click);
+            // 
             // gbCurrentSelection
             // 
             this.gbCurrentSelection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -167,7 +216,7 @@ namespace Mandelbrot
             this.gbCurrentSelection.Controls.Add(this.lbSelectionReal);
             this.gbCurrentSelection.Controls.Add(this.label5);
             this.gbCurrentSelection.Controls.Add(this.label6);
-            this.gbCurrentSelection.Location = new System.Drawing.Point(12, 163);
+            this.gbCurrentSelection.Location = new System.Drawing.Point(12, 246);
             this.gbCurrentSelection.Name = "gbCurrentSelection";
             this.gbCurrentSelection.Size = new System.Drawing.Size(331, 63);
             this.gbCurrentSelection.TabIndex = 20;
@@ -210,36 +259,12 @@ namespace Mandelbrot
             this.label6.TabIndex = 0;
             this.label6.Text = "R:";
             // 
-            // btRefresh
-            // 
-            this.btRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRefresh.Location = new System.Drawing.Point(12, 435);
-            this.btRefresh.Name = "btRefresh";
-            this.btRefresh.Size = new System.Drawing.Size(331, 23);
-            this.btRefresh.TabIndex = 90;
-            this.btRefresh.Text = "Refresh";
-            this.btRefresh.UseVisualStyleBackColor = true;
-            this.btRefresh.Click += new System.EventHandler(this.btRefresh_Click);
-            // 
-            // btStartScreen
-            // 
-            this.btStartScreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btStartScreen.Location = new System.Drawing.Point(12, 346);
-            this.btStartScreen.Name = "btStartScreen";
-            this.btStartScreen.Size = new System.Drawing.Size(331, 23);
-            this.btStartScreen.TabIndex = 60;
-            this.btStartScreen.Text = "Return to total view";
-            this.btStartScreen.UseVisualStyleBackColor = true;
-            this.btStartScreen.Click += new System.EventHandler(this.btStartScreen_Click);
-            // 
             // cbFullscreen
             // 
             this.cbFullscreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cbFullscreen.Location = new System.Drawing.Point(12, 375);
+            this.cbFullscreen.Location = new System.Drawing.Point(12, 315);
             this.cbFullscreen.Name = "cbFullscreen";
             this.cbFullscreen.Size = new System.Drawing.Size(331, 24);
             this.cbFullscreen.TabIndex = 70;
@@ -248,126 +273,56 @@ namespace Mandelbrot
             this.cbFullscreen.UseVisualStyleBackColor = true;
             this.cbFullscreen.CheckedChanged += new System.EventHandler(this.cbFullscreen_CheckedChanged);
             // 
-            // gbAdjustment
+            // nupIterations
             // 
-            this.gbAdjustment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbAdjustment.Controls.Add(this.rbAdjustToImaginary);
-            this.gbAdjustment.Controls.Add(this.rbAdjustToReal);
-            this.gbAdjustment.Controls.Add(this.rbAdjustToNone);
-            this.gbAdjustment.Location = new System.Drawing.Point(12, 232);
-            this.gbAdjustment.Name = "gbAdjustment";
-            this.gbAdjustment.Size = new System.Drawing.Size(331, 55);
-            this.gbAdjustment.TabIndex = 30;
-            this.gbAdjustment.TabStop = false;
-            this.gbAdjustment.Text = "Adjust area to axis";
-            // 
-            // rbAdjustToImaginary
-            // 
-            this.rbAdjustToImaginary.AutoSize = true;
-            this.rbAdjustToImaginary.Location = new System.Drawing.Point(112, 23);
-            this.rbAdjustToImaginary.Name = "rbAdjustToImaginary";
-            this.rbAdjustToImaginary.Size = new System.Drawing.Size(69, 17);
-            this.rbAdjustToImaginary.TabIndex = 2;
-            this.rbAdjustToImaginary.TabStop = true;
-            this.rbAdjustToImaginary.Text = "imaginary";
-            this.rbAdjustToImaginary.UseVisualStyleBackColor = true;
-            this.rbAdjustToImaginary.CheckedChanged += new System.EventHandler(this.OnAdjustmentChanged);
-            // 
-            // rbAdjustToReal
-            // 
-            this.rbAdjustToReal.AutoSize = true;
-            this.rbAdjustToReal.Location = new System.Drawing.Point(64, 23);
-            this.rbAdjustToReal.Name = "rbAdjustToReal";
-            this.rbAdjustToReal.Size = new System.Drawing.Size(42, 17);
-            this.rbAdjustToReal.TabIndex = 1;
-            this.rbAdjustToReal.TabStop = true;
-            this.rbAdjustToReal.Text = "real";
-            this.rbAdjustToReal.UseVisualStyleBackColor = true;
-            this.rbAdjustToReal.CheckedChanged += new System.EventHandler(this.OnAdjustmentChanged);
-            // 
-            // rbAdjustToNone
-            // 
-            this.rbAdjustToNone.AutoSize = true;
-            this.rbAdjustToNone.Checked = true;
-            this.rbAdjustToNone.Location = new System.Drawing.Point(9, 23);
-            this.rbAdjustToNone.Name = "rbAdjustToNone";
-            this.rbAdjustToNone.Size = new System.Drawing.Size(49, 17);
-            this.rbAdjustToNone.TabIndex = 0;
-            this.rbAdjustToNone.TabStop = true;
-            this.rbAdjustToNone.Text = "none";
-            this.rbAdjustToNone.UseVisualStyleBackColor = true;
-            this.rbAdjustToNone.CheckedChanged += new System.EventHandler(this.OnAdjustmentChanged);
-            // 
-            // btPrevioius
-            // 
-            this.btPrevioius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btPrevioius.Enabled = false;
-            this.btPrevioius.Location = new System.Drawing.Point(12, 318);
-            this.btPrevioius.Name = "btPrevioius";
-            this.btPrevioius.Size = new System.Drawing.Size(163, 23);
-            this.btPrevioius.TabIndex = 40;
-            this.btPrevioius.Text = "<<";
-            this.btPrevioius.UseVisualStyleBackColor = true;
-            this.btPrevioius.Click += new System.EventHandler(this.btPrevioius_Click);
-            // 
-            // btNext
-            // 
-            this.btNext.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btNext.Enabled = false;
-            this.btNext.Location = new System.Drawing.Point(180, 318);
-            this.btNext.Name = "btNext";
-            this.btNext.Size = new System.Drawing.Size(163, 23);
-            this.btNext.TabIndex = 50;
-            this.btNext.Text = ">>";
-            this.btNext.UseVisualStyleBackColor = true;
-            this.btNext.Click += new System.EventHandler(this.btNext_Click);
-            // 
-            // btSave
-            // 
-            this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btSave.Location = new System.Drawing.Point(12, 406);
-            this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(331, 23);
-            this.btSave.TabIndex = 80;
-            this.btSave.Text = "Save bitmap...";
-            this.btSave.UseVisualStyleBackColor = true;
-            this.btSave.Click += new System.EventHandler(this.btSave_Click);
+            this.nupIterations.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nupIterations.Location = new System.Drawing.Point(165, 22);
+            this.nupIterations.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.nupIterations.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nupIterations.Name = "nupIterations";
+            this.nupIterations.Size = new System.Drawing.Size(78, 20);
+            this.nupIterations.TabIndex = 1;
+            this.nupIterations.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
             // 
             // ControlForm
             // 
-            this.AcceptButton = this.btRefresh;
+            this.AcceptButton = this.btRecalculate;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(355, 465);
-            this.Controls.Add(this.btSave);
-            this.Controls.Add(this.btNext);
-            this.Controls.Add(this.btPrevioius);
-            this.Controls.Add(this.gbAdjustment);
+            this.ClientSize = new System.Drawing.Size(355, 351);
             this.Controls.Add(this.cbFullscreen);
-            this.Controls.Add(this.btStartScreen);
-            this.Controls.Add(this.btRefresh);
             this.Controls.Add(this.gbCurrentSelection);
             this.Controls.Add(this.gbCurrentView);
             this.Controls.Add(this.gbCalculation);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ControlForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Mandelbrot controller";
             this.gbCalculation.ResumeLayout(false);
             this.gbCalculation.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).EndInit();
             this.gbCurrentView.ResumeLayout(false);
             this.gbCurrentView.PerformLayout();
             this.gbCurrentSelection.ResumeLayout(false);
             this.gbCurrentSelection.PerformLayout();
-            this.gbAdjustment.ResumeLayout(false);
-            this.gbAdjustment.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -387,15 +342,13 @@ namespace Mandelbrot
         private System.Windows.Forms.Label lbSelectionReal;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button btRefresh;
+        private System.Windows.Forms.Button btRecalculate;
         private System.Windows.Forms.Button btStartScreen;
         private System.Windows.Forms.CheckBox cbFullscreen;
-        private System.Windows.Forms.GroupBox gbAdjustment;
-        private System.Windows.Forms.RadioButton rbAdjustToImaginary;
-        private System.Windows.Forms.RadioButton rbAdjustToReal;
-        private System.Windows.Forms.RadioButton rbAdjustToNone;
         private System.Windows.Forms.Button btPrevioius;
         private System.Windows.Forms.Button btNext;
         private System.Windows.Forms.Button btSave;
+        private System.Windows.Forms.ProgressBar pbProgress;
+        private System.Windows.Forms.Button btAdjust;
     }
 }
