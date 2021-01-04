@@ -44,5 +44,7 @@ namespace MandelbrotGenerator
                 return hashCode;
             }
         }
+        /// <inheritdoc />
+        public override string ToString() => $"({RealMin}; {ImaginaryMin}) - ({RealMax}; {ImaginaryMax})";
     }
 }

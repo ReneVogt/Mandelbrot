@@ -148,8 +148,9 @@ namespace Mandelbrot
         }
         private void pbView_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && mouseSelection.HasValue)
+            if (e.Button == MouseButtons.Left && mouseSelection.HasValue && mouseSelection.Value.Width > 0 && mouseSelection.Value.Height > 0)
                 _ = RunCalculationAsync(GetMandelbrotAreaFromRect(mouseSelection.Value), InsertToStack);
+
             mouseSelection = null;
             mouseStartingPoint = null;
             Invalidate();
@@ -168,7 +169,8 @@ namespace Mandelbrot
         }
         private void pbView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            ReturnToTotalView();
+            if (e.Button == MouseButtons.Left)
+                ReturnToTotalView();
         }
         private void pbView_Paint(object sender, PaintEventArgs e)
         {

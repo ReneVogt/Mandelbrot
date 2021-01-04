@@ -13,5 +13,8 @@
         <member name="M:MandelbrotGenerator.MandelbrotArea.GetHashCode">
             <inheritdoc />
         </member>
+        <member name="M:MandelbrotGenerator.MandelbrotArea.ToString">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
