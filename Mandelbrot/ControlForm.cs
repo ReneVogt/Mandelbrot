@@ -10,7 +10,7 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
-        readonly MandelbrotColorizer[] colorizers = {MandelbrotColorizer.Default, new IterationRatioColorizer(), new RoundTripColorizer()};
+        readonly MandelbrotColorizer[] colorizers = {MandelbrotColorizer.Default, new IterationRatioColorizer(), new IterationRoundTripColorizer()};
         bool calculationRunning;
 
         public event EventHandler? RecalculateClicked;

@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RoundTripColorizer.cs" />
+    <Compile Include="IterationRoundTripColorizer.cs" />
     <Compile Include="IterationRatioColorizer.cs" />
     <Compile Include="ControlForm.cs">
       <SubType>Form</SubType>
@@ -126,9 +126,6 @@
       <Project>{32cd8b0d-c4aa-4208-8c12-01b393d37164}</Project>
       <Name>MandelbrotGenerator</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Calculating.cur" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Mandelbrot.ico" />
