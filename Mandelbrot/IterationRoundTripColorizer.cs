@@ -11,8 +11,9 @@ namespace Mandelbrot
         public override Color SetColor => Color.Black;
         protected override Color GetImmediateColor(int x, int y, double r, double i, int neededIterations, int maxIterations, double squaredMagnitude)
         {
-            if (neededIterations <= 0) return Color.DarkSlateGray;
-            double hue = neededIterations - Math.Min(1, squaredMagnitude/30);
+            if (neededIterations <= 0) return SetColor;
+            double magnitudeImpact = Math.Min(1, Math.Log(squaredMagnitude) / Math.Log(2) / 5);
+            double hue = neededIterations - magnitudeImpact;
             while (hue < 0) hue += 360;
             if (hue > 360)
                 hue -= Math.Floor(hue / 360) * 360;
