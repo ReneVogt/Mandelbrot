@@ -48,6 +48,11 @@ namespace Mandelbrot
             get => btNext.Enabled;
             set => btNext.Enabled = value;
         }
+        public bool AdjustAxes
+        {
+            get => cbAdjustAxes.Checked;
+            set => cbAdjustAxes.Checked = value;
+        }
         public bool Fullscreen
         {
             get => cbFullscreen.Checked;
@@ -69,6 +74,7 @@ namespace Mandelbrot
             InitializeComponent();
             MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
             cmbColorizer.SelectedIndex = 0;
+            cbAdjustAxes.Checked = Settings.Default.ADjustAxes;
             try
             {
                 cmbColorizer.SelectedIndex = Settings.Default.Colorizer;
@@ -79,6 +85,7 @@ namespace Mandelbrot
         {
             Settings.Default.MaximumNumberOfIterations = MaximumNumberOfIterations;
             Settings.Default.Colorizer = cmbColorizer.SelectedIndex;
+            Settings.Default.ADjustAxes = cbAdjustAxes.Checked;
             Settings.Default.Save();
             if (e.CloseReason == CloseReason.UserClosing)
             {
@@ -118,9 +125,10 @@ namespace Mandelbrot
         {
             NextClicked?.Invoke(this, e);
         }
-        private void btAdjust_Click(object sender, EventArgs e)
+        private void cbAdjustAxes_CheckedChanged(object sender, EventArgs e)
         {
-            AdjustClicked?.Invoke(this, e);
+            if (cbAdjustAxes.Checked)
+                AdjustClicked?.Invoke(this, e);
         }
         private void btStartScreen_Click(object sender, EventArgs e)
         {

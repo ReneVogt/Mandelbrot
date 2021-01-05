@@ -37,7 +37,7 @@ namespace Mandelbrot
             this.label1 = new System.Windows.Forms.Label();
             this.btRecalculate = new System.Windows.Forms.Button();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
-            this.btAdjust = new System.Windows.Forms.Button();
+            this.cbAdjustAxes = new System.Windows.Forms.CheckBox();
             this.btSave = new System.Windows.Forms.Button();
             this.lbCurrentImaginary = new System.Windows.Forms.Label();
             this.btNext = new System.Windows.Forms.Button();
@@ -156,7 +156,7 @@ namespace Mandelbrot
             // 
             this.gbCurrentView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbCurrentView.Controls.Add(this.btAdjust);
+            this.gbCurrentView.Controls.Add(this.cbAdjustAxes);
             this.gbCurrentView.Controls.Add(this.btSave);
             this.gbCurrentView.Controls.Add(this.lbCurrentImaginary);
             this.gbCurrentView.Controls.Add(this.btNext);
@@ -172,19 +172,19 @@ namespace Mandelbrot
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
             // 
-            // btAdjust
+            // cbAdjustAxes
             // 
-            this.btAdjust.Location = new System.Drawing.Point(9, 89);
-            this.btAdjust.Name = "btAdjust";
-            this.btAdjust.Size = new System.Drawing.Size(75, 23);
-            this.btAdjust.TabIndex = 20;
-            this.btAdjust.Text = "Adjust axes";
-            this.btAdjust.UseVisualStyleBackColor = true;
-            this.btAdjust.Click += new System.EventHandler(this.btAdjust_Click);
+            this.cbAdjustAxes.Location = new System.Drawing.Point(9, 58);
+            this.cbAdjustAxes.Name = "cbAdjustAxes";
+            this.cbAdjustAxes.Size = new System.Drawing.Size(102, 24);
+            this.cbAdjustAxes.TabIndex = 0;
+            this.cbAdjustAxes.Text = "Adjust axes";
+            this.cbAdjustAxes.UseVisualStyleBackColor = true;
+            this.cbAdjustAxes.CheckedChanged += new System.EventHandler(this.cbAdjustAxes_CheckedChanged);
             // 
             // btSave
             // 
-            this.btSave.Location = new System.Drawing.Point(9, 117);
+            this.btSave.Location = new System.Drawing.Point(90, 117);
             this.btSave.Name = "btSave";
             this.btSave.Size = new System.Drawing.Size(75, 23);
             this.btSave.TabIndex = 40;
@@ -204,10 +204,10 @@ namespace Mandelbrot
             // btNext
             // 
             this.btNext.Enabled = false;
-            this.btNext.Location = new System.Drawing.Point(90, 60);
+            this.btNext.Location = new System.Drawing.Point(90, 88);
             this.btNext.Name = "btNext";
             this.btNext.Size = new System.Drawing.Size(75, 23);
-            this.btNext.TabIndex = 10;
+            this.btNext.TabIndex = 20;
             this.btNext.Text = ">>";
             this.btNext.UseVisualStyleBackColor = true;
             this.btNext.Click += new System.EventHandler(this.btNext_Click);
@@ -224,10 +224,10 @@ namespace Mandelbrot
             // btPrevioius
             // 
             this.btPrevioius.Enabled = false;
-            this.btPrevioius.Location = new System.Drawing.Point(9, 60);
+            this.btPrevioius.Location = new System.Drawing.Point(9, 88);
             this.btPrevioius.Name = "btPrevioius";
             this.btPrevioius.Size = new System.Drawing.Size(75, 23);
-            this.btPrevioius.TabIndex = 0;
+            this.btPrevioius.TabIndex = 10;
             this.btPrevioius.Text = "<<";
             this.btPrevioius.UseVisualStyleBackColor = true;
             this.btPrevioius.Click += new System.EventHandler(this.btPrevioius_Click);
@@ -253,7 +253,7 @@ namespace Mandelbrot
             // btStartScreen
             // 
             this.btStartScreen.AutoSize = true;
-            this.btStartScreen.Location = new System.Drawing.Point(90, 89);
+            this.btStartScreen.Location = new System.Drawing.Point(9, 117);
             this.btStartScreen.Name = "btStartScreen";
             this.btStartScreen.Size = new System.Drawing.Size(75, 23);
             this.btStartScreen.TabIndex = 30;
@@ -377,8 +377,8 @@ namespace Mandelbrot
         private System.Windows.Forms.Button btNext;
         private System.Windows.Forms.Button btSave;
         private System.Windows.Forms.ProgressBar pbProgress;
-        private System.Windows.Forms.Button btAdjust;
         private System.Windows.Forms.ComboBox cmbColorizer;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox cbAdjustAxes;
     }
 }

@@ -46,5 +46,29 @@ namespace Mandelbrot.Properties {
                 this["MaximumNumberOfIterations"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ADjustAxes {
+            get {
+                return ((bool)(this["ADjustAxes"]));
+            }
+            set {
+                this["ADjustAxes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Upgraded {
+            get {
+                return ((bool)(this["Upgraded"]));
+            }
+            set {
+                this["Upgraded"] = value;
+            }
+        }
     }
 }

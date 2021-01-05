@@ -145,7 +145,7 @@ namespace Mandelbrot
         private void pbView_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && mouseSelection.HasValue && mouseSelection.Value.Width > 0 && mouseSelection.Value.Height > 0)
-                _ = RunCalculationAsync(GetMandelbrotAreaFromRect(mouseSelection.Value), InsertToStack);
+                _ = RunCalculationAsync(AdjustArea(GetMandelbrotAreaFromRect(mouseSelection.Value)), InsertToStack);
 
             mouseSelection = null;
             mouseStartingPoint = null;
@@ -193,7 +193,7 @@ namespace Mandelbrot
                 generator = currentGenerator =
                                     new MandelbrotBitmapGenerator(controlForm.Colorizer, pixels, area, controlForm.MaximumNumberOfIterations);
                 Cursor = Cursors.AppStarting;
-                var bmp = await generator.GenerateAsync();
+                var bmp = await generator.CreateBitmapParallel();
                 if (generator.IsCancelled) return;
 
                 stackAction();
@@ -236,6 +236,8 @@ namespace Mandelbrot
         }
         MandelbrotArea AdjustArea(MandelbrotArea area)
         {
+            if (!controlForm.AdjustAxes) return area;
+
             var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
             var h = Pixels.Height;
             var w = Pixels.Width;
