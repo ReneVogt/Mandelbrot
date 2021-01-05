@@ -37,5 +37,8 @@
         <member name="M:MandelbrotGenerator.MandelbrotArea.ToString">
             <inheritdoc />
         </member>
+        <member name="M:MandelbrotGenerator.MandelbrotArea.ToString(System.String,System.IFormatProvider)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>

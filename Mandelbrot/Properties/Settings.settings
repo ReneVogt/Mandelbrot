@@ -8,7 +8,7 @@
     <Setting Name="MaximumNumberOfIterations" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
-    <Setting Name="ADjustAxes" Type="System.Boolean" Scope="User">
+    <Setting Name="AdjustAxesd" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Upgraded" Type="System.Boolean" Scope="User">

@@ -50,12 +50,12 @@ namespace Mandelbrot.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ADjustAxes {
+        public bool AdjustAxesd {
             get {
-                return ((bool)(this["ADjustAxes"]));
+                return ((bool)(this["AdjustAxesd"]));
             }
             set {
-                this["ADjustAxes"] = value;
+                this["AdjustAxesd"] = value;
             }
         }
         

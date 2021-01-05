@@ -74,7 +74,7 @@ namespace Mandelbrot
             InitializeComponent();
             MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
             cmbColorizer.SelectedIndex = 0;
-            cbAdjustAxes.Checked = Settings.Default.ADjustAxes;
+            cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
             try
             {
                 cmbColorizer.SelectedIndex = Settings.Default.Colorizer;
@@ -85,7 +85,7 @@ namespace Mandelbrot
         {
             Settings.Default.MaximumNumberOfIterations = MaximumNumberOfIterations;
             Settings.Default.Colorizer = cmbColorizer.SelectedIndex;
-            Settings.Default.ADjustAxes = cbAdjustAxes.Checked;
+            Settings.Default.AdjustAxesd = cbAdjustAxes.Checked;
             Settings.Default.Save();
             if (e.CloseReason == CloseReason.UserClosing)
             {
@@ -107,7 +107,6 @@ namespace Mandelbrot
         static string CreateAxisString(double min, double max) => min.Equals(max) ? FormatDouble(min) : $"{FormatDouble(min)} to {FormatDouble(max)}";
         static string FormatDouble(double d) =>
             d.ToString("G17").TrimEnd('0').TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToCharArray());
-
 
         void btRecalculate_Click(object sender, EventArgs e)
         {

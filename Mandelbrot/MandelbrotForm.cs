@@ -139,7 +139,7 @@ namespace Mandelbrot
             else
             {
                 var (r, i) = GetComplexFromPoint(e.Location);
-                controlForm.SetCurrentSelection((r, r, i, i));
+                controlForm.SetCurrentSelection((r, i, r, i));
             }
         }
         private void pbView_MouseUp(object sender, MouseEventArgs e)
@@ -238,7 +238,7 @@ namespace Mandelbrot
         {
             if (!controlForm.AdjustAxes) return area;
 
-            var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
+            var (realMin, imaginaryMin, realMax, imaginaryMax) = area;
             var h = Pixels.Height;
             var w = Pixels.Width;
             var dx = (realMax - realMin) / w;
@@ -247,14 +247,14 @@ namespace Mandelbrot
             {
                 double d = 0.5 * dx * h;
                 double m = (imaginaryMax + imaginaryMin) / 2;
-                return (realMin, realMax, m - d, m + d);
+                return (realMin, m - d, realMax, m + d);
             }
             
             if (dy > dx)
             {
                 double d = 0.5 * dy * w;
                 double m = (realMax + realMin) / 2;
-                return (m - d, m + d, imaginaryMin, imaginaryMax);
+                return (m - d, imaginaryMin, m + d, imaginaryMax);
             }
 
             return area;
@@ -263,7 +263,7 @@ namespace Mandelbrot
         {
             (double rmin, double imax) = GetComplexFromPoint(rect.Location);
             (double rmax, double imin) = GetComplexFromPoint(rect.Location + rect.Size);
-            return (rmin, rmax, imin, imax);
+            return (rmin, imin, rmax, imax);
         }
         (double r, double i) GetComplexFromPoint(Point p) => (currentArea.RealMin + (currentArea.RealMax - currentArea.RealMin) * p.X / Pixels.Width,
                                                                  currentArea.ImaginaryMax - (currentArea.ImaginaryMax - currentArea.ImaginaryMin) * p.Y / Pixels.Height);

@@ -44,7 +44,7 @@ namespace MandelbrotGenerator
             if (resolution.Width <= 0 || resolution.Height <= 0)
                 throw new ArgumentException("The resolution must have positive width and height!", nameof(resolution));
 
-            var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
+            var (realMin, imaginaryMin, realMax, imaginaryMax) = area;
             if (realMin >= realMax || imaginaryMin >= imaginaryMax)
                 throw new ArgumentException("The requested area is invalid!.", nameof(area));
 
@@ -77,7 +77,7 @@ namespace MandelbrotGenerator
         }
         Bitmap CreateBitmapInternal()
         {
-            var (realMin, realMax, imaginaryMin, imaginaryMax) = area;
+            var (realMin, imaginaryMin, realMax, imaginaryMax) = area;
             int height = resolution.Height, width = resolution.Width;
             double dx = realMax - realMin;
             double dy = imaginaryMax - imaginaryMin;
