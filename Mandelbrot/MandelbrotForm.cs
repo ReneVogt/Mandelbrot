@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
 using MandelbrotGenerator;
-using MandelbrotGenerator.Exceptions;
 
 #nullable enable
 #pragma warning disable IDE1006 // Benennungsstile
@@ -23,10 +21,9 @@ namespace Mandelbrot
         readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
         readonly Brush progressBackBrush = new SolidBrush(Color.FromArgb(96, Color.Black));
 
-        int progress = -1;
-        MandelbrotImageGenerator? currentGenerator;
+        int progressToDraw = -1;
+        MandelbrotBitmapGenerator? currentGenerator;
         MandelbrotArea currentArea;
-        CancellationTokenSource? cancellationTokenSource;
         Rectangle? mouseSelection;
         Point? mouseStartingPoint;
 
@@ -53,10 +50,9 @@ namespace Mandelbrot
             currentArea = AdjustArea(MandelbrotArea.Default);
 
             controlForm.RecalculateClicked += (sender, e) => _ = RunCalculationAsync(currentArea, UpdateStackButtons);
-            controlForm.CancelClicked += (sender, e) => 
+            controlForm.CancelClicked += (sender, e) =>
             {
-                cancellationTokenSource?.Cancel();
-                cancellationTokenSource = null;
+                currentGenerator?.Cancel();
                 currentGenerator = null;
                 Cursor = Cursors.Default;
             };
@@ -77,7 +73,7 @@ namespace Mandelbrot
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
-            cancellationTokenSource?.Cancel();
+            currentGenerator?.Cancel();
         }
         protected override void OnResizeBegin(EventArgs e)
         {
@@ -111,15 +107,15 @@ namespace Mandelbrot
         private void OnProgressTimer(object sender, EventArgs e)
         {
             var p = currentGenerator?.Progress ?? -1;
-            if (p == progress) return;
-            controlForm.Progress = progress = p;
+            if (p == progressToDraw) return;
+            controlForm.Progress = progressToDraw = p;
             pbView.Invalidate();
         }
         #endregion
         #region PictureBox event handlers
         private void pbView_SizeChanged(object sender, EventArgs e)
         {
-            cancellationTokenSource?.Cancel();
+            currentGenerator?.Cancel();
             CurrentImage = null;
         }
         private void pbView_MouseMove(object sender, MouseEventArgs e)
@@ -174,34 +170,35 @@ namespace Mandelbrot
         }
         private void pbView_Paint(object sender, PaintEventArgs e)
         {
-            if (CurrentImage == null && cancellationTokenSource?.IsCancellationRequested != false)
+            if (CurrentImage == null && currentGenerator?.IsCancelled != false)
                 _ = RunCalculationAsync(currentArea, UpdateStackButtons);
 
             if (mouseSelection != null)
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
 
-            if (progress > -1)
+            if (progressToDraw > -1)
                 DrawProgress(e.Graphics);
         }
         #endregion
         #region Calculation
         async Task RunCalculationAsync(MandelbrotArea area, Action stackAction)
         {
-            cancellationTokenSource?.Cancel();
-            var cts = cancellationTokenSource = new CancellationTokenSource();
-            var generator = currentGenerator = new MandelbrotImageGenerator(controlForm.Colorizer)
-                                {MaximumNumberOfIterations = controlForm.MaximumNumberOfIterations};
+            currentGenerator?.Cancel();
+            currentGenerator = null;
             var pixels = Pixels;
+            MandelbrotBitmapGenerator? generator = null;
             try
             {
+
+                generator = currentGenerator =
+                                    new MandelbrotBitmapGenerator(controlForm.Colorizer, pixels, area, controlForm.MaximumNumberOfIterations);
                 Cursor = Cursors.AppStarting;
-                var bmp = await Task.Run(() => generator.CreateBitmap(pixels.Width, pixels.Height, area, cts.Token), cts.Token);
-                if (cts.IsCancellationRequested) return;
+                var bmp = await generator.GenerateAsync();
+                if (generator.IsCancelled) return;
 
                 stackAction();
                 currentArea = area;
                 Cursor = Cursors.Default;
-                cancellationTokenSource = null;
                 currentGenerator = null;
                 mouseSelection = null;
                 mouseStartingPoint = null;
@@ -210,21 +207,15 @@ namespace Mandelbrot
                 CurrentImage = bmp;
             }
             catch (OperationCanceledException) { }
-            catch (MandelbrotException mbe)
-            {
-                if (cts.IsCancellationRequested) return;
-                OnCalculationError(mbe);
-            }
             catch (ArgumentException ae)
             {
-                if (cts.IsCancellationRequested) return;
+                if (generator?.IsCancelled == true) return;
                 OnCalculationError(ae);
             }
         }
         void OnCalculationError(Exception error)
         {
             Cursor = Cursors.Default;
-            cancellationTokenSource = null;
             currentGenerator = null;
             MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -232,15 +223,15 @@ namespace Mandelbrot
         #region Helper methods
         void DrawProgress(Graphics graphics)
         {
-            var text = $"{progress}%";
+            var text = $"{progressToDraw}%";
             var textSize = graphics.MeasureString(text, progressFont);
             var textRect = new RectangleF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2, textSize.Width, textSize.Height);
             var s = Math.Max(textSize.Width, textSize.Height) + 50;
             var backRect = new Rectangle((int)(textRect.Left + textRect.Width / 2 - s / 2), (int)(textRect.Top + textRect.Height / 2 - s / 2), (int)s,
                                          (int)s);
             graphics.DrawEllipse(progressWheelPen, backRect);
-            graphics.FillPie(progressBackBrush, backRect, 3.6f * progress - 90, 3.6f * (100 - progress));
-            graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progress);
+            graphics.FillPie(progressBackBrush, backRect, 3.6f * progressToDraw - 90, 3.6f * (100 - progressToDraw));
+            graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progressToDraw);
             graphics.DrawString(text, progressFont, Brushes.White, textRect);
         }
         MandelbrotArea AdjustArea(MandelbrotArea area)

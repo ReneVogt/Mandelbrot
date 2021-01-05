@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
 using MandelbrotGenerator;
+using MandelbrotGenerator.Colorizer;
 
 #nullable enable
 #pragma warning disable IDE1006 // Benennungsstile
@@ -11,7 +12,8 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
-        readonly MandelbrotColorizer[] colorizers = {MandelbrotColorizer.Default, new IterationRatioColorizer(), new IterationModuloColorizer()};
+        readonly MandelbrotColorizer[] colorizers =
+            {MandelbrotColorizer.BlackAndWhite, MandelbrotColorizer.IterationRatioColorizer, MandelbrotColorizer.IterationModuloColorizer};
         bool calculationRunning;
 
         public event EventHandler? RecalculateClicked;
