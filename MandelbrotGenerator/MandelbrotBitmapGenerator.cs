@@ -10,7 +10,7 @@ using MandelbrotGenerator.Colorizer;
 
 namespace MandelbrotGenerator
 {
-    public sealed class MandelbrotBitmapGenerator
+    public sealed class MandelbrotBitmapGenerator : IDisposable
     {
         readonly int maxDegreeOfParallelism, maximumNumberOfIterations;
         readonly MandelbrotColorizer colorizer;
@@ -19,7 +19,7 @@ namespace MandelbrotGenerator
         readonly int pixels;
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        int started;
+        int started, disposed;
         int iteratingProgress, colorizingProgress;
 
         CancellationToken CancellationToken => cancellationTokenSource.Token;
@@ -58,22 +58,35 @@ namespace MandelbrotGenerator
             this.maximumNumberOfIterations = maximumNumberOfIterations;
             this.maxDegreeOfParallelism = maxDegreeOfParallelism;
         }
+        public void Dispose()
+        {
+            if (Interlocked.CompareExchange(ref disposed, 1, 0) != 0) return;
+            cancellationTokenSource.Dispose();
+        }
 
         public Task<Bitmap> CreateBitmapParallel()
         {
+            ThrowIfDisposed();
             ThrowIfAlreadyUsed();
             return Task.Run(CreateBitmapInternal, CancellationToken);
         }
         public Bitmap CreateBitmap()
         {
+            ThrowIfDisposed();
             ThrowIfAlreadyUsed();
             return CreateBitmapInternal();
         }
         public void Cancel() => cancellationTokenSource.Cancel();
+        
         void ThrowIfAlreadyUsed()
         {
             if (Interlocked.CompareExchange(ref started, 1, 0) != 0)
                 throw new InvalidOperationException($"This {nameof(MandelbrotBitmapGenerator)} has already generated a bitmap! It cannot be used twice.");
+        }
+        void ThrowIfDisposed()
+        {
+            if (disposed > 0)
+                throw new ObjectDisposedException(nameof(MandelbrotBitmapGenerator));
         }
         Bitmap CreateBitmapInternal()
         {

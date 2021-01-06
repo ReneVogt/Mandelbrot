@@ -25,9 +25,6 @@
         <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.ComplexScope.Equals(MandelbrotGenerator.ComplexScope)">
-            <inheritdoc />
-        </member>
         <member name="M:MandelbrotGenerator.ComplexScope.Equals(System.Object)">
             <inheritdoc />
         </member>
