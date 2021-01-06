@@ -172,7 +172,7 @@ namespace Mandelbrot
         private void pbView_Paint(object sender, PaintEventArgs e)
         {
             if (CurrentImage == null && currentGenerator?.IsCancelled != false)
-                _ = RunCalculationAsync(currentScope, UpdateStackButtons);
+                _ = RunCalculationAsync(AdjustScope(currentScope), UpdateStackButtons);
 
             if (mouseSelection != null)
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
