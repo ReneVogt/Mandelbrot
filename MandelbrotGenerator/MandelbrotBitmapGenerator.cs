@@ -10,6 +10,10 @@ using MandelbrotGenerator.Colorizer;
 
 namespace MandelbrotGenerator
 {
+    /// <summary>
+    /// Creates a <see cref="Bitmap"/> with the given resolution of
+    /// the given section of the Mandelbrot set in the complex plane.
+    /// </summary>
     public sealed class MandelbrotBitmapGenerator : IDisposable
     {
         readonly int maxDegreeOfParallelism, maximumNumberOfIterations;
@@ -24,6 +28,9 @@ namespace MandelbrotGenerator
 
         CancellationToken CancellationToken => cancellationTokenSource.Token;
 
+        /// <summary>
+        /// Gets a value between 0 and 100 indicating the calculation progress in percent.
+        /// </summary>
         public int Progress
         {
             get
@@ -36,20 +43,31 @@ namespace MandelbrotGenerator
                 return 80 + cp * 20 / c;
             }
         }
+        /// <summary>
+        /// Gets a value indicating whether the calculation has been cancelled.
+        /// </summary>
         public bool IsCancelled => cancellationTokenSource.IsCancellationRequested;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MandelbrotBitmapGenerator"/>.
+        /// </summary>
+        /// <param name="colorizer">The <see cref="MandelbrotColorizer"/> to use to colorize the calculation results for the bitmap.</param>
+        /// <param name="resolution">The resolution of the raster and final bitmap.</param>
+        /// <param name="scope">The scope in the complex plane to analyze.</param>
+        /// <param name="maximumNumberOfIterations">The maximum number of iterations after which an sequence can be considered convergent.</param>
+        /// <param name="maxDegreeOfParallelism">This value is used for the TPL via the <see cref="ParallelOptions.MaxDegreeOfParallelism"/> property to control how the calculation is parallelized.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="colorizer"/> or <paramref name="scope"/> are <c>null</c>!</exception>
+        /// <exception cref="ArgumentException"><paramref name="resolution"/> has zero or negative values, or the <paramref name="scope"/> is too small to be analyzed by this implementation.</exception>
         public MandelbrotBitmapGenerator(MandelbrotColorizer colorizer, Size resolution, ComplexScope scope, int maximumNumberOfIterations, int maxDegreeOfParallelism = -1)
         {
             this.colorizer = colorizer ?? throw new ArgumentNullException(nameof(colorizer));
+            this.scope = scope ?? throw new ArgumentNullException(nameof(scope));
+
             if (resolution.Width <= 0 || resolution.Height <= 0)
                 throw new ArgumentException("The resolution must have positive width and height!", nameof(resolution));
 
-            var ((realMin, imaginaryMin), (realMax, imaginaryMax)) = scope;
-            if (realMin >= realMax || imaginaryMin >= imaginaryMax)
-                throw new ArgumentException("The requested scope is invalid!.", nameof(scope));
-
-            if (realMax - realMin < resolution.Width * double.Epsilon ||
-                imaginaryMax - imaginaryMin <= resolution.Height * double.Epsilon)
+            if (scope.Real < resolution.Width * double.Epsilon ||
+                scope.Imaginary <= resolution.Height * double.Epsilon)
                 throw new ArgumentException("The desired scope and resolution cannot be calculated precisely enough by the current implementation.");
 
             this.resolution = resolution;
@@ -58,24 +76,41 @@ namespace MandelbrotGenerator
             this.maximumNumberOfIterations = maximumNumberOfIterations;
             this.maxDegreeOfParallelism = maxDegreeOfParallelism;
         }
+        /// <inheritdoc />
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref disposed, 1, 0) != 0) return;
             cancellationTokenSource.Dispose();
         }
 
+        /// <summary>
+        /// Starts the calculation as a background task and returns the <see cref="Task{Bitmap}"/> that
+        /// can be used to <c>await</c> the resulting <see cref="Bitmap"/>:
+        /// </summary>
+        /// <returns>A <see cref="Task{Bitmap}"/> that can be used to wait for or <c>await</c> the resulting <see cref="Bitmap"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This instance has already been disposed of.</exception>
+        /// <exception cref="InvalidOperationException">This instance has already been used to generate a bitmap. An instance of <see cref="MandelbrotBitmapGenerator"/> can only be used once.</exception>
         public Task<Bitmap> CreateBitmapParallel()
         {
             ThrowIfDisposed();
             ThrowIfAlreadyUsed();
             return Task.Run(CreateBitmapInternal, CancellationToken);
         }
+        /// <summary>
+        /// Performs the calculation and returns the generated <see cref="Bitmap"/>.
+        /// </summary>
+        /// <returns>The generated <see cref="Bitmap"/> representing an approximation of the Mandelbrot set in the given scope and using the specified <see cref="MandelbrotColorizer"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This instance has already been disposed of.</exception>
+        /// <exception cref="InvalidOperationException">This instance has already been used to generate a bitmap. An instance of <see cref="MandelbrotBitmapGenerator"/> can only be used once.</exception>
         public Bitmap CreateBitmap()
         {
             ThrowIfDisposed();
             ThrowIfAlreadyUsed();
             return CreateBitmapInternal();
         }
+        /// <summary>
+        /// Cancels a running calculation.
+        /// </summary>
         public void Cancel() => cancellationTokenSource.Cancel();
         
         void ThrowIfAlreadyUsed()

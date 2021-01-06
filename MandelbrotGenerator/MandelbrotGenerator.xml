@@ -4,27 +4,6 @@
         <name>MandelbrotGenerator</name>
     </assembly>
     <members>
-        <member name="P:MandelbrotGenerator.Colorizer.BlackAndWhiteColorizer.SetColor">
-            <inheritdoc />
-        </member>
-        <member name="M:MandelbrotGenerator.Colorizer.BlackAndWhiteColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
-            <inheritdoc />
-        </member>
-        <member name="P:MandelbrotGenerator.Colorizer.IterationModuloColorizer.SetColor">
-            <inheritdoc />
-        </member>
-        <member name="M:MandelbrotGenerator.Colorizer.IterationModuloColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
-            <inheritdoc />
-        </member>
-        <member name="P:MandelbrotGenerator.Colorizer.IterationRatioColorizer.SetColor">
-            <inheritdoc />
-        </member>
-        <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32)">
-            <inheritdoc />
-        </member>
-        <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
-            <inheritdoc />
-        </member>
         <member name="T:MandelbrotGenerator.Colorizer.MandelbrotColorizer">
             <summary>
             Base class for colorization implementations.

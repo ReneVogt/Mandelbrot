@@ -11,18 +11,15 @@ namespace MandelbrotGenerator.Colorizer
             internal UserState(int maximumNumberOfIterations) =>  MaximumNumberOfIterations = maximumNumberOfIterations;
         }
 
-        /// <inheritdoc />
         public override Color SetColor => Color.Black;
 
         internal IterationRatioColorizer() : base(false) { }
 
-        /// <inheritdoc />
         public override object Initialize(Size resolution, ComplexScope scope, int maximumNumberOfIterations)
         {
             base.Initialize(resolution, scope, maximumNumberOfIterations);
             return new UserState(maximumNumberOfIterations);
         }
-        /// <inheritdoc />
         public override Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState)
         {
             if (!(userState is UserState { MaximumNumberOfIterations: var maxIterations})) 

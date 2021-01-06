@@ -5,12 +5,10 @@ namespace MandelbrotGenerator.Colorizer
 {
     sealed class IterationModuloColorizer : MandelbrotColorizer
     {
-        /// <inheritdoc />
         public override Color SetColor => Color.Black;
 
         internal IterationModuloColorizer() : base(false){}
 
-        /// <inheritdoc />
         public override Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState)
         {
             if (iteratedPoint.Iterations <= 0) return SetColor;
