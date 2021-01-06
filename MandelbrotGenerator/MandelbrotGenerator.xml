@@ -25,6 +25,100 @@
         <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
             <inheritdoc />
         </member>
+        <member name="T:MandelbrotGenerator.Colorizer.MandelbrotColorizer">
+            <summary>
+            Base class for colorization implementations.
+            The colorization can be run during the actual
+            calculation (using only the iteration count and
+            escaping z value) or after the calculation (with
+            the possibiilty to do statistics over all iterated
+            pixels).
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.Colorizer.MandelbrotColorizer.BlackAndWhite">
+            <summary>
+            A colorizer that uses <see cref="P:System.Drawing.Color.Black"/>for pixels inside the set
+            and <see cref="P:System.Drawing.Color.White"/> for pixels outside of the set.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.Colorizer.MandelbrotColorizer.IterationRatioColorizer">
+            <summary>
+            A colorizer that uses <see cref="P:System.Drawing.Color.Black"/>for pixels inside the set
+            and a hue for the color of pixels outside of the set depending on the ratio of
+            iterations needed to escape to the maximum iteration count. The escaping magnitude
+            is also used for fine tuning.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.Colorizer.MandelbrotColorizer.IterationModuloColorizer">
+            <summary>
+            A colorizer that uses <see cref="P:System.Drawing.Color.Black"/>for pixels inside the set
+            and the number of iterations needed to escape as the hue angle degrees for
+            the color of pixels outside of the set. The escaping magnitude
+            is also used for fine tuning.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.Colorizer.MandelbrotColorizer.SetColor">
+            <summary>
+            Gets the color to use for pixels inside the set.
+            </summary>
+        </member>
+        <member name="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.#ctor(System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:MandelbrotGenerator.Colorizer.MandelbrotColorizer"/> instance.
+            </summary>
+            <param name="usePostCalculationColorization">Indicates wether this colorizer uses immediate colorization (while calculation is running;
+            using only the number of iterations and escaping z value) or post calculation colorization (with the possibility to do statistics
+            on the overall calculation result.</param>
+        </member>
+        <member name="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32)">
+            <summary>
+            This method is called by the <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/> when calculation starts.
+            Override this method to initialize your colorizer with the given <paramref name="resolution"/>,
+            <paramref name="scope"/> and <paramref name="maximumNumberOfIterations"/>. To keep your colorizer
+            thread and usage safe, return your state and it will be provided as parameter to the other colorization methods.
+            </summary>
+            <param name="resolution">The used raster resolution.</param>
+            <param name="scope">The scope in the complex plane that is analyzed.</param>
+            <param name="maximumNumberOfIterations">The maximum number of iterations used by the <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/>.</param>
+            <returns>A state object that is passed on to colorization methods. It is recommended to use this way to pass state instead of
+            keeping shared fields in your colorizer.</returns>
+        </member>
+        <member name="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.Initialize(MandelbrotGenerator.IteratedPoint[],System.Object)">
+            <summary>
+            This method is called by the <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/> when calculation has finished
+            to initialize post calculation colorization. It is only called if this colorizer was created with
+            <see cref="P:MandelbrotGenerator.Colorizer.MandelbrotColorizer.UsePostCalculationColorization"/> set to <c>true</c>.
+            Override this method to initialize your colorizer using the calculation result given in <paramref name="iteratedPoints"/>.
+            To pass your analysis result on to the <see cref="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)"/> method, return it as state object from this method.
+            </summary>
+            <param name="iteratedPoints">The result of the calculation. The array's size
+            depends on the of the <c>resolution</c> parameter of the earlier called <see cref="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32)"/> method.
+            An elements index is <c>row*width+column</c>. See <see cref="T:MandelbrotGenerator.IteratedPoint"/> for details about the per pixel information.</param>
+            <param name="userState">The state object returned by the earlier called <see cref="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32)"/> method.</param>
+            <returns>A state object that is passed on to <see cref="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)"/>. It is recommended to use this way to pass state instead of
+            keeping shared fields in your colorizer.</returns>
+        </member>
+        <member name="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
+            <summary>
+            This method is called by the <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/> to determine the color of
+            an calculated pixel. The calculation result is stored in <paramref name="iteratedPoint"/>. See
+            <see cref="T:MandelbrotGenerator.IteratedPoint"/> for details about information.
+            </summary>
+            <param name="pixel">The raster pixel that should be colorized.</param>
+            <param name="iteratedPoint">The result of the calculation for this pixel. See <see cref="T:MandelbrotGenerator.IteratedPoint"/>
+            for details about the per pixel information</param>
+            <param name="userState">The state object returned by the earlier called <see cref="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32)"/> or <see cref="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.Initialize(MandelbrotGenerator.IteratedPoint[],System.Object)"/> method..</param>
+            <returns>The color to use for the given pixel.</returns>
+        </member>
+        <member name="M:MandelbrotGenerator.Colorizer.MandelbrotColorizer.ConvertHsvToRgb(System.Double,System.Double,System.Double)">
+            <summary>
+            Converts a hsv color information into a <see cref="T:System.Drawing.Color"/>.
+            </summary>
+            <param name="hue">The hue of the color (0 to 360 degree).</param>
+            <param name="saturation">The saturation of the color (0 to 1).</param>
+            <param name="value">The value (intensity) of the color (0 to 1).</param>
+            <returns>The <see cref="T:System.Drawing.Color"/> representing the hsv color values.</returns>
+        </member>
         <member name="M:MandelbrotGenerator.ComplexScope.Equals(System.Object)">
             <inheritdoc />
         </member>

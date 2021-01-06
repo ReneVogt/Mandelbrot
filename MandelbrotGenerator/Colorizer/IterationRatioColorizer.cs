@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace MandelbrotGenerator.Colorizer
 {
-    public sealed class IterationRatioColorizer : MandelbrotColorizer
+    sealed class IterationRatioColorizer : MandelbrotColorizer
     {
         sealed class UserState
         {
@@ -14,12 +14,12 @@ namespace MandelbrotGenerator.Colorizer
         /// <inheritdoc />
         public override Color SetColor => Color.Black;
 
-        public IterationRatioColorizer() : base(false) { }
+        internal IterationRatioColorizer() : base(false) { }
 
         /// <inheritdoc />
-        public override object Initialize(Size resolution, ComplexScope area, int maximumNumberOfIterations)
+        public override object Initialize(Size resolution, ComplexScope scope, int maximumNumberOfIterations)
         {
-            base.Initialize(resolution, area, maximumNumberOfIterations);
+            base.Initialize(resolution, scope, maximumNumberOfIterations);
             return new UserState(maximumNumberOfIterations);
         }
         /// <inheritdoc />

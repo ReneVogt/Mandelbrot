@@ -6,8 +6,6 @@ namespace MandelbrotGeneratorTests
     {
         static void Main()
         {
-            //ComplexScope area = (-2.12358123d, 3.1712309154853d, -1.234109853d, 4.12345d);
-            //Console.WriteLine(area);
         }
     }
 }

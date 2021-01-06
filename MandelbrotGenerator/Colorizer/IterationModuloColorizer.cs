@@ -3,12 +3,12 @@ using System.Drawing;
 
 namespace MandelbrotGenerator.Colorizer
 {
-    public sealed class IterationModuloColorizer : MandelbrotColorizer
+    sealed class IterationModuloColorizer : MandelbrotColorizer
     {
         /// <inheritdoc />
         public override Color SetColor => Color.Black;
 
-        public IterationModuloColorizer() : base(false){}
+        internal IterationModuloColorizer() : base(false){}
 
         /// <inheritdoc />
         public override Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState)

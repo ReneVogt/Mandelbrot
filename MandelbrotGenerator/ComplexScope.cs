@@ -74,15 +74,15 @@ namespace MandelbrotGenerator
         public static ComplexScope Parse(string s, IFormatProvider formatProvider) => Parse(s, NumberStyles.Any, formatProvider);
         public static ComplexScope Parse(string s, NumberStyles style, IFormatProvider formatProvider) => throw new NotImplementedException();
 
-        public static bool TryParse(string s, out ComplexScope area) => TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out area);
-        public static bool TryParse(string s, IFormatProvider formatProvider, out ComplexScope area) =>
-            TryParse(s, NumberStyles.Any, formatProvider, out area);
-        public static bool TryParse(string s, NumberStyles style, IFormatProvider formatProvider, out ComplexScope area)
+        public static bool TryParse(string s, out ComplexScope scope) => TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out scope);
+        public static bool TryParse(string s, IFormatProvider formatProvider, out ComplexScope scope) =>
+            TryParse(s, NumberStyles.Any, formatProvider, out scope);
+        public static bool TryParse(string s, NumberStyles style, IFormatProvider formatProvider, out ComplexScope scope)
         {
-            area = default!;
+            scope = default!;
             try
             {
-                area = Parse(s, style, formatProvider);
+                scope = Parse(s, style, formatProvider);
                 return true;
             }
             catch (FormatException)

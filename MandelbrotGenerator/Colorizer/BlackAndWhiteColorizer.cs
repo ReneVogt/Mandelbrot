@@ -2,12 +2,12 @@
 
 namespace MandelbrotGenerator.Colorizer
 {
-    public sealed class BlackAndWhiteColorizer : MandelbrotColorizer
+    sealed class BlackAndWhiteColorizer : MandelbrotColorizer
     {
         /// <inheritdoc />
         public override Color SetColor => Color.Black;
 
-        public BlackAndWhiteColorizer()
+        internal BlackAndWhiteColorizer()
             : base(false)
         {
         }
