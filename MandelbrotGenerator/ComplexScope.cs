@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Numerics;
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
 
 namespace MandelbrotGenerator
 {
@@ -13,6 +14,9 @@ namespace MandelbrotGenerator
     /// </summary>
     public sealed class ComplexScope : IEquatable<ComplexScope>, IFormattable
     {
+        #region Constants
+        static readonly ArgumentException invalidScopeException = new ArgumentException("The specified scope coordinates are invalid. They must define a non-empty positive finite rectangle in the complex plane.");
+        #endregion
         #region Static properties
         /// <summary>
         /// The default scope for the Mandelbrot image creation. Ranging
@@ -59,10 +63,18 @@ namespace MandelbrotGenerator
         /// the respective part of <paramref name="upperRight"/>.</exception>
         public ComplexScope(Complex lowerLeft, Complex upperRight)
         {
-            if (lowerLeft.Real >= upperRight.Real || lowerLeft.Imaginary >= upperRight.Imaginary)
-                throw new ArgumentException("The specified scope coordinates are invalid. They must define a non-empty positive rectangle in the complex plane.");
+            ValidateScope(lowerLeft, upperRight);
             LowerLeft = lowerLeft;
             UpperRight = upperRight;
+        }
+        static void ValidateScope(Complex lowerLeft, Complex upperRight)
+        {
+            if (double.IsNaN(lowerLeft.Real) || double.IsNaN(lowerLeft.Imaginary) ||
+                double.IsNaN(upperRight.Real) || double.IsNaN(upperRight.Imaginary) || 
+                double.IsInfinity(lowerLeft.Real) || double.IsInfinity(lowerLeft.Imaginary) ||
+                double.IsInfinity(upperRight.Real) || double.IsInfinity(upperRight.Imaginary) ||
+                lowerLeft.Real >= upperRight.Real || lowerLeft.Imaginary >= upperRight.Imaginary)
+                throw invalidScopeException;
         }
         /// <summary>
         /// Deconstructs this <see cref="ComplexScope"/> into to tuples representing

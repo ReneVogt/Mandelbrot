@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -16,15 +17,25 @@ namespace MandelbrotGenerator
     /// </summary>
     public sealed class MandelbrotBitmapGenerator : IDisposable
     {
+        #region Constants
+        static readonly ArgumentNullException colorizerNullException = new ArgumentNullException("colorizer");
+        static readonly ArgumentNullException scopeNullException = new ArgumentNullException("scope");
+        static readonly ArgumentException invalidResolutionException =
+            new ArgumentException("The resolution must have positive width and height!", "resolution");
+        static readonly ArgumentException implementationNotPreciseEnoughException = new ArgumentException("The desired scope and resolution cannot be calculated precisely enough by the current implementation.");
+        #endregion
+
         readonly int maxDegreeOfParallelism, maximumNumberOfIterations;
         readonly MandelbrotColorizer colorizer;
         readonly ComplexScope scope;
         readonly Size resolution;
-        readonly int pixels;
+        readonly (Point pixel, int index, Complex c)[] pixelSource;
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         int started, disposed;
         int iteratingProgress, colorizingProgress;
+
+        int PixelCount => pixelSource.Length;
 
         CancellationToken CancellationToken => cancellationTokenSource.Token;
 
@@ -35,7 +46,7 @@ namespace MandelbrotGenerator
         {
             get
             {
-                int c = pixels, ip = iteratingProgress, cp = colorizingProgress;
+                int c = PixelCount, ip = iteratingProgress, cp = colorizingProgress;
                 if (c <= 0) return 0;
                 if (!colorizer.UsePostCalculationColorization) return ip * 100 / c;
                 if (cp <= 0)
@@ -60,18 +71,36 @@ namespace MandelbrotGenerator
         /// <exception cref="ArgumentException"><paramref name="resolution"/> has zero or negative values, or the <paramref name="scope"/> is too small to be analyzed by this implementation.</exception>
         public MandelbrotBitmapGenerator(MandelbrotColorizer colorizer, Size resolution, ComplexScope scope, int maximumNumberOfIterations, int maxDegreeOfParallelism = -1)
         {
-            this.colorizer = colorizer ?? throw new ArgumentNullException(nameof(colorizer));
-            this.scope = scope ?? throw new ArgumentNullException(nameof(scope));
+            this.colorizer = colorizer ?? throw colorizerNullException;
+            this.scope = scope ?? throw scopeNullException;
 
             if (resolution.Width <= 0 || resolution.Height <= 0)
-                throw new ArgumentException("The resolution must have positive width and height!", nameof(resolution));
+                throw invalidResolutionException;
 
-            if (scope.Real < resolution.Width * double.Epsilon ||
-                scope.Imaginary <= resolution.Height * double.Epsilon)
-                throw new ArgumentException("The desired scope and resolution cannot be calculated precisely enough by the current implementation.");
+            var reals = Enumerable.Range(0, resolution.Width)
+                                  .Select(x => scope.LowerLeft.Real + x * scope.Real / resolution.Width)
+                                  .ToArray();
+            var checkSet = new HashSet<double>();
+            if (!reals.All(checkSet.Add))
+                throw implementationNotPreciseEnoughException;
+            
+            var imaginaries = Enumerable.Range(0, resolution.Height)
+                                  .Select(y => scope.UpperRight.Imaginary - y * scope.Imaginary / resolution.Height)
+                                  .ToArray();
+            checkSet.Clear();
+            if (!imaginaries.All(checkSet.Add))
+                throw implementationNotPreciseEnoughException;
+
+            pixelSource = (from y in Enumerable.Range(0, resolution.Height)
+                               from x in Enumerable.Range(0, resolution.Width)
+                               select (
+                                          pixel: new Point(x, y), 
+                                          index: y * resolution.Width + x, 
+                                          c: new Complex(reals[x], imaginaries[y])
+                                          )
+                              ).ToArray();
 
             this.resolution = resolution;
-            pixels = resolution.Height * resolution.Width;
             this.scope = scope;
             this.maximumNumberOfIterations = maximumNumberOfIterations;
             this.maxDegreeOfParallelism = maxDegreeOfParallelism;
@@ -125,15 +154,6 @@ namespace MandelbrotGenerator
         }
         Bitmap CreateBitmapInternal()
         {
-            var (minr, mini, maxr, maxi) = scope;
-            int height = resolution.Height, width = resolution.Width;
-            double dx = maxr - minr;
-            double dy = maxi - mini;
-
-            var pixelSource =(from y in Enumerable.Range(0, height)
-                               from x in Enumerable.Range(0, width)
-                               select new Point(x, y)).ToArray();
-
             var options = new ParallelOptions
             {
                 CancellationToken = CancellationToken,
@@ -144,42 +164,40 @@ namespace MandelbrotGenerator
 
             object? userState = colorizer.Initialize(resolution, scope, maxIterations);
 
-            Color[] colors = new Color[pixels];
+            Color[] colors = new Color[PixelCount];
             if (colorizer.UsePostCalculationColorization)
             {
-                IteratedPoint[] iteratedPoints = new IteratedPoint[pixels];
+                IteratedPoint[] iteratedPoints = new IteratedPoint[PixelCount];
 
-                Parallel.ForEach(pixelSource, options, pixel =>
+                Parallel.ForEach(pixelSource, options, p =>
                 {
-                    iteratedPoints[pixel.Y * width + pixel.X] = IteratedPoint.Iterate(
-                        new Complex(minr + pixel.X * dx / width, maxi - pixel.Y * dy / height), maxIterations, CancellationToken);
+                    iteratedPoints[p.index] = IteratedPoint.Iterate(p.c, maxIterations, CancellationToken);
                     Interlocked.Increment(ref iteratingProgress);
                 });
                 userState = colorizer.Initialize(iteratedPoints, userState);
-                Parallel.ForEach(pixelSource, options, pixel =>
+                Parallel.ForEach(pixelSource, options, p =>
                 {
-                    int index = pixel.Y * width + pixel.X;
-                    var iteratedPoint = iteratedPoints[index];
-                    colors[index] = iteratedPoint.Set
+                    var iteratedPoint = iteratedPoints[p.index];
+                    colors[p.index] = iteratedPoint.Set
                                         ? colorizer.SetColor
-                                        : colorizer.GetColor(pixel, iteratedPoint, userState);
+                                        : colorizer.GetColor(p.pixel, iteratedPoint, userState);
                     Interlocked.Increment(ref colorizingProgress);
                 });
             }
             else
             {
-                Parallel.ForEach(pixelSource, options, pixel =>
+                Parallel.ForEach(pixelSource, options, p =>
                 {
-                    var m = IteratedPoint.Iterate(new Complex(minr + pixel.X * dx / width, maxi - pixel.Y * dy / height), maxIterations,
-                                                  CancellationToken);
-                    colors[pixel.Y * width + pixel.X] = m.Set ? colorizer.SetColor :
-                        colorizer.GetColor(pixel, m, userState);
+                    var iteratedPoint = IteratedPoint.Iterate(p.c, maxIterations, CancellationToken);
+                    colors[p.index] = iteratedPoint.Set ? colorizer.SetColor :
+                        colorizer.GetColor(p.pixel, iteratedPoint, userState);
                     Interlocked.Increment(ref iteratingProgress);
                 });
             }
 
-            var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            var lockBits = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            var bitmap = new Bitmap(resolution.Width, resolution.Height, PixelFormat.Format32bppArgb);
+            var lockBits = bitmap.LockBits(new Rectangle(0, 0, resolution.Width, resolution.Height), ImageLockMode.WriteOnly,
+                                           PixelFormat.Format32bppArgb);
             for (int i = 0; i < colors.Length; i++)
                 Marshal.WriteInt32(lockBits.Scan0, i * 4, colors[i].ToArgb());
             bitmap.UnlockBits(lockBits);
