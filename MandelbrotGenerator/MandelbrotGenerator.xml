@@ -144,5 +144,58 @@
             The number of iterations calculated to this point.
             </summary>
         </member>
+        <member name="T:MandelbrotGenerator.MandelbrotBitmapGenerator">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Bitmap"/> with the given resolution of
+            the given section of the Mandelbrot set in the complex plane.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.MandelbrotBitmapGenerator.Progress">
+            <summary>
+            Gets a value between 0 and 100 indicating the calculation progress in percent.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.MandelbrotBitmapGenerator.IsCancelled">
+            <summary>
+            Gets a value indicating whether the calculation has been cancelled.
+            </summary>
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotBitmapGenerator.#ctor(MandelbrotGenerator.Colorizer.MandelbrotColorizer,System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32,System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/>.
+            </summary>
+            <param name="colorizer">The <see cref="T:MandelbrotGenerator.Colorizer.MandelbrotColorizer"/> to use to colorize the calculation results for the bitmap.</param>
+            <param name="resolution">The resolution of the raster and final bitmap.</param>
+            <param name="scope">The scope in the complex plane to analyze.</param>
+            <param name="maximumNumberOfIterations">The maximum number of iterations after which an sequence can be considered convergent.</param>
+            <param name="maxDegreeOfParallelism">This value is used for the TPL via the <see cref="P:System.Threading.Tasks.ParallelOptions.MaxDegreeOfParallelism"/> property to control how the calculation is parallelized.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="colorizer"/> or <paramref name="scope"/> are <c>null</c>!</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="resolution"/> has zero or negative values, or the <paramref name="scope"/> is too small to be analyzed by this implementation.</exception>
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotBitmapGenerator.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotBitmapGenerator.CreateBitmapParallel">
+            <summary>
+            Starts the calculation as a background task and returns the <see cref="T:System.Threading.Tasks.Task`1"/> that
+            can be used to <c>await</c> the resulting <see cref="T:System.Drawing.Bitmap"/>:
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> that can be used to wait for or <c>await</c> the resulting <see cref="T:System.Drawing.Bitmap"/>.</returns>
+            <exception cref="T:System.ObjectDisposedException">This instance has already been disposed of.</exception>
+            <exception cref="T:System.InvalidOperationException">This instance has already been used to generate a bitmap. An instance of <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/> can only be used once.</exception>
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotBitmapGenerator.CreateBitmap">
+            <summary>
+            Performs the calculation and returns the generated <see cref="T:System.Drawing.Bitmap"/>.
+            </summary>
+            <returns>The generated <see cref="T:System.Drawing.Bitmap"/> representing an approximation of the Mandelbrot set in the given scope and using the specified <see cref="T:MandelbrotGenerator.Colorizer.MandelbrotColorizer"/>.</returns>
+            <exception cref="T:System.ObjectDisposedException">This instance has already been disposed of.</exception>
+            <exception cref="T:System.InvalidOperationException">This instance has already been used to generate a bitmap. An instance of <see cref="T:MandelbrotGenerator.MandelbrotBitmapGenerator"/> can only be used once.</exception>
+        </member>
+        <member name="M:MandelbrotGenerator.MandelbrotBitmapGenerator.Cancel">
+            <summary>
+            Cancels a running calculation.
+            </summary>
+        </member>
     </members>
 </doc>

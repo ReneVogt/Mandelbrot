@@ -88,6 +88,7 @@
     <Compile Include="MandelbrotForm.Designer.cs">
       <DependentUpon>MandelbrotForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SavedScopes.cs" />
     <EmbeddedResource Include="MandelbrotForm.resx">
       <DependentUpon>MandelbrotForm.cs</DependentUpon>
     </EmbeddedResource>

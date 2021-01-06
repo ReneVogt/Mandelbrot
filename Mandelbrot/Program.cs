@@ -18,6 +18,9 @@ namespace Mandelbrot
                 Settings.Default.Upgraded = true;
                 Settings.Default.Save();
             }
+
+            Settings.Default.SavedScopes ??= new SavedScopes();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MandelbrotForm());

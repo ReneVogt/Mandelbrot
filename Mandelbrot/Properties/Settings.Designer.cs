@@ -70,5 +70,16 @@ namespace Mandelbrot.Properties {
                 this["Upgraded"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::Mandelbrot.SavedScopes SavedScopes {
+            get {
+                return ((global::Mandelbrot.SavedScopes)(this["SavedScopes"]));
+            }
+            set {
+                this["SavedScopes"] = value;
+            }
+        }
     }
 }

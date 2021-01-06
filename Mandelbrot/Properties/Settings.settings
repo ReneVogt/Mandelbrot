@@ -14,5 +14,8 @@
     <Setting Name="Upgraded" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="SavedScopes" Type="Mandelbrot.SavedScopes" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

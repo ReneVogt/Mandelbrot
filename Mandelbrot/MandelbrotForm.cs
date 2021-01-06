@@ -68,6 +68,7 @@ namespace Mandelbrot
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            Text += $" v{Application.ProductVersion}";
             controlForm.Location = PointToScreen(new Point((Width - controlForm.Width) / 2, (Height - controlForm.Height) / 2));
             controlForm.Show(this);
         }
