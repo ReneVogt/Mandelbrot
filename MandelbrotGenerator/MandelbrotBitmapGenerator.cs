@@ -125,10 +125,10 @@ namespace MandelbrotGenerator
         }
         Bitmap CreateBitmapInternal()
         {
-            var ((realMin, imaginaryMin), (realMax, imaginaryMax)) = scope;
+            var (minr, mini, maxr, maxi) = scope;
             int height = resolution.Height, width = resolution.Width;
-            double dx = realMax - realMin;
-            double dy = imaginaryMax - imaginaryMin;
+            double dx = maxr - minr;
+            double dy = maxi - mini;
 
             var pixelSource =(from y in Enumerable.Range(0, height)
                                from x in Enumerable.Range(0, width)
@@ -152,7 +152,7 @@ namespace MandelbrotGenerator
                 Parallel.ForEach(pixelSource, options, pixel =>
                 {
                     iteratedPoints[pixel.Y * width + pixel.X] = IteratedPoint.Iterate(
-                        new Complex(realMin + pixel.X * dx / width, imaginaryMax - pixel.Y * dy / height), maxIterations, CancellationToken);
+                        new Complex(minr + pixel.X * dx / width, maxi - pixel.Y * dy / height), maxIterations, CancellationToken);
                     Interlocked.Increment(ref iteratingProgress);
                 });
                 userState = colorizer.Initialize(iteratedPoints, userState);
@@ -170,7 +170,7 @@ namespace MandelbrotGenerator
             {
                 Parallel.ForEach(pixelSource, options, pixel =>
                 {
-                    var m = IteratedPoint.Iterate(new Complex(realMin + pixel.X * dx / width, imaginaryMax - pixel.Y * dy / height), maxIterations,
+                    var m = IteratedPoint.Iterate(new Complex(minr + pixel.X * dx / width, maxi - pixel.Y * dy / height), maxIterations,
                                                   CancellationToken);
                     colors[pixel.Y * width + pixel.X] = m.Set ? colorizer.SetColor :
                         colorizer.GetColor(pixel, m, userState);

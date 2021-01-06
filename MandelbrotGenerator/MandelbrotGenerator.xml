@@ -98,17 +98,126 @@
             <param name="value">The value (intensity) of the color (0 to 1).</param>
             <returns>The <see cref="T:System.Drawing.Color"/> representing the hsv color values.</returns>
         </member>
+        <member name="T:MandelbrotGenerator.ComplexScope">
+            <summary>
+            Represents a rectangular scope in the complex plain, defined
+            by its "lower left corner" (<see cref="P:MandelbrotGenerator.ComplexScope.LowerLeft"/>) (that is,
+            the point of the rectangle with the smallest real and imaginary values),
+            and its "upper right corner" (<see cref="P:MandelbrotGenerator.ComplexScope.UpperRight"/>) (that is,
+            the point of the rectangle with the greatest real and imaginary values).
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.ComplexScope.Mandelbrot">
+            <summary>
+            The default scope for the Mandelbrot image creation. Ranging
+            from <c>-2 - 2i</c> to <c>2 + 2i</c>.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.ComplexScope.LowerLeft">
+            <summary>
+            Gets the "lower left corner" of this complex rectangle. This is the
+            point of the rectangle with the smallest real and imaginary values.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.ComplexScope.UpperRight">
+            <summary>
+            Gets the "upper right corner" of this complex rectangle. This is the
+            point of the rectangle with the greates real and imaginary values.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.ComplexScope.Real">
+            <summary>
+            Gets the "width" of this complex rectangle. The difference of the
+            real parts of <see cref="P:MandelbrotGenerator.ComplexScope.UpperRight"/> and <see cref="P:MandelbrotGenerator.ComplexScope.LowerLeft"/>.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.ComplexScope.Imaginary">
+            <summary>
+            Gets the "height" of this complex rectangle. The difference of the
+            imaginary parts of <see cref="P:MandelbrotGenerator.ComplexScope.UpperRight"/> and <see cref="P:MandelbrotGenerator.ComplexScope.LowerLeft"/>.
+            </summary>
+        </member>
+        <member name="M:MandelbrotGenerator.ComplexScope.#ctor(System.Numerics.Complex,System.Numerics.Complex)">
+            <summary>
+            Creates a new <see cref="T:MandelbrotGenerator.ComplexScope"/> instance from the given coordinates.
+            The coordinates must specify a non-empty positive rectangle in the complex plane.
+            The <see cref="P:System.Numerics.Complex.Real"/> and <see cref="P:System.Numerics.Complex.Imaginary"/> values of
+            <paramref name="lowerLeft"/> must be smaller than the respective values of
+            <paramref name="upperRight"/>.
+            </summary>
+            <param name="lowerLeft">The "lower left corner" of the scope. This is the
+            point of the rectangle with the smallest real and imaginary values.</param>
+            <param name="upperRight">The "upper right corner" of the scope. This is the
+            point of the rectangle with the greatest real and imaginary values.</param>
+            <exception cref="T:System.ArgumentException">The scope coordinates are invalid. The
+            real or imaginary part of <paramref name="lowerLeft"/> are not smaller than
+            the respective part of <paramref name="upperRight"/>.</exception>
+        </member>
+        <member name="M:MandelbrotGenerator.ComplexScope.Deconstruct(System.Double@,System.Double@,System.Double@,System.Double@)">
+            <summary>
+            Deconstructs this <see cref="T:MandelbrotGenerator.ComplexScope"/> into to tuples representing
+            the lower left and upper right corners. Each tuple consists of two
+            <see cref="T:System.Double"/> values representing the real and imaginary parts.
+            </summary>
+            <param name="minr">The real part of the lower left corner.</param>
+            <param name="mini">The imaginary part of the lower left corner.</param>
+            <param name="maxr">The real part of the upper right corner.</param>
+            <param name="maxi">The imaginary part of the upper right corner.</param>
+        </member>
+        <member name="M:MandelbrotGenerator.ComplexScope.Equals(MandelbrotGenerator.ComplexScope)">
+            <summary>
+            Compares two <see cref="T:MandelbrotGenerator.ComplexScope"/> instances for equality.
+            </summary>
+            <param name="other">The <see cref="T:MandelbrotGenerator.ComplexScope"/> to test for equality with this instance.</param>
+            <returns><c>true</c> if <paramref name="other"/> is not <c>null</c> and has equal <see cref="P:MandelbrotGenerator.ComplexScope.LowerLeft"/> and <see cref="P:MandelbrotGenerator.ComplexScope.UpperRight"/> values.</returns>
+        </member>
         <member name="M:MandelbrotGenerator.ComplexScope.Equals(System.Object)">
             <inheritdoc />
         </member>
         <member name="M:MandelbrotGenerator.ComplexScope.GetHashCode">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.ComplexScope.ToString">
-            <inheritdoc />
+        <member name="M:MandelbrotGenerator.ComplexScope.FromValueTuple(System.ValueTuple{System.ValueTuple{System.Double,System.Double},System.ValueTuple{System.Double,System.Double}})">
+            <summary>
+            Creates a <see cref="T:MandelbrotGenerator.ComplexScope"/> instance from two tuples representing
+            the lower left and upper right corners of the scope. Each tuple needs to
+            consist of two <see cref="T:System.Double"/> values representing the real and
+            imaginary parts.
+            </summary>
+            <returns>A new <see cref="T:MandelbrotGenerator.ComplexScope"/> instance representing the scope defined
+            by the given tuples.</returns>
+            <exception cref="T:System.ArgumentException">The scope coordinates are invalid. The
+            real or imaginary part of the first tuple is not smaller than
+            the respective part of the second tuple.</exception>
         </member>
-        <member name="M:MandelbrotGenerator.ComplexScope.ToString(System.String,System.IFormatProvider)">
-            <inheritdoc />
+        <member name="M:MandelbrotGenerator.ComplexScope.op_Implicit(System.ValueTuple{System.ValueTuple{System.Double,System.Double},System.ValueTuple{System.Double,System.Double}})~MandelbrotGenerator.ComplexScope">
+            <summary>
+            Creates a <see cref="T:MandelbrotGenerator.ComplexScope"/> instance from two tuples representing
+            the lower left and upper right corners of the scope. Each tuple needs to
+            consist of two <see cref="T:System.Double"/> values representing the real and
+            imaginary parts.
+            </summary>
+            <returns>A new <see cref="T:MandelbrotGenerator.ComplexScope"/> instance representing the scope defined
+            by the given tuples.</returns>
+            <exception cref="T:System.ArgumentException">The scope coordinates are invalid. The
+            real or imaginary part of the first tuple is not smaller than
+            the respective part of the second tuple.</exception>
+        </member>
+        <member name="M:MandelbrotGenerator.ComplexScope.op_Equality(MandelbrotGenerator.ComplexScope,MandelbrotGenerator.ComplexScope)">
+            <summary>
+            Compares two <see cref="T:MandelbrotGenerator.ComplexScope"/> instances for equality.
+            </summary>
+            <param name="left">Left operand.</param>
+            <param name="right">Right operand.</param>
+            <returns><c>true</c> if either <paramref name="left"/> and <paramref name="right"/> are <c>null</c> or both have equal <see cref="P:MandelbrotGenerator.ComplexScope.LowerLeft"/> and <see cref="P:MandelbrotGenerator.ComplexScope.UpperRight"/> values.</returns>
+        </member>
+        <member name="M:MandelbrotGenerator.ComplexScope.op_Inequality(MandelbrotGenerator.ComplexScope,MandelbrotGenerator.ComplexScope)">
+            <summary>
+            Compares two <see cref="T:MandelbrotGenerator.ComplexScope"/> instances for inequality.
+            </summary>
+            <param name="left">Left operand.</param>
+            <param name="right">Right operand.</param>
+            <returns><c>true</c> if either only <paramref name="left"/> or <paramref name="right"/> is <c>null</c> or both have inequal <see cref="P:MandelbrotGenerator.ComplexScope.LowerLeft"/> and <see cref="P:MandelbrotGenerator.ComplexScope.UpperRight"/> values.</returns>
         </member>
         <member name="T:MandelbrotGenerator.IteratedPoint">
             <summary>
