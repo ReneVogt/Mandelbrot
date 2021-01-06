@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,10 +14,9 @@ namespace MandelbrotGenerator
     {
         readonly int maxDegreeOfParallelism, maximumNumberOfIterations;
         readonly MandelbrotColorizer colorizer;
-        readonly MandelbrotArea area;
+        readonly ComplexScope scope;
         readonly Size resolution;
         readonly int pixels;
-        readonly TaskCompletionSource<Bitmap> taskCompletionSource = new TaskCompletionSource<Bitmap>();
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         int started;
@@ -38,23 +38,23 @@ namespace MandelbrotGenerator
         }
         public bool IsCancelled => cancellationTokenSource.IsCancellationRequested;
 
-        public MandelbrotBitmapGenerator(MandelbrotColorizer colorizer, Size resolution, MandelbrotArea area, int maximumNumberOfIterations, int maxDegreeOfParallelism = -1)
+        public MandelbrotBitmapGenerator(MandelbrotColorizer colorizer, Size resolution, ComplexScope scope, int maximumNumberOfIterations, int maxDegreeOfParallelism = -1)
         {
             this.colorizer = colorizer ?? throw new ArgumentNullException(nameof(colorizer));
             if (resolution.Width <= 0 || resolution.Height <= 0)
                 throw new ArgumentException("The resolution must have positive width and height!", nameof(resolution));
 
-            var (realMin, imaginaryMin, realMax, imaginaryMax) = area;
+            var ((realMin, imaginaryMin), (realMax, imaginaryMax)) = scope;
             if (realMin >= realMax || imaginaryMin >= imaginaryMax)
-                throw new ArgumentException("The requested area is invalid!.", nameof(area));
+                throw new ArgumentException("The requested scope is invalid!.", nameof(scope));
 
             if (realMax - realMin < resolution.Width * double.Epsilon ||
                 imaginaryMax - imaginaryMin <= resolution.Height * double.Epsilon)
-                throw new ArgumentException("The desired area and resolution cannot be calculated precisely enough by the current implementation.");
+                throw new ArgumentException("The desired scope and resolution cannot be calculated precisely enough by the current implementation.");
 
             this.resolution = resolution;
             pixels = resolution.Height * resolution.Width;
-            this.area = area;
+            this.scope = scope;
             this.maximumNumberOfIterations = maximumNumberOfIterations;
             this.maxDegreeOfParallelism = maxDegreeOfParallelism;
         }
@@ -77,7 +77,7 @@ namespace MandelbrotGenerator
         }
         Bitmap CreateBitmapInternal()
         {
-            var (realMin, imaginaryMin, realMax, imaginaryMax) = area;
+            var ((realMin, imaginaryMin), (realMax, imaginaryMax)) = scope;
             int height = resolution.Height, width = resolution.Width;
             double dx = realMax - realMin;
             double dy = imaginaryMax - imaginaryMin;
@@ -94,18 +94,17 @@ namespace MandelbrotGenerator
             var maxIterations = maximumNumberOfIterations;
             iteratingProgress = colorizingProgress = 0;
 
-            object? userState = colorizer.Initialize(resolution, area, maxIterations);
+            object? userState = colorizer.Initialize(resolution, scope, maxIterations);
 
             Color[] colors = new Color[pixels];
             if (colorizer.UsePostCalculationColorization)
             {
-                MandelbrotPoint[] iteratedPoints = new MandelbrotPoint[pixels];
+                IteratedPoint[] iteratedPoints = new IteratedPoint[pixels];
 
                 Parallel.ForEach(pixelSource, options, pixel =>
                 {
-                    iteratedPoints[pixel.Y * width + pixel.X] = MandelbrotPoint.Calculate(realMin + pixel.X * dx / width,
-                                                                                          imaginaryMax - pixel.Y * dy / height, maxIterations,
-                                                                                          CancellationToken);
+                    iteratedPoints[pixel.Y * width + pixel.X] = IteratedPoint.Iterate(
+                        new Complex(realMin + pixel.X * dx / width, imaginaryMax - pixel.Y * dy / height), maxIterations, CancellationToken);
                     Interlocked.Increment(ref iteratingProgress);
                 });
                 userState = colorizer.Initialize(iteratedPoints, userState);
@@ -123,9 +122,8 @@ namespace MandelbrotGenerator
             {
                 Parallel.ForEach(pixelSource, options, pixel =>
                 {
-                    var m = MandelbrotPoint.Calculate(realMin + pixel.X * dx / width,
-                                                                                          imaginaryMax - pixel.Y * dy / height, maxIterations,
-                                                                                          CancellationToken);
+                    var m = IteratedPoint.Iterate(new Complex(realMin + pixel.X * dx / width, imaginaryMax - pixel.Y * dy / height), maxIterations,
+                                                  CancellationToken);
                     colors[pixel.Y * width + pixel.X] = m.Set ? colorizer.SetColor :
                         colorizer.GetColor(pixel, m, userState);
                     Interlocked.Increment(ref iteratingProgress);

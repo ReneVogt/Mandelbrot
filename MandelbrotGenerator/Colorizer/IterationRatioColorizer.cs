@@ -17,18 +17,18 @@ namespace MandelbrotGenerator.Colorizer
         public IterationRatioColorizer() : base(false) { }
 
         /// <inheritdoc />
-        public override object? Initialize(Size resolution, MandelbrotArea area, int maximumNumberOfIterations)
+        public override object Initialize(Size resolution, ComplexScope area, int maximumNumberOfIterations)
         {
             base.Initialize(resolution, area, maximumNumberOfIterations);
             return new UserState(maximumNumberOfIterations);
         }
         /// <inheritdoc />
-        public override Color GetColor(Point pixel, MandelbrotPoint iteratedPoint, object? userState)
+        public override Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState)
         {
             if (!(userState is UserState { MaximumNumberOfIterations: var maxIterations})) 
                         throw new ArgumentException($"{nameof(userState)} must be an instance of {nameof(UserState)}!", nameof(userState));
             if (iteratedPoint.Iterations <= 0) return SetColor;
-            double magnitudeImpact = Math.Min(1, Math.Log(iteratedPoint.SquaredMagnitude) / Math.Log(2) / 5);
+            double magnitudeImpact = Math.Min(1, Math.Log(iteratedPoint.Z.Magnitude) / Math.Log(2) / 3);
             double iterationIndex = iteratedPoint.Iterations - magnitudeImpact;
             double hue = 360d * Math.Pow(iterationIndex / maxIterations, Math.Pow(0.5, Math.Log10(maxIterations)));
             return ConvertHsvToRgb(hue, 1, 1);

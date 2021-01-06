@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Numerics;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,15 +17,15 @@ namespace Mandelbrot
     public partial class MandelbrotForm : FullscreenableForm
     {
         readonly ControlForm controlForm = new ControlForm();
-        readonly Stack<MandelbrotArea> rewindStack = new Stack<MandelbrotArea>(), forwardStack = new Stack<MandelbrotArea>();
+        readonly Stack<ComplexScope> rewindStack = new Stack<ComplexScope>(), forwardStack = new Stack<ComplexScope>();
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
         readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
         readonly Brush progressBackBrush = new SolidBrush(Color.FromArgb(96, Color.Black));
 
         int progressToDraw = -1;
         MandelbrotBitmapGenerator? currentGenerator;
-        MandelbrotArea currentArea;
-        Rectangle? mouseSelection;
+        ComplexScope currentScope;
+        Rectangle? mouseSelection, calculatingRect;
         Point? mouseStartingPoint;
 
         Size Pixels => pbView.Size;
@@ -47,9 +48,9 @@ namespace Mandelbrot
             typeof(Panel).InvokeMember(nameof(DoubleBuffered), BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null,
                                        pbView, new object[] {true});
 
-            currentArea = AdjustArea(MandelbrotArea.Default);
+            currentScope = AdjustScope(ComplexScope.Mandelbrot);
 
-            controlForm.RecalculateClicked += (sender, e) => _ = RunCalculationAsync(currentArea, UpdateStackButtons);
+            controlForm.RecalculateClicked += (sender, e) => _ = RunCalculationAsync(currentScope, UpdateStackButtons);
             controlForm.CancelClicked += (sender, e) =>
             {
                 currentGenerator?.Cancel();
@@ -134,18 +135,17 @@ namespace Mandelbrot
                 pbView.Invalidate();
             }
 
-            if (mouseSelection != null)
-                controlForm.SetCurrentSelection(GetMandelbrotAreaFromRect(mouseSelection.Value));
+            if (mouseSelection?.Height > 0 && mouseSelection?.Width > 0)
+                controlForm.SetCurrentSelection(GetScopeFromRect(mouseSelection.Value));
             else
-            {
-                var (r, i) = GetComplexFromPoint(e.Location);
-                controlForm.SetCurrentSelection((r, i, r, i));
-            }
+                controlForm.SetCurrentSelection(GetComplexFromPoint(e.Location));
         }
         private void pbView_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && mouseSelection.HasValue && mouseSelection.Value.Width > 0 && mouseSelection.Value.Height > 0)
-                _ = RunCalculationAsync(AdjustArea(GetMandelbrotAreaFromRect(mouseSelection.Value)), InsertToStack);
+            {
+                _ = RunCalculationAsync(AdjustScope(GetScopeFromRect(mouseSelection.Value)), InsertToStack);
+            }
 
             mouseSelection = null;
             mouseStartingPoint = null;
@@ -171,56 +171,22 @@ namespace Mandelbrot
         private void pbView_Paint(object sender, PaintEventArgs e)
         {
             if (CurrentImage == null && currentGenerator?.IsCancelled != false)
-                _ = RunCalculationAsync(currentArea, UpdateStackButtons);
+                _ = RunCalculationAsync(currentScope, UpdateStackButtons);
 
             if (mouseSelection != null)
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
 
+            if (calculatingRect != null)
+            {
+                using var brush = new SolidBrush(Color.LightGreen);
+                //using var brush = new LinearGradientBrush(calculatingRect.Value, Color.White, Color.Black, LinearGradientMode.BackwardDiagonal);
+                using var pen = new Pen(brush, 3);
+                e.Graphics.DrawRectangle(pen, calculatingRect.Value);
+            }
+
             if (progressToDraw > -1)
                 DrawProgress(e.Graphics);
         }
-        #endregion
-        #region Calculation
-        async Task RunCalculationAsync(MandelbrotArea area, Action stackAction)
-        {
-            currentGenerator?.Cancel();
-            currentGenerator = null;
-            var pixels = Pixels;
-            MandelbrotBitmapGenerator? generator = null;
-            try
-            {
-
-                generator = currentGenerator =
-                                    new MandelbrotBitmapGenerator(controlForm.Colorizer, pixels, area, controlForm.MaximumNumberOfIterations);
-                Cursor = Cursors.AppStarting;
-                var bmp = await generator.CreateBitmapParallel();
-                if (generator.IsCancelled) return;
-
-                stackAction();
-                currentArea = area;
-                Cursor = Cursors.Default;
-                currentGenerator = null;
-                mouseSelection = null;
-                mouseStartingPoint = null;
-                controlForm.SetCurrentScope(area);
-                controlForm.SetCurrentSelection(area);
-                CurrentImage = bmp;
-            }
-            catch (OperationCanceledException) { }
-            catch (ArgumentException ae)
-            {
-                if (generator?.IsCancelled == true) return;
-                OnCalculationError(ae);
-            }
-        }
-        void OnCalculationError(Exception error)
-        {
-            Cursor = Cursors.Default;
-            currentGenerator = null;
-            MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        #endregion
-        #region Helper methods
         void DrawProgress(Graphics graphics)
         {
             var text = $"{progressToDraw}%";
@@ -234,63 +200,120 @@ namespace Mandelbrot
             graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progressToDraw);
             graphics.DrawString(text, progressFont, Brushes.White, textRect);
         }
-        MandelbrotArea AdjustArea(MandelbrotArea area)
+        #endregion
+        #region Calculation
+        async Task RunCalculationAsync(ComplexScope scope, Action stackAction)
         {
-            if (!controlForm.AdjustAxes) return area;
+            currentGenerator?.Cancel();
+            currentGenerator = null;
+            calculatingRect = null;
 
-            var (realMin, imaginaryMin, realMax, imaginaryMax) = area;
+            var pixels = Pixels;
+            MandelbrotBitmapGenerator? generator = null;
+            try
+            {
+
+                calculatingRect = GetRectFromScope(scope);
+                generator = currentGenerator =
+                                new MandelbrotBitmapGenerator(controlForm.Colorizer, pixels, scope, controlForm.MaximumNumberOfIterations);
+                Cursor = Cursors.AppStarting;
+                var bmp = await generator.CreateBitmapParallel();
+                if (generator.IsCancelled) return;
+
+                stackAction();
+                currentScope = scope;
+                Cursor = Cursors.Default;
+                currentGenerator = null;
+                mouseSelection = calculatingRect = null;
+                mouseStartingPoint = null;
+                controlForm.SetCurrentScope(scope);
+                controlForm.SetCurrentSelection(scope);
+                CurrentImage = bmp;
+            }
+            catch (OperationCanceledException) { }
+            catch (ArgumentException ae)
+            {
+                if (generator?.IsCancelled == true) return;
+                OnCalculationError(ae);
+            }
+        }
+        void OnCalculationError(Exception error)
+        {
+            Cursor = Cursors.Default;
+            currentGenerator = null;
+            calculatingRect = null;
+            MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        #endregion
+        #region Coordinate transformation
+        ComplexScope AdjustScope(ComplexScope scope)
+        {
+            if (!controlForm.AdjustAxes) return scope;
+
             var h = Pixels.Height;
             var w = Pixels.Width;
-            var dx = (realMax - realMin) / w;
-            var dy = (imaginaryMax - imaginaryMin) / h;
+            var dx = scope.Real / w;
+            var dy = scope.Imaginary / h;
+
             if (dx > dy)
             {
                 double d = 0.5 * dx * h;
-                double m = (imaginaryMax + imaginaryMin) / 2;
-                return (realMin, m - d, realMax, m + d);
+                double m = (scope.UpperRight.Imaginary + scope.LowerLeft.Imaginary) / 2;
+                return ((scope.LowerLeft.Real, m - d), (scope.UpperRight.Real, m + d));
             }
             
             if (dy > dx)
             {
                 double d = 0.5 * dy * w;
-                double m = (realMax + realMin) / 2;
-                return (m - d, imaginaryMin, m + d, imaginaryMax);
+                double m = (scope.UpperRight.Real + scope.LowerLeft.Real) / 2;
+                return ((m - d, scope.LowerLeft.Imaginary), (m + d, scope.UpperRight.Imaginary));
             }
 
-            return area;
+            return scope;
         }
-        MandelbrotArea GetMandelbrotAreaFromRect(Rectangle rect)
+        Rectangle GetRectFromScope(ComplexScope scope)
         {
-            (double rmin, double imax) = GetComplexFromPoint(rect.Location);
-            (double rmax, double imin) = GetComplexFromPoint(rect.Location + rect.Size);
-            return (rmin, imin, rmax, imax);
+            var dx = Pixels.Width / currentScope.Real;
+            var dy = Pixels.Height / currentScope.Imaginary;
+            var x = (int)((scope.LowerLeft.Real - currentScope.LowerLeft.Real) * dx);
+            var y = (int)((currentScope.UpperRight.Imaginary - scope.UpperRight.Imaginary) * dy);
+            var width = (int)(scope.Real * dx);
+            var height = (int)(scope.Imaginary * dy);
+            return new Rectangle(x, y, width, height);
         }
-        (double r, double i) GetComplexFromPoint(Point p) => (currentArea.RealMin + (currentArea.RealMax - currentArea.RealMin) * p.X / Pixels.Width,
-                                                                 currentArea.ImaginaryMax - (currentArea.ImaginaryMax - currentArea.ImaginaryMin) * p.Y / Pixels.Height);
-
+        ComplexScope GetScopeFromRect(Rectangle rect)
+        {
+            var upperLeft = GetComplexFromPoint(rect.Location);
+            var lowerRight = GetComplexFromPoint(rect.Location + rect.Size);
+            return ((upperLeft.Real, lowerRight.Imaginary), (lowerRight.Real, upperLeft.Imaginary));
+        }
+        Complex GetComplexFromPoint(Point p) => new Complex(currentScope.LowerLeft.Real + currentScope.Real * p.X / Pixels.Width,
+                                                            currentScope.UpperRight.Imaginary - currentScope.Imaginary * p.Y / Pixels.Height);
+        #endregion
+        #region ControlForm handlers
         void ReturnToTotalView()
         {
-            var area = AdjustArea(MandelbrotArea.Default);
-            if (area == currentArea) return;
-            _ = RunCalculationAsync(area, InsertToStack);
+            var scope = AdjustScope(ComplexScope.Mandelbrot);
+            if (scope == currentScope) return;
+            _ = RunCalculationAsync(scope, InsertToStack);
         }
         void AdjustAxes()
         {
-            var area = AdjustArea(currentArea);
-            if (area == currentArea) return;
-            _ = RunCalculationAsync(area, InsertToStack);
+            var scope = AdjustScope(currentScope);
+            if (scope == currentScope) return;
+            _ = RunCalculationAsync(scope, InsertToStack);
         }
         void GotoPreviousScope()
         {
             if (rewindStack.Count <= 0) return;
-            var area = rewindStack.Peek();
-            _ = RunCalculationAsync(area, OnPoppedPrevious);
+            var scope = rewindStack.Peek();
+            _ = RunCalculationAsync(scope, OnPoppedPrevious);
         }
         void GotoNextScope()
         {
             if (forwardStack.Count <= 0) return;
-            var area = forwardStack.Peek();
-            _ = RunCalculationAsync(area, OnPoppedNext);
+            var scope = forwardStack.Peek();
+            _ = RunCalculationAsync(scope, OnPoppedNext);
         }
         void SaveImage()
         {
@@ -326,24 +349,26 @@ namespace Mandelbrot
                 MessageBox.Show(this, $"Failed to save image: {e}", "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        #endregion
+        #region Stack actions
         void InsertToStack()
         {
-            if (rewindStack.Count == 0 || rewindStack.Peek() != currentArea)
-                rewindStack.Push(currentArea);
+            if (rewindStack.Count == 0 || rewindStack.Peek() != currentScope)
+                rewindStack.Push(currentScope);
             forwardStack.Clear();
             UpdateStackButtons();
         }
         void OnPoppedPrevious()
         {
-            if (forwardStack.Count == 0 || forwardStack.Peek() != currentArea)
-                forwardStack.Push(currentArea);
+            if (forwardStack.Count == 0 || forwardStack.Peek() != currentScope)
+                forwardStack.Push(currentScope);
             rewindStack.Pop();
             UpdateStackButtons();
         }
         void OnPoppedNext()
         {
-            if (rewindStack.Count == 0 || rewindStack.Peek() != currentArea)
-                rewindStack.Push(currentArea);
+            if (rewindStack.Count == 0 || rewindStack.Peek() != currentScope)
+                rewindStack.Push(currentScope);
             forwardStack.Pop();
             UpdateStackButtons();
         }

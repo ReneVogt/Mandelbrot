@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Numerics;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
 using MandelbrotGenerator;
@@ -94,15 +95,20 @@ namespace Mandelbrot
             }
             base.OnFormClosing(e);
         }
-        public void SetCurrentScope(MandelbrotArea area)
+        public void SetCurrentScope(ComplexScope scope)
         {
-            lbCurrentReal.Text = CreateAxisString(area.RealMin, area.RealMax);
-            lbCurrentImaginary.Text = CreateAxisString(area.ImaginaryMin, area.ImaginaryMax);
+            lbCurrentReal.Text = CreateAxisString(scope.LowerLeft.Real, scope.UpperRight.Real);
+            lbCurrentImaginary.Text = CreateAxisString(scope.LowerLeft.Imaginary, scope.UpperRight.Imaginary);
         }
-        public void SetCurrentSelection(MandelbrotArea area)
+        public void SetCurrentSelection(ComplexScope scope)
         {
-            lbSelectionReal.Text = CreateAxisString(area.RealMin, area.RealMax);
-            lbSelectionImaginary.Text = CreateAxisString(area.ImaginaryMin, area.ImaginaryMax);
+            lbSelectionReal.Text = CreateAxisString(scope.LowerLeft.Real, scope.UpperRight.Real);
+            lbSelectionImaginary.Text = CreateAxisString(scope.LowerLeft.Imaginary, scope.UpperRight.Imaginary);
+        }
+        public void SetCurrentSelection(Complex point)
+        {
+            lbSelectionReal.Text = point.Real.ToString("G20");
+            lbSelectionImaginary.Text = point.Imaginary.ToString("G20");
         }
         static string CreateAxisString(double min, double max) => min.Equals(max) ? FormatDouble(min) : $"{FormatDouble(min)} to {FormatDouble(max)}";
         static string FormatDouble(double d) =>

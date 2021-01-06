@@ -7,38 +7,72 @@
         <member name="P:MandelbrotGenerator.Colorizer.BlackAndWhiteColorizer.SetColor">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.Colorizer.BlackAndWhiteColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.MandelbrotPoint,System.Object)">
+        <member name="M:MandelbrotGenerator.Colorizer.BlackAndWhiteColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
             <inheritdoc />
         </member>
         <member name="P:MandelbrotGenerator.Colorizer.IterationModuloColorizer.SetColor">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.Colorizer.IterationModuloColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.MandelbrotPoint,System.Object)">
+        <member name="M:MandelbrotGenerator.Colorizer.IterationModuloColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
             <inheritdoc />
         </member>
         <member name="P:MandelbrotGenerator.Colorizer.IterationRatioColorizer.SetColor">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.MandelbrotArea,System.Int32)">
+        <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.Initialize(System.Drawing.Size,MandelbrotGenerator.ComplexScope,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.MandelbrotPoint,System.Object)">
+        <member name="M:MandelbrotGenerator.Colorizer.IterationRatioColorizer.GetColor(System.Drawing.Point,MandelbrotGenerator.IteratedPoint,System.Object)">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.MandelbrotArea.Equals(MandelbrotGenerator.MandelbrotArea)">
+        <member name="M:MandelbrotGenerator.ComplexScope.Equals(MandelbrotGenerator.ComplexScope)">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.MandelbrotArea.Equals(System.Object)">
+        <member name="M:MandelbrotGenerator.ComplexScope.Equals(System.Object)">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.MandelbrotArea.GetHashCode">
+        <member name="M:MandelbrotGenerator.ComplexScope.GetHashCode">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.MandelbrotArea.ToString">
+        <member name="M:MandelbrotGenerator.ComplexScope.ToString">
             <inheritdoc />
         </member>
-        <member name="M:MandelbrotGenerator.MandelbrotArea.ToString(System.String,System.IFormatProvider)">
+        <member name="M:MandelbrotGenerator.ComplexScope.ToString(System.String,System.IFormatProvider)">
             <inheritdoc />
+        </member>
+        <member name="T:MandelbrotGenerator.IteratedPoint">
+            <summary>
+            Represents the element in the sequence <c>z[n+1] = z[n]*z[n] + c</c>
+            of a given <see cref="T:System.Numerics.Complex"/> number <c>c</c> and <c>z[0] = 0</c>
+            after <see cref="P:MandelbrotGenerator.IteratedPoint.Iterations"/> iterations.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.IteratedPoint.C">
+            <summary>
+            The seed of the sequence. This is the point in the complex plane for
+            which the sequence's behaviour determines wether it belongs to the
+            Mandelbrot set or not.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.IteratedPoint.Z">
+            <summary>
+            The result of the iterations. This is the <see cref="P:MandelbrotGenerator.IteratedPoint.Iterations"/>th element in
+            the sequence. If its <see cref="P:System.Numerics.Complex.Magnitude"/> is greater than 2, the sequence diverges and <see cref="P:MandelbrotGenerator.IteratedPoint.C"/>
+            does not belong to the Mandelbrot set. If it is less than or equal to 2, the sequence did not escape after <see cref="P:MandelbrotGenerator.IteratedPoint.Iterations"/> iterations.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.IteratedPoint.Set">
+            <summary>
+            Gets a value that indicates wether <see cref="P:MandelbrotGenerator.IteratedPoint.C"/> belongs to the Mandelbrot set.
+            If the <see cref="P:System.Numerics.Complex.Magnitude"/> of <see cref="P:MandelbrotGenerator.IteratedPoint.Z"/> is greater than 2, <see cref="P:MandelbrotGenerator.IteratedPoint.C"/>
+            does not belong to the set and <c>false</c> is returned. If it is less than or equal to 2, <see cref="P:MandelbrotGenerator.IteratedPoint.C"/>
+            is assumed to belong to the set and <c>true</c> is returned.
+            </summary>
+        </member>
+        <member name="P:MandelbrotGenerator.IteratedPoint.Iterations">
+            <summary>
+            The number of iterations calculated to this point.
+            </summary>
         </member>
     </members>
 </doc>

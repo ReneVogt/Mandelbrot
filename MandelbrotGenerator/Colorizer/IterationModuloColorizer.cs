@@ -11,10 +11,10 @@ namespace MandelbrotGenerator.Colorizer
         public IterationModuloColorizer() : base(false){}
 
         /// <inheritdoc />
-        public override Color GetColor(Point pixel, MandelbrotPoint iteratedPoint, object? userState)
+        public override Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState)
         {
             if (iteratedPoint.Iterations <= 0) return SetColor;
-            double magnitudeImpact = Math.Min(1, Math.Log(iteratedPoint.SquaredMagnitude) / Math.Log(2) / 5);
+            double magnitudeImpact = Math.Min(1, Math.Log(iteratedPoint.Z.Magnitude) / Math.Log(2) / 3);
             double hue = iteratedPoint.Iterations - magnitudeImpact;
             while (hue < 0) hue += 360;
             if (hue > 360)

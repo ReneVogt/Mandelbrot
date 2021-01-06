@@ -13,6 +13,6 @@ namespace MandelbrotGenerator.Colorizer
         }
 
         /// <inheritdoc />
-        public override Color GetColor(Point pixel, MandelbrotPoint iteratedPoint, object? userState) => iteratedPoint.Iterations == 0 ? Color.Black : Color.White;
+        public override Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState) => iteratedPoint.Iterations == 0 ? Color.Black : Color.White;
     }
 }

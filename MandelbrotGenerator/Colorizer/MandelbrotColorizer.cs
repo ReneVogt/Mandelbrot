@@ -14,15 +14,15 @@ namespace MandelbrotGenerator.Colorizer
 
         protected MandelbrotColorizer(bool usePostCalculationColorization) => UsePostCalculationColorization = usePostCalculationColorization;
 
-        public virtual object? Initialize(Size resolution, MandelbrotArea area, int maximumNumberOfIterations)
+        public virtual object? Initialize(Size resolution, ComplexScope area, int maximumNumberOfIterations)
         {
             return null;
         }
-        public virtual object? Initialize(MandelbrotPoint[] iteratedPoints, object? userState)
+        public virtual object? Initialize(IteratedPoint[] iteratedPoints, object? userState)
         {
             return null;
         }
-        public abstract Color GetColor(Point pixel, MandelbrotPoint iteratedPoint, object? userState);
+        public abstract Color GetColor(Point pixel, IteratedPoint iteratedPoint, object? userState);
         protected static Color ConvertHsvToRgb(double hue, double saturation, double value)
         {
             int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
