@@ -14,9 +14,8 @@ namespace Mandelbrot
     public partial class ControlForm : Form
     {
         readonly CalculationSettingsViewModel calculationSettings;
-        bool calculationRunning;
-
-        public event EventHandler? RecalculateClicked;
+        
+        public event EventHandler? RecalculationRequested;
         public event EventHandler? CancelClicked;
         public event EventHandler? AdjustClicked;
         public event EventHandler? TotalClicked;
@@ -25,12 +24,8 @@ namespace Mandelbrot
         public event EventHandler? FullscreenChanged;
         public event EventHandler? SaveClicked;
 
-        public int MaximumNumberOfIterations => calculationSettings.MaximumNumberOfIterations;
-        public MandelbrotColorizer Colorizer => calculationSettings.Colorizer switch
-        {
-            Colorizers.IterationModulo => MandelbrotColorizer.IterationModuloColorizer,
-            Colorizers.IterationRatio => MandelbrotColorizer.IterationRatioColorizer,
-            _ => MandelbrotColorizer.BlackAndWhite};
+        public int MaximumNumberOfIterations { get; private set; }
+        public MandelbrotColorizer Colorizer { get; private set; }
         public bool CanGotoPrevious
         {
             get => btPrevioius.Enabled;
@@ -55,26 +50,18 @@ namespace Mandelbrot
         public ControlForm()
         {
             InitializeComponent();
-            
+
+            MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
+            Colorizer = GetColorizer((Colorizers)Settings.Default.Colorizer);
             calculationSettings = new CalculationSettingsViewModel
             {
-                MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations,
+                MaximumNumberOfIterations = MaximumNumberOfIterations,
                 Colorizer = (Colorizers)Settings.Default.Colorizer
             };
             pgCalculationSettings.SelectedObject = calculationSettings;
-
-            cmbColorizer.SelectedIndex = 0;
-            cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
-            try
-            {
-                cmbColorizer.SelectedIndex = Settings.Default.Colorizer;
-            }
-            catch(ArgumentException){}
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            Settings.Default.MaximumNumberOfIterations = MaximumNumberOfIterations;
-            Settings.Default.Colorizer = cmbColorizer.SelectedIndex;
             Settings.Default.AdjustAxesd = cbAdjustAxes.Checked;
             Settings.Default.Save();
             if (e.CloseReason == CloseReason.UserClosing)
@@ -87,17 +74,18 @@ namespace Mandelbrot
         #region Calculation proress
         public void SetProgress(int progress, TimeSpan? elapsed = null)
         {
-            btCancel.Enabled = calculationRunning = progress >= 0;
-            if (calculationRunning)
+            if (progress >= 0)
             {
+                btCancel.Enabled = true;
                 Cursor = Cursors.AppStarting;
                 pbProgress.Value = progress;
                 lbProgress.Text = $"{progress}%";
             }
             else
             {
+                btCancel.Enabled = false;
                 Cursor = Cursors.Default;
-                lbProgress.Text = String.Empty;
+                lbProgress.Text = string.Empty;
                 pbProgress.Value = 0;
             }
 
@@ -112,10 +100,32 @@ namespace Mandelbrot
         #region Calculation settings
         private void btApplyCalculationSettings_Click(object sender, EventArgs e)
         {
+            Settings.Default.Colorizer = (int)calculationSettings.Colorizer;
+            Colorizer = GetColorizer(calculationSettings.Colorizer);
+            MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations = calculationSettings.MaximumNumberOfIterations;
+            Settings.Default.Save();
+            btApplyCalculationSettings.Enabled = btResetCalculationSettings.Enabled = false;
+            RecalculationRequested?.Invoke(this, e);
         }
         private void btResetCalculationSettings_Click(object sender, EventArgs e)
         {
+            calculationSettings.Colorizer = (Colorizers)Settings.Default.Colorizer;
+            calculationSettings.MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
+            btApplyCalculationSettings.Enabled = btResetCalculationSettings.Enabled = false;
+            pgCalculationSettings.Refresh();
         }
+        private void pgCalculationSettings_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            btResetCalculationSettings.Enabled = btApplyCalculationSettings.Enabled =
+                                                     Settings.Default.MaximumNumberOfIterations != calculationSettings.MaximumNumberOfIterations ||
+                                                     Settings.Default.Colorizer != (int)calculationSettings.Colorizer;
+        }
+        static MandelbrotColorizer GetColorizer(Colorizers colorizer) => colorizer switch
+        {
+            Colorizers.IterationRatio => MandelbrotColorizer.IterationRatioColorizer,
+            Colorizers.IterationModulo => MandelbrotColorizer.IterationModuloColorizer,
+            _ => MandelbrotColorizer.BlackAndWhite
+        };
         #endregion
         public void SetCurrentScope(ComplexScope scope)
         {
@@ -135,14 +145,6 @@ namespace Mandelbrot
         static string CreateAxisString(double min, double max) => min.Equals(max) ? FormatDouble(min) : $"{FormatDouble(min)} to {FormatDouble(max)}";
         static string FormatDouble(double d) =>
             d.ToString("G17").TrimEnd('0').TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToCharArray());
-
-        void btRecalculate_Click(object sender, EventArgs e)
-        {
-            if (calculationRunning)
-                CancelClicked?.Invoke(this, e);
-            else
-                RecalculateClicked?.Invoke(this, e);
-        }
 
         private void btPrevioius_Click(object sender, EventArgs e)
         {

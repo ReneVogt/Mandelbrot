@@ -52,7 +52,7 @@ namespace Mandelbrot
 
             currentScope = AdjustScope(ComplexScope.Mandelbrot);
 
-            controlForm.RecalculateClicked += (sender, e) => _ = RunCalculationAsync(currentScope, UpdateStackButtons);
+            controlForm.RecalculationRequested += (sender, e) => _ = RunCalculationAsync(currentScope, UpdateStackButtons);
             controlForm.CancelClicked += (sender, e) => CancelCalculation();
             controlForm.PreviousClicked += (sender, e) => GotoPreviousScope();
             controlForm.NextClicked += (sender, e) => GotoNextScope();
