@@ -9,7 +9,9 @@ namespace Mandelbrot
     {
         sealed class ComplexViewModel
         {
+            [NotifyParentProperty(true)]
             public double Real { get; set; }
+            [NotifyParentProperty(true)]
             public double Imaginary { get; set; }
             public override string ToString() => new Complex(Real, Imaginary).ToString();
         }
