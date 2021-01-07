@@ -21,8 +21,10 @@ namespace Mandelbrot
         readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
         readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
         readonly Brush progressBackBrush = new SolidBrush(Color.FromArgb(96, Color.Black));
+        readonly Pen calculationRectanglePen = new Pen(new SolidBrush(Color.LightGreen), 3);
 
         int progressToDraw = -1;
+        bool resizing;
         MandelbrotBitmapGenerator? currentGenerator;
         ComplexScope currentScope;
         Rectangle? mouseSelection, calculatingRect;
@@ -51,12 +53,7 @@ namespace Mandelbrot
             currentScope = AdjustScope(ComplexScope.Mandelbrot);
 
             controlForm.RecalculateClicked += (sender, e) => _ = RunCalculationAsync(currentScope, UpdateStackButtons);
-            controlForm.CancelClicked += (sender, e) =>
-            {
-                currentGenerator?.Cancel();
-                currentGenerator = null;
-                Cursor = Cursors.Default;
-            };
+            controlForm.CancelClicked += (sender, e) => CancelCalculation();
             controlForm.PreviousClicked += (sender, e) => GotoPreviousScope();
             controlForm.NextClicked += (sender, e) => GotoNextScope();
             controlForm.TotalClicked += (sender, e) => ReturnToTotalView();
@@ -74,18 +71,19 @@ namespace Mandelbrot
         }
         protected override void OnClosing(CancelEventArgs e)
         {
+            CancelCalculation();
             base.OnClosing(e);
-            currentGenerator?.Cancel();
         }
         protected override void OnResizeBegin(EventArgs e)
         {
+            resizing = true;
             base.OnResizeBegin(e);
-            SuspendLayout();
         }
         protected override void OnResizeEnd(EventArgs e)
         {
+            resizing = false;
             base.OnResizeEnd(e);
-            ResumeLayout();
+            _ = RunCalculationAsync(AdjustScope(currentScope), UpdateStackButtons);
         }
         protected override void OnFullscreenChanged(EventArgs e)
         {
@@ -97,7 +95,8 @@ namespace Mandelbrot
             base.OnKeyDown(e);
             switch (e.KeyCode)
             {
-                case Keys.Escape: ReturnToTotalView();
+                case Keys.Escape:
+                    CancelCalculation();
                     break;
                 case Keys.Z: if (e.Control) GotoPreviousScope();
                     break;
@@ -111,13 +110,13 @@ namespace Mandelbrot
             var p = currentGenerator?.Progress ?? -1;
             if (p == progressToDraw) return;
             controlForm.Progress = progressToDraw = p;
-            pbView.Invalidate();
+            InvalidateView();
         }
         #endregion
         #region PictureBox event handlers
         private void pbView_SizeChanged(object sender, EventArgs e)
         {
-            currentGenerator?.Cancel();
+            CancelCalculation();
             CurrentImage = null;
         }
         private void pbView_MouseMove(object sender, MouseEventArgs e)
@@ -133,7 +132,7 @@ namespace Mandelbrot
                 Point topLeft = new Point(Math.Min(mouseStartingPoint.Value.X, e.Location.X), Math.Min(e.Location.Y, mouseStartingPoint.Value.Y));
                 Size width = new Size(Math.Abs(e.Location.X - mouseStartingPoint.Value.X), Math.Abs(e.Location.Y - mouseStartingPoint.Value.Y));
                 mouseSelection = new Rectangle(topLeft, width);
-                pbView.Invalidate();
+                InvalidateView();
             }
 
             if (mouseSelection?.Height > 0 && mouseSelection?.Width > 0)
@@ -150,7 +149,7 @@ namespace Mandelbrot
 
             mouseSelection = null;
             mouseStartingPoint = null;
-            Invalidate();
+            InvalidateView();
         }
         private void pbView_MouseClick(object sender, MouseEventArgs e)
         {
@@ -171,19 +170,14 @@ namespace Mandelbrot
         }
         private void pbView_Paint(object sender, PaintEventArgs e)
         {
-            if (CurrentImage == null && currentGenerator?.IsCancelled != false)
+            if (CurrentImage == null && currentGenerator?.IsCancelled != false && !resizing)
                 _ = RunCalculationAsync(AdjustScope(currentScope), UpdateStackButtons);
 
             if (mouseSelection != null)
                 e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
 
-            if (calculatingRect != null)
-            {
-                using var brush = new SolidBrush(Color.LightGreen);
-                //using var brush = new LinearGradientBrush(calculatingRect.Value, Color.White, Color.Black, LinearGradientMode.BackwardDiagonal);
-                using var pen = new Pen(brush, 3);
-                e.Graphics.DrawRectangle(pen, calculatingRect.Value);
-            }
+            if (calculatingRect != null) 
+                e.Graphics.DrawRectangle(calculationRectanglePen, calculatingRect.Value);
 
             if (progressToDraw > -1)
                 DrawProgress(e.Graphics);
@@ -201,13 +195,12 @@ namespace Mandelbrot
             graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progressToDraw);
             graphics.DrawString(text, progressFont, Brushes.White, textRect);
         }
+        void InvalidateView() => pbView.Invalidate();
         #endregion
         #region Calculation
         async Task RunCalculationAsync(ComplexScope scope, Action stackAction)
         {
-            currentGenerator?.Cancel();
-            currentGenerator = null;
-            calculatingRect = null;
+            CancelCalculation();
 
             var pixels = Pixels;
             MandelbrotBitmapGenerator? generator = null;
@@ -222,14 +215,7 @@ namespace Mandelbrot
                 if (generator.IsCancelled) return;
 
                 stackAction();
-                currentScope = scope;
-                Cursor = Cursors.Default;
-                currentGenerator = null;
-                mouseSelection = calculatingRect = null;
-                mouseStartingPoint = null;
-                controlForm.SetCurrentScope(scope);
-                controlForm.SetCurrentSelection(scope);
-                CurrentImage = bmp;
+                ResetStatesAfterCalculation(bmp, scope);
             }
             catch (OperationCanceledException) { }
             catch (ArgumentException ae)
@@ -240,10 +226,29 @@ namespace Mandelbrot
         }
         void OnCalculationError(Exception error)
         {
+            ResetStatesAfterCalculation();
+            MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        void CancelCalculation()
+        {
+            currentGenerator?.Cancel();
+            currentGenerator = null;
+            ResetStatesAfterCalculation();
+        }
+        void ResetStatesAfterCalculation(Bitmap? bitmap = null, ComplexScope? scope = null)
+        {
             Cursor = Cursors.Default;
             currentGenerator = null;
-            calculatingRect = null;
-            MessageBox.Show(this, error.ToString(), "Mandelbrot error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            mouseStartingPoint = null;
+            mouseSelection = calculatingRect = null;
+
+            if (bitmap is {}) CurrentImage = bitmap;
+            if (scope is {})
+            {
+                currentScope = scope;
+                controlForm.SetCurrentScope(scope);
+                controlForm.SetCurrentSelection(scope);
+            }
         }
         #endregion
         #region Coordinate transformation
