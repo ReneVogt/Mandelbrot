@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using System.Numerics;
+
 // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
 
 namespace MandelbrotGenerator
@@ -12,7 +12,7 @@ namespace MandelbrotGenerator
     /// and its "upper right corner" (<see cref="UpperRight"/>) (that is,
     /// the point of the rectangle with the greatest real and imaginary values).
     /// </summary>
-    public sealed class ComplexScope : IEquatable<ComplexScope>, IFormattable
+    public sealed class ComplexScope : IEquatable<ComplexScope>
     {
         #region Constants
         static readonly ArgumentException invalidScopeException = new ArgumentException("The specified scope coordinates are invalid. They must define a non-empty positive finite rectangle in the complex plane.");
@@ -115,14 +115,8 @@ namespace MandelbrotGenerator
         }
         #endregion
         #region ToString
-        public override string ToString() => ToString("G20", CultureInfo.CurrentCulture);
-        public string ToString(string format) => ToString(format, CultureInfo.CurrentCulture);
-        public string ToString(string format, IFormatProvider formatProvider) => format switch
-        {
-            _ => ToCustomString(format, formatProvider)
-        };
-        //string ToCustomString(string format, IFormatProvider formatProvider) => string.Format(formatProvider, $"[({{0:{format}}}; {{1:{format}}}), ({{2:{format}}}; {{3:{format}}})]", RealMin, ImaginaryMin, RealMax, ImaginaryMax);
-        string ToCustomString(string format, IFormatProvider formatProvider) => string.Format(formatProvider, $"[{{0:{format}}}; {{1:{format}}}]", LowerLeft, UpperRight);
+        /// <inheritdoc />
+        public override string ToString() => $"[{LowerLeft}; {UpperRight}]";
         #endregion
         #region Operators
         /// <summary>
@@ -169,28 +163,6 @@ namespace MandelbrotGenerator
         /// <param name="right">Right operand.</param>
         /// <returns><c>true</c> if either only <paramref name="left"/> or <paramref name="right"/> is <c>null</c> or both have inequal <see cref="LowerLeft"/> and <see cref="UpperRight"/> values.</returns>
         public static bool operator !=(ComplexScope? left, ComplexScope? right) => !(left?.Equals(right) ?? right is null);
-        #endregion
-        #region Parse
-        public static ComplexScope Parse(string s) => Parse(s, NumberStyles.Any, CultureInfo.CurrentCulture);
-        public static ComplexScope Parse(string s, IFormatProvider formatProvider) => Parse(s, NumberStyles.Any, formatProvider);
-        public static ComplexScope Parse(string s, NumberStyles style, IFormatProvider formatProvider) => throw new NotImplementedException();
-
-        public static bool TryParse(string s, out ComplexScope scope) => TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out scope);
-        public static bool TryParse(string s, IFormatProvider formatProvider, out ComplexScope scope) =>
-            TryParse(s, NumberStyles.Any, formatProvider, out scope);
-        public static bool TryParse(string s, NumberStyles style, IFormatProvider formatProvider, out ComplexScope scope)
-        {
-            scope = default!;
-            try
-            {
-                scope = Parse(s, style, formatProvider);
-                return true;
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
-        }
         #endregion
     }
 }

@@ -177,6 +177,9 @@
         <member name="M:MandelbrotGenerator.ComplexScope.GetHashCode">
             <inheritdoc />
         </member>
+        <member name="M:MandelbrotGenerator.ComplexScope.ToString">
+            <inheritdoc />
+        </member>
         <member name="M:MandelbrotGenerator.ComplexScope.FromValueTuple(System.ValueTuple{System.ValueTuple{System.Double,System.Double},System.ValueTuple{System.Double,System.Double}})">
             <summary>
             Creates a <see cref="T:MandelbrotGenerator.ComplexScope"/> instance from two tuples representing

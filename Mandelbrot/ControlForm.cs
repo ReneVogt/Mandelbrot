@@ -15,6 +15,9 @@ namespace Mandelbrot
     {
         #region Fields
         readonly CalculationSettingsViewModel calculationSettings;
+        readonly ScopeViewModel currentScopeViewModel = new ScopeViewModel();
+
+        ComplexScope currentScope = ComplexScope.Mandelbrot;
         #endregion
         #region Events
         public event EventHandler? RecalculationRequested;
@@ -63,6 +66,8 @@ namespace Mandelbrot
                 Colorizer = (Colorizers)Settings.Default.Colorizer
             };
             pgCalculationSettings.SelectedObject = calculationSettings;
+
+            pgCurrentScope.SelectedObject = currentScopeViewModel;
             cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
         }
         #endregion
@@ -136,11 +141,38 @@ namespace Mandelbrot
             _ => MandelbrotColorizer.BlackAndWhite
         };
         #endregion
+        #region Current scope
+        private void pgCurrentScope_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            btApplyScope.Enabled = btResetScope.Enabled = !(
+                                                               currentScopeViewModel.LowerLeft.Real.Equals(currentScope.LowerLeft.Real) &&
+                                                               currentScopeViewModel.LowerLeft.Imaginary.Equals(currentScope.LowerLeft.Imaginary) &&
+                                                               currentScopeViewModel.UpperRight.Real.Equals(currentScope.UpperRight.Real) &&
+                                                               currentScopeViewModel.UpperRight.Imaginary.Equals(currentScope.UpperRight.Imaginary));
+        }
+        private void btApplyScope_Click(object sender, EventArgs e)
+        {
+            ResetCurrentScope();
+        }
+        private void btResetScope_Click(object sender, EventArgs e) => ResetCurrentScope();
         public void SetCurrentScope(ComplexScope scope)
         {
-            lbCurrentReal.Text = CreateAxisString(scope.LowerLeft.Real, scope.UpperRight.Real);
-            lbCurrentImaginary.Text = CreateAxisString(scope.LowerLeft.Imaginary, scope.UpperRight.Imaginary);
+            currentScope = new ComplexScope(scope.LowerLeft, scope.UpperRight);
+            if (!btApplyScope.Enabled)
+                ResetCurrentScope();
         }
+        void ResetCurrentScope()
+        {
+            currentScopeViewModel.LowerLeft.Real = currentScope.LowerLeft.Real;
+            currentScopeViewModel.LowerLeft.Imaginary = currentScope.LowerLeft.Imaginary;
+            currentScopeViewModel.UpperRight.Real = currentScope.UpperRight.Real;
+            currentScopeViewModel.UpperRight.Imaginary = currentScope.UpperRight.Imaginary;
+            pgCurrentScope.Refresh();
+            btApplyScope.Enabled = btResetScope.Enabled = false;
+        }
+        #endregion
+
+
         public void SetCurrentSelection(ComplexScope scope)
         {
             lbSelectionReal.Text = CreateAxisString(scope.LowerLeft.Real, scope.UpperRight.Real);
