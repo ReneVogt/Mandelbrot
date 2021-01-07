@@ -29,6 +29,8 @@ namespace Mandelbrot
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlForm));
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
             this.cbAdjustAxes = new System.Windows.Forms.CheckBox();
@@ -55,6 +57,8 @@ namespace Mandelbrot
             this.pgCalculationSettings = new System.Windows.Forms.PropertyGrid();
             this.btResetCalculationSettings = new System.Windows.Forms.Button();
             this.btApplyCalculationSettings = new System.Windows.Forms.Button();
+            this.buttonImages = new System.Windows.Forms.ImageList(this.components);
+            this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.gbCurrentView.SuspendLayout();
             this.gbCurrentSelection.SuspendLayout();
             this.gbCalculationProgress.SuspendLayout();
@@ -83,9 +87,9 @@ namespace Mandelbrot
             this.gbCurrentView.Controls.Add(this.label9);
             this.gbCurrentView.Controls.Add(this.label2);
             this.gbCurrentView.Controls.Add(this.btStartScreen);
-            this.gbCurrentView.Location = new System.Drawing.Point(17, 325);
+            this.gbCurrentView.Location = new System.Drawing.Point(12, 293);
             this.gbCurrentView.Name = "gbCurrentView";
-            this.gbCurrentView.Size = new System.Drawing.Size(443, 146);
+            this.gbCurrentView.Size = new System.Drawing.Size(442, 146);
             this.gbCurrentView.TabIndex = 10;
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
@@ -187,7 +191,7 @@ namespace Mandelbrot
             this.gbCurrentSelection.Controls.Add(this.lbSelectionReal);
             this.gbCurrentSelection.Controls.Add(this.label5);
             this.gbCurrentSelection.Controls.Add(this.label6);
-            this.gbCurrentSelection.Location = new System.Drawing.Point(11, 432);
+            this.gbCurrentSelection.Location = new System.Drawing.Point(12, 464);
             this.gbCurrentSelection.Name = "gbCurrentSelection";
             this.gbCurrentSelection.Size = new System.Drawing.Size(443, 63);
             this.gbCurrentSelection.TabIndex = 20;
@@ -335,11 +339,13 @@ namespace Mandelbrot
             this.btResetCalculationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btResetCalculationSettings.Enabled = false;
-            this.btResetCalculationSettings.Location = new System.Drawing.Point(361, 140);
+            this.btResetCalculationSettings.ImageKey = "cancel";
+            this.btResetCalculationSettings.ImageList = this.buttonImages;
+            this.btResetCalculationSettings.Location = new System.Drawing.Point(413, 140);
             this.btResetCalculationSettings.Name = "btResetCalculationSettings";
-            this.btResetCalculationSettings.Size = new System.Drawing.Size(75, 23);
+            this.btResetCalculationSettings.Size = new System.Drawing.Size(23, 23);
             this.btResetCalculationSettings.TabIndex = 20;
-            this.btResetCalculationSettings.Text = "Reset";
+            this.buttonToolTip.SetToolTip(this.btResetCalculationSettings, "Reset changes");
             this.btResetCalculationSettings.UseVisualStyleBackColor = true;
             this.btResetCalculationSettings.Click += new System.EventHandler(this.btResetCalculationSettings_Click);
             // 
@@ -348,13 +354,22 @@ namespace Mandelbrot
             this.btApplyCalculationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btApplyCalculationSettings.Enabled = false;
-            this.btApplyCalculationSettings.Location = new System.Drawing.Point(280, 140);
+            this.btApplyCalculationSettings.ImageKey = "apply";
+            this.btApplyCalculationSettings.ImageList = this.buttonImages;
+            this.btApplyCalculationSettings.Location = new System.Drawing.Point(387, 140);
             this.btApplyCalculationSettings.Name = "btApplyCalculationSettings";
-            this.btApplyCalculationSettings.Size = new System.Drawing.Size(75, 23);
+            this.btApplyCalculationSettings.Size = new System.Drawing.Size(23, 23);
             this.btApplyCalculationSettings.TabIndex = 10;
-            this.btApplyCalculationSettings.Text = "Apply";
+            this.buttonToolTip.SetToolTip(this.btApplyCalculationSettings, "Apply changes");
             this.btApplyCalculationSettings.UseVisualStyleBackColor = true;
             this.btApplyCalculationSettings.Click += new System.EventHandler(this.btApplyCalculationSettings_Click);
+            // 
+            // buttonImages
+            // 
+            this.buttonImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("buttonImages.ImageStream")));
+            this.buttonImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.buttonImages.Images.SetKeyName(0, "apply");
+            this.buttonImages.Images.SetKeyName(1, "cancel");
             // 
             // ControlForm
             // 
@@ -413,5 +428,7 @@ namespace Mandelbrot
         private System.Windows.Forms.Button btResetCalculationSettings;
         private System.Windows.Forms.Button btApplyCalculationSettings;
         private System.Windows.Forms.PropertyGrid pgCalculationSettings;
+        private System.Windows.Forms.ImageList buttonImages;
+        private System.Windows.Forms.ToolTip buttonToolTip;
     }
 }
