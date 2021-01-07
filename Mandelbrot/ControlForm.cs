@@ -13,8 +13,10 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
+        #region Fields
         readonly CalculationSettingsViewModel calculationSettings;
-        
+        #endregion
+        #region Events
         public event EventHandler? RecalculationRequested;
         public event EventHandler? CancelClicked;
         public event EventHandler? AdjustClicked;
@@ -23,7 +25,8 @@ namespace Mandelbrot
         public event EventHandler? NextClicked;
         public event EventHandler? FullscreenChanged;
         public event EventHandler? SaveClicked;
-
+        #endregion
+        #region Properties
         public int MaximumNumberOfIterations { get; private set; }
         public MandelbrotColorizer Colorizer { get; private set; }
         public bool CanGotoPrevious
@@ -46,7 +49,8 @@ namespace Mandelbrot
             get => cbFullscreen.Checked;
             set => cbFullscreen.Checked = value;
         }
-
+        #endregion
+        #region Construction
         public ControlForm()
         {
             InitializeComponent();
@@ -59,7 +63,10 @@ namespace Mandelbrot
                 Colorizer = (Colorizers)Settings.Default.Colorizer
             };
             pgCalculationSettings.SelectedObject = calculationSettings;
+            cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
         }
+        #endregion
+        #region Form event handlers
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             Settings.Default.AdjustAxesd = cbAdjustAxes.Checked;
@@ -71,6 +78,8 @@ namespace Mandelbrot
             }
             base.OnFormClosing(e);
         }
+        #endregion
+
         #region Calculation proress
         public void SetProgress(int progress, TimeSpan? elapsed = null)
         {
@@ -170,6 +179,11 @@ namespace Mandelbrot
         private void btSave_Click(object sender, EventArgs e)
         {
             SaveClicked?.Invoke(this, e);
+        }
+
+        private void btExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
