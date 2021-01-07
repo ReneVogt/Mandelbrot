@@ -32,10 +32,10 @@ namespace Mandelbrot
             this.gbCalculation = new System.Windows.Forms.GroupBox();
             this.cmbColorizer = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.nupIterations = new Mandelbrot.LogarithmicUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.btRecalculate = new System.Windows.Forms.Button();
+            this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
             this.cbAdjustAxes = new System.Windows.Forms.CheckBox();
             this.btSave = new System.Windows.Forms.Button();
@@ -52,10 +52,21 @@ namespace Mandelbrot
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.cbFullscreen = new System.Windows.Forms.CheckBox();
+            this.gbCalculationProgress = new System.Windows.Forms.GroupBox();
+            this.btCancel = new System.Windows.Forms.Button();
+            this.lbProgress = new System.Windows.Forms.Label();
+            this.lbElapsed = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.gbCalculationSettings = new System.Windows.Forms.GroupBox();
+            this.btResetCalculationSettings = new System.Windows.Forms.Button();
+            this.btApplyCalculationSettings = new System.Windows.Forms.Button();
+            this.pgCalculationSettings = new System.Windows.Forms.PropertyGrid();
             this.gbCalculation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIterations)).BeginInit();
             this.gbCurrentView.SuspendLayout();
             this.gbCurrentSelection.SuspendLayout();
+            this.gbCalculationProgress.SuspendLayout();
+            this.gbCalculationSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbCalculation
@@ -64,16 +75,15 @@ namespace Mandelbrot
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbCalculation.Controls.Add(this.cmbColorizer);
             this.gbCalculation.Controls.Add(this.label3);
-            this.gbCalculation.Controls.Add(this.pbProgress);
             this.gbCalculation.Controls.Add(this.nupIterations);
             this.gbCalculation.Controls.Add(this.label1);
             this.gbCalculation.Controls.Add(this.btRecalculate);
-            this.gbCalculation.Location = new System.Drawing.Point(12, 12);
+            this.gbCalculation.Location = new System.Drawing.Point(42, 293);
             this.gbCalculation.Name = "gbCalculation";
-            this.gbCalculation.Size = new System.Drawing.Size(331, 133);
+            this.gbCalculation.Size = new System.Drawing.Size(443, 133);
             this.gbCalculation.TabIndex = 0;
             this.gbCalculation.TabStop = false;
-            this.gbCalculation.Text = "Calculation";
+            this.gbCalculation.Text = "Calculation settings";
             // 
             // cmbColorizer
             // 
@@ -96,13 +106,6 @@ namespace Mandelbrot
             this.label3.Size = new System.Drawing.Size(64, 13);
             this.label3.TabIndex = 92;
             this.label3.Text = "Colorization:";
-            // 
-            // pbProgress
-            // 
-            this.pbProgress.Location = new System.Drawing.Point(9, 104);
-            this.pbProgress.Name = "pbProgress";
-            this.pbProgress.Size = new System.Drawing.Size(315, 23);
-            this.pbProgress.TabIndex = 30;
             // 
             // nupIterations
             // 
@@ -144,13 +147,22 @@ namespace Mandelbrot
             // btRecalculate
             // 
             this.btRecalculate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btRecalculate.Location = new System.Drawing.Point(9, 75);
+            this.btRecalculate.Location = new System.Drawing.Point(121, 75);
             this.btRecalculate.Name = "btRecalculate";
             this.btRecalculate.Size = new System.Drawing.Size(315, 23);
             this.btRecalculate.TabIndex = 20;
             this.btRecalculate.Text = "Recalculate";
             this.btRecalculate.UseVisualStyleBackColor = true;
             this.btRecalculate.Click += new System.EventHandler(this.btRecalculate_Click);
+            // 
+            // pbProgress
+            // 
+            this.pbProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbProgress.Location = new System.Drawing.Point(9, 39);
+            this.pbProgress.Name = "pbProgress";
+            this.pbProgress.Size = new System.Drawing.Size(427, 23);
+            this.pbProgress.TabIndex = 30;
             // 
             // gbCurrentView
             // 
@@ -165,9 +177,9 @@ namespace Mandelbrot
             this.gbCurrentView.Controls.Add(this.label9);
             this.gbCurrentView.Controls.Add(this.label2);
             this.gbCurrentView.Controls.Add(this.btStartScreen);
-            this.gbCurrentView.Location = new System.Drawing.Point(12, 151);
+            this.gbCurrentView.Location = new System.Drawing.Point(17, 325);
             this.gbCurrentView.Name = "gbCurrentView";
-            this.gbCurrentView.Size = new System.Drawing.Size(331, 146);
+            this.gbCurrentView.Size = new System.Drawing.Size(443, 146);
             this.gbCurrentView.TabIndex = 10;
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
@@ -269,9 +281,9 @@ namespace Mandelbrot
             this.gbCurrentSelection.Controls.Add(this.lbSelectionReal);
             this.gbCurrentSelection.Controls.Add(this.label5);
             this.gbCurrentSelection.Controls.Add(this.label6);
-            this.gbCurrentSelection.Location = new System.Drawing.Point(12, 303);
+            this.gbCurrentSelection.Location = new System.Drawing.Point(11, 432);
             this.gbCurrentSelection.Name = "gbCurrentSelection";
-            this.gbCurrentSelection.Size = new System.Drawing.Size(331, 63);
+            this.gbCurrentSelection.Size = new System.Drawing.Size(443, 63);
             this.gbCurrentSelection.TabIndex = 20;
             this.gbCurrentSelection.TabStop = false;
             this.gbCurrentSelection.Text = "Current selection";
@@ -317,21 +329,132 @@ namespace Mandelbrot
             this.cbFullscreen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
-            this.cbFullscreen.Location = new System.Drawing.Point(12, 372);
+            this.cbFullscreen.Location = new System.Drawing.Point(12, 542);
             this.cbFullscreen.Name = "cbFullscreen";
-            this.cbFullscreen.Size = new System.Drawing.Size(331, 24);
+            this.cbFullscreen.Size = new System.Drawing.Size(443, 24);
             this.cbFullscreen.TabIndex = 70;
             this.cbFullscreen.Text = "Fullscreen";
             this.cbFullscreen.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cbFullscreen.UseVisualStyleBackColor = true;
             this.cbFullscreen.CheckedChanged += new System.EventHandler(this.cbFullscreen_CheckedChanged);
             // 
+            // gbCalculationProgress
+            // 
+            this.gbCalculationProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCalculationProgress.Controls.Add(this.btCancel);
+            this.gbCalculationProgress.Controls.Add(this.lbProgress);
+            this.gbCalculationProgress.Controls.Add(this.lbElapsed);
+            this.gbCalculationProgress.Controls.Add(this.label4);
+            this.gbCalculationProgress.Controls.Add(this.pbProgress);
+            this.gbCalculationProgress.Location = new System.Drawing.Point(12, 12);
+            this.gbCalculationProgress.Name = "gbCalculationProgress";
+            this.gbCalculationProgress.Size = new System.Drawing.Size(442, 100);
+            this.gbCalculationProgress.TabIndex = 71;
+            this.gbCalculationProgress.TabStop = false;
+            this.gbCalculationProgress.Text = "Calculation progress";
+            // 
+            // btCancel
+            // 
+            this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btCancel.Enabled = false;
+            this.btCancel.Location = new System.Drawing.Point(9, 69);
+            this.btCancel.Name = "btCancel";
+            this.btCancel.Size = new System.Drawing.Size(427, 23);
+            this.btCancel.TabIndex = 34;
+            this.btCancel.Text = "Cancel";
+            this.btCancel.UseVisualStyleBackColor = true;
+            this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
+            // 
+            // lbProgress
+            // 
+            this.lbProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbProgress.Location = new System.Drawing.Point(371, 23);
+            this.lbProgress.Name = "lbProgress";
+            this.lbProgress.Size = new System.Drawing.Size(65, 13);
+            this.lbProgress.TabIndex = 33;
+            this.lbProgress.Text = "42%";
+            this.lbProgress.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lbElapsed
+            // 
+            this.lbElapsed.AutoSize = true;
+            this.lbElapsed.Location = new System.Drawing.Point(73, 23);
+            this.lbElapsed.Name = "lbElapsed";
+            this.lbElapsed.Size = new System.Drawing.Size(10, 13);
+            this.lbElapsed.TabIndex = 32;
+            this.lbElapsed.Text = "-";
+            this.lbElapsed.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 23);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(70, 13);
+            this.label4.TabIndex = 31;
+            this.label4.Text = "Elapsed time:";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // gbCalculationSettings
+            // 
+            this.gbCalculationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCalculationSettings.Controls.Add(this.pgCalculationSettings);
+            this.gbCalculationSettings.Controls.Add(this.btResetCalculationSettings);
+            this.gbCalculationSettings.Controls.Add(this.btApplyCalculationSettings);
+            this.gbCalculationSettings.Location = new System.Drawing.Point(12, 118);
+            this.gbCalculationSettings.Name = "gbCalculationSettings";
+            this.gbCalculationSettings.Size = new System.Drawing.Size(442, 169);
+            this.gbCalculationSettings.TabIndex = 72;
+            this.gbCalculationSettings.TabStop = false;
+            this.gbCalculationSettings.Text = "Calculation settings";
+            // 
+            // btResetCalculationSettings
+            // 
+            this.btResetCalculationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btResetCalculationSettings.Location = new System.Drawing.Point(361, 140);
+            this.btResetCalculationSettings.Name = "btResetCalculationSettings";
+            this.btResetCalculationSettings.Size = new System.Drawing.Size(75, 23);
+            this.btResetCalculationSettings.TabIndex = 20;
+            this.btResetCalculationSettings.Text = "Reset";
+            this.btResetCalculationSettings.UseVisualStyleBackColor = true;
+            this.btResetCalculationSettings.Click += new System.EventHandler(this.btResetCalculationSettings_Click);
+            // 
+            // btApplyCalculationSettings
+            // 
+            this.btApplyCalculationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btApplyCalculationSettings.Location = new System.Drawing.Point(280, 140);
+            this.btApplyCalculationSettings.Name = "btApplyCalculationSettings";
+            this.btApplyCalculationSettings.Size = new System.Drawing.Size(75, 23);
+            this.btApplyCalculationSettings.TabIndex = 10;
+            this.btApplyCalculationSettings.Text = "Apply";
+            this.btApplyCalculationSettings.UseVisualStyleBackColor = true;
+            this.btApplyCalculationSettings.Click += new System.EventHandler(this.btApplyCalculationSettings_Click);
+            // 
+            // pgCalculationSettings
+            // 
+            this.pgCalculationSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pgCalculationSettings.Location = new System.Drawing.Point(9, 18);
+            this.pgCalculationSettings.Name = "pgCalculationSettings";
+            this.pgCalculationSettings.Size = new System.Drawing.Size(427, 116);
+            this.pgCalculationSettings.TabIndex = 0;
+            // 
             // ControlForm
             // 
             this.AcceptButton = this.btRecalculate;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(355, 408);
+            this.CancelButton = this.btCancel;
+            this.ClientSize = new System.Drawing.Size(467, 578);
+            this.Controls.Add(this.gbCalculationSettings);
+            this.Controls.Add(this.gbCalculationProgress);
             this.Controls.Add(this.cbFullscreen);
             this.Controls.Add(this.gbCurrentSelection);
             this.Controls.Add(this.gbCurrentView);
@@ -351,6 +474,9 @@ namespace Mandelbrot
             this.gbCurrentView.PerformLayout();
             this.gbCurrentSelection.ResumeLayout(false);
             this.gbCurrentSelection.PerformLayout();
+            this.gbCalculationProgress.ResumeLayout(false);
+            this.gbCalculationProgress.PerformLayout();
+            this.gbCalculationSettings.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -380,5 +506,14 @@ namespace Mandelbrot
         private System.Windows.Forms.ComboBox cmbColorizer;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox cbAdjustAxes;
+        private System.Windows.Forms.GroupBox gbCalculationProgress;
+        private System.Windows.Forms.Label lbProgress;
+        private System.Windows.Forms.Label lbElapsed;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btCancel;
+        private System.Windows.Forms.GroupBox gbCalculationSettings;
+        private System.Windows.Forms.Button btResetCalculationSettings;
+        private System.Windows.Forms.Button btApplyCalculationSettings;
+        private System.Windows.Forms.PropertyGrid pgCalculationSettings;
     }
 }

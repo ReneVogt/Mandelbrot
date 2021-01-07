@@ -264,6 +264,12 @@
             Gets a value between 0 and 100 indicating the calculation progress in percent.
             </summary>
         </member>
+        <member name="P:MandelbrotGenerator.MandelbrotBitmapGenerator.ElapsedTime">
+            <summary>
+            Gets the elapsed time since the start of the calculation or the time needed to
+            complete it.
+            </summary>
+        </member>
         <member name="P:MandelbrotGenerator.MandelbrotBitmapGenerator.IsCancelled">
             <summary>
             Gets a value indicating whether the calculation has been cancelled.

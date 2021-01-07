@@ -108,8 +108,10 @@ namespace Mandelbrot
         private void OnProgressTimer(object sender, EventArgs e)
         {
             var p = currentGenerator?.Progress ?? -1;
+            var elapsed = currentGenerator?.ElapsedTime;
+            controlForm.SetProgress(p, elapsed);
             if (p == progressToDraw) return;
-            controlForm.Progress = progressToDraw = p;
+            progressToDraw = p;
             InvalidateView();
         }
         #endregion
@@ -215,7 +217,7 @@ namespace Mandelbrot
                 if (generator.IsCancelled) return;
 
                 stackAction();
-                ResetStatesAfterCalculation(bmp, scope);
+                ResetStatesAfterCalculation(bmp, scope, generator.ElapsedTime);
             }
             catch (OperationCanceledException) { }
             catch (ArgumentException ae)
@@ -235,7 +237,7 @@ namespace Mandelbrot
             currentGenerator = null;
             ResetStatesAfterCalculation();
         }
-        void ResetStatesAfterCalculation(Bitmap? bitmap = null, ComplexScope? scope = null)
+        void ResetStatesAfterCalculation(Bitmap? bitmap = null, ComplexScope? scope = null, TimeSpan? elapsed = null)
         {
             Cursor = Cursors.Default;
             currentGenerator = null;
@@ -249,6 +251,9 @@ namespace Mandelbrot
                 controlForm.SetCurrentScope(scope);
                 controlForm.SetCurrentSelection(scope);
             }
+
+            controlForm.SetProgress(-1, elapsed);
+            InvalidateView();
         }
         #endregion
         #region Coordinate transformation

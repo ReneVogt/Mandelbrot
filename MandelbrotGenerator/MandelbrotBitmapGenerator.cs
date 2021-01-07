@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace MandelbrotGenerator
         readonly Size resolution;
         readonly (Point pixel, int index, Complex c)[] pixelSource;
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        readonly Stopwatch stopWatch = new Stopwatch();
 
         int started, disposed;
         int iteratingProgress, colorizingProgress;
@@ -54,6 +56,11 @@ namespace MandelbrotGenerator
                 return 80 + cp * 20 / c;
             }
         }
+        /// <summary>
+        /// Gets the elapsed time since the start of the calculation or the time needed to
+        /// complete it.
+        /// </summary>
+        public TimeSpan ElapsedTime => stopWatch.Elapsed;
         /// <summary>
         /// Gets a value indicating whether the calculation has been cancelled.
         /// </summary>
@@ -154,55 +161,62 @@ namespace MandelbrotGenerator
         }
         Bitmap CreateBitmapInternal()
         {
-            var options = new ParallelOptions
+            stopWatch.Start();
+            try
             {
-                CancellationToken = CancellationToken,
-                MaxDegreeOfParallelism = maxDegreeOfParallelism
-            };
-            var maxIterations = maximumNumberOfIterations;
-            iteratingProgress = colorizingProgress = 0;
-
-            object? userState = colorizer.Initialize(resolution, scope, maxIterations);
-
-            Color[] colors = new Color[PixelCount];
-            if (colorizer.UsePostCalculationColorization)
-            {
-                IteratedPoint[] iteratedPoints = new IteratedPoint[PixelCount];
-
-                Parallel.ForEach(pixelSource, options, p =>
+                var options = new ParallelOptions
                 {
-                    iteratedPoints[p.index] = IteratedPoint.Iterate(p.c, maxIterations, CancellationToken);
-                    Interlocked.Increment(ref iteratingProgress);
-                });
-                userState = colorizer.Initialize(iteratedPoints, userState);
-                Parallel.ForEach(pixelSource, options, p =>
+                    CancellationToken = CancellationToken,
+                    MaxDegreeOfParallelism = maxDegreeOfParallelism
+                };
+                var maxIterations = maximumNumberOfIterations;
+                iteratingProgress = colorizingProgress = 0;
+
+                object? userState = colorizer.Initialize(resolution, scope, maxIterations);
+
+                Color[] colors = new Color[PixelCount];
+                if (colorizer.UsePostCalculationColorization)
                 {
-                    var iteratedPoint = iteratedPoints[p.index];
-                    colors[p.index] = iteratedPoint.Set
-                                        ? colorizer.SetColor
-                                        : colorizer.GetColor(p.pixel, iteratedPoint, userState);
-                    Interlocked.Increment(ref colorizingProgress);
-                });
+                    IteratedPoint[] iteratedPoints = new IteratedPoint[PixelCount];
+
+                    Parallel.ForEach(pixelSource, options, p =>
+                    {
+                        iteratedPoints[p.index] = IteratedPoint.Iterate(p.c, maxIterations, CancellationToken);
+                        Interlocked.Increment(ref iteratingProgress);
+                    });
+                    userState = colorizer.Initialize(iteratedPoints, userState);
+                    Parallel.ForEach(pixelSource, options, p =>
+                    {
+                        var iteratedPoint = iteratedPoints[p.index];
+                        colors[p.index] = iteratedPoint.Set
+                                              ? colorizer.SetColor
+                                              : colorizer.GetColor(p.pixel, iteratedPoint, userState);
+                        Interlocked.Increment(ref colorizingProgress);
+                    });
+                }
+                else
+                {
+                    Parallel.ForEach(pixelSource, options, p =>
+                    {
+                        var iteratedPoint = IteratedPoint.Iterate(p.c, maxIterations, CancellationToken);
+                        colors[p.index] = iteratedPoint.Set ? colorizer.SetColor : colorizer.GetColor(p.pixel, iteratedPoint, userState);
+                        Interlocked.Increment(ref iteratingProgress);
+                    });
+                }
+
+                var bitmap = new Bitmap(resolution.Width, resolution.Height, PixelFormat.Format32bppArgb);
+                var lockBits = bitmap.LockBits(new Rectangle(0, 0, resolution.Width, resolution.Height), ImageLockMode.WriteOnly,
+                                               PixelFormat.Format32bppArgb);
+                for (int i = 0; i < colors.Length; i++)
+                    Marshal.WriteInt32(lockBits.Scan0, i * 4, colors[i].ToArgb());
+                bitmap.UnlockBits(lockBits);
+
+                return bitmap;
             }
-            else
+            finally
             {
-                Parallel.ForEach(pixelSource, options, p =>
-                {
-                    var iteratedPoint = IteratedPoint.Iterate(p.c, maxIterations, CancellationToken);
-                    colors[p.index] = iteratedPoint.Set ? colorizer.SetColor :
-                        colorizer.GetColor(p.pixel, iteratedPoint, userState);
-                    Interlocked.Increment(ref iteratingProgress);
-                });
+                stopWatch.Stop();
             }
-
-            var bitmap = new Bitmap(resolution.Width, resolution.Height, PixelFormat.Format32bppArgb);
-            var lockBits = bitmap.LockBits(new Rectangle(0, 0, resolution.Width, resolution.Height), ImageLockMode.WriteOnly,
-                                           PixelFormat.Format32bppArgb);
-            for (int i = 0; i < colors.Length; i++)
-                Marshal.WriteInt32(lockBits.Scan0, i * 4, colors[i].ToArgb());
-            bitmap.UnlockBits(lockBits);
-
-            return bitmap;
         }
     }
 }

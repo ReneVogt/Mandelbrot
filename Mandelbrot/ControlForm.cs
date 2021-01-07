@@ -13,8 +13,7 @@ namespace Mandelbrot
 {
     public partial class ControlForm : Form
     {
-        readonly MandelbrotColorizer[] colorizers =
-            {MandelbrotColorizer.BlackAndWhite, MandelbrotColorizer.IterationRatioColorizer, MandelbrotColorizer.IterationModuloColorizer};
+        readonly CalculationSettingsViewModel calculationSettings;
         bool calculationRunning;
 
         public event EventHandler? RecalculateClicked;
@@ -26,19 +25,12 @@ namespace Mandelbrot
         public event EventHandler? FullscreenChanged;
         public event EventHandler? SaveClicked;
 
-        public int MaximumNumberOfIterations
+        public int MaximumNumberOfIterations => calculationSettings.MaximumNumberOfIterations;
+        public MandelbrotColorizer Colorizer => calculationSettings.Colorizer switch
         {
-            get => (int)nupIterations.Value;
-            set
-            {
-                try
-                {
-                    nupIterations.Value = value;
-                }
-                catch(ArgumentOutOfRangeException){}
-            }
-        }
-        public MandelbrotColorizer Colorizer => colorizers[cmbColorizer.SelectedIndex];
+            Colorizers.IterationModulo => MandelbrotColorizer.IterationModuloColorizer,
+            Colorizers.IterationRatio => MandelbrotColorizer.IterationRatioColorizer,
+            _ => MandelbrotColorizer.BlackAndWhite};
         public bool CanGotoPrevious
         {
             get => btPrevioius.Enabled;
@@ -59,21 +51,18 @@ namespace Mandelbrot
             get => cbFullscreen.Checked;
             set => cbFullscreen.Checked = value;
         }
-        public int Progress
-        {
-            get => calculationRunning ? pbProgress.Value : -1;
-            set
-            {
-                calculationRunning = value >= 0;
-                btRecalculate.Text = calculationRunning ? "Cancel" : "Recalculate";
-                pbProgress.Value = calculationRunning ? value : 0;
-            }
-        }
 
         public ControlForm()
         {
             InitializeComponent();
-            MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
+            
+            calculationSettings = new CalculationSettingsViewModel
+            {
+                MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations,
+                Colorizer = (Colorizers)Settings.Default.Colorizer
+            };
+            pgCalculationSettings.SelectedObject = calculationSettings;
+
             cmbColorizer.SelectedIndex = 0;
             cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
             try
@@ -95,6 +84,39 @@ namespace Mandelbrot
             }
             base.OnFormClosing(e);
         }
+        #region Calculation proress
+        public void SetProgress(int progress, TimeSpan? elapsed = null)
+        {
+            btCancel.Enabled = calculationRunning = progress >= 0;
+            if (calculationRunning)
+            {
+                Cursor = Cursors.AppStarting;
+                pbProgress.Value = progress;
+                lbProgress.Text = $"{progress}%";
+            }
+            else
+            {
+                Cursor = Cursors.Default;
+                lbProgress.Text = String.Empty;
+                pbProgress.Value = 0;
+            }
+
+            if (elapsed.HasValue)
+                lbElapsed.Text = elapsed.Value.ToString();
+        }
+        private void btCancel_Click(object sender, EventArgs e)
+        {
+            CancelClicked?.Invoke(this, e);
+        }
+        #endregion
+        #region Calculation settings
+        private void btApplyCalculationSettings_Click(object sender, EventArgs e)
+        {
+        }
+        private void btResetCalculationSettings_Click(object sender, EventArgs e)
+        {
+        }
+        #endregion
         public void SetCurrentScope(ComplexScope scope)
         {
             lbCurrentReal.Text = CreateAxisString(scope.LowerLeft.Real, scope.UpperRight.Real);
