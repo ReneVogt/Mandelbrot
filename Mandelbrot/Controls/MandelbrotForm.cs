@@ -256,7 +256,7 @@ namespace Mandelbrot.Controls
             if (scope is {})
             {
                 currentScope = scope;
-                controlForm.SetCurrentScope(scope);
+                controlForm.SetCurrentScope(scope, Pixels);
                 controlForm.SetCurrentSelection(scope);
             }
 

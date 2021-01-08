@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Numerics;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+
 #nullable enable
 
 namespace Mandelbrot.Controls

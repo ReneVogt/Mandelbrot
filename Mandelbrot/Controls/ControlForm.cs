@@ -94,7 +94,6 @@ namespace Mandelbrot.Controls
             base.OnFormClosing(e);
         }
         #endregion
-
         #region Calculation proress
         public void SetProgress(int progress, TimeSpan? elapsed = null)
         {
@@ -165,9 +164,11 @@ namespace Mandelbrot.Controls
             ResetCurrentScope();
         }
         private void btResetScope_Click(object sender, EventArgs e) => ResetCurrentScope();
-        public void SetCurrentScope(ComplexScope scope)
+        public void SetCurrentScope(ComplexScope scope, Size resolution)
         {
             currentScope = new ComplexScope(scope.LowerLeft, scope.UpperRight);
+            currentScopeViewModel.Resolution = resolution;
+            pgCurrentScope.Refresh();
             if (!btApplyScope.Enabled)
                 ResetCurrentScope();
         }

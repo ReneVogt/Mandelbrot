@@ -146,7 +146,12 @@
     <None Include="Resources\apply.png" />
     <None Include="Resources\cancel.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\adjustaxes.png" />
+    <Content Include="Resources\fullscreen.png" />
+    <Content Include="Resources\next.png" />
+    <Content Include="Resources\previous.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
