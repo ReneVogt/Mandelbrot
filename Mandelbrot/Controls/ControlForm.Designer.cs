@@ -58,7 +58,6 @@ namespace Mandelbrot.Controls
             this.btResetCalculationSettings = new System.Windows.Forms.Button();
             this.btApplyCalculationSettings = new System.Windows.Forms.Button();
             this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.gbBookmarks = new System.Windows.Forms.GroupBox();
             this.btExit = new System.Windows.Forms.Button();
             this.cmbImageFormat = new System.Windows.Forms.ComboBox();
             this.gbCurrentView.SuspendLayout();
@@ -92,7 +91,7 @@ namespace Mandelbrot.Controls
             this.gbCurrentView.Controls.Add(this.btStartScreen);
             this.gbCurrentView.Location = new System.Drawing.Point(12, 195);
             this.gbCurrentView.Name = "gbCurrentView";
-            this.gbCurrentView.Size = new System.Drawing.Size(442, 189);
+            this.gbCurrentView.Size = new System.Drawing.Size(442, 211);
             this.gbCurrentView.TabIndex = 20;
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
@@ -106,7 +105,7 @@ namespace Mandelbrot.Controls
             this.pgCurrentScope.Location = new System.Drawing.Point(9, 19);
             this.pgCurrentScope.Name = "pgCurrentScope";
             this.pgCurrentScope.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.pgCurrentScope.Size = new System.Drawing.Size(398, 124);
+            this.pgCurrentScope.Size = new System.Drawing.Size(398, 156);
             this.pgCurrentScope.TabIndex = 0;
             this.pgCurrentScope.ToolbarVisible = false;
             this.pgCurrentScope.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.pgCurrentScope_PropertyValueChanged);
@@ -117,7 +116,7 @@ namespace Mandelbrot.Controls
             this.btResetScope.Enabled = false;
             this.btResetScope.ImageKey = "cancel";
             this.btResetScope.ImageList = this.buttonImages;
-            this.btResetScope.Location = new System.Drawing.Point(412, 48);
+            this.btResetScope.Location = new System.Drawing.Point(413, 48);
             this.btResetScope.Name = "btResetScope";
             this.btResetScope.Size = new System.Drawing.Size(24, 24);
             this.btResetScope.TabIndex = 20;
@@ -144,7 +143,7 @@ namespace Mandelbrot.Controls
             this.btApplyScope.Enabled = false;
             this.btApplyScope.ImageKey = "apply";
             this.btApplyScope.ImageList = this.buttonImages;
-            this.btApplyScope.Location = new System.Drawing.Point(412, 18);
+            this.btApplyScope.Location = new System.Drawing.Point(413, 18);
             this.btApplyScope.Name = "btApplyScope";
             this.btApplyScope.Size = new System.Drawing.Size(24, 24);
             this.btApplyScope.TabIndex = 10;
@@ -158,20 +157,20 @@ namespace Mandelbrot.Controls
             this.cbAdjustAxes.Appearance = System.Windows.Forms.Appearance.Button;
             this.cbAdjustAxes.ImageKey = "adjustaxes";
             this.cbAdjustAxes.ImageList = this.buttonImages;
-            this.cbAdjustAxes.Location = new System.Drawing.Point(99, 149);
+            this.cbAdjustAxes.Location = new System.Drawing.Point(39, 181);
             this.cbAdjustAxes.Name = "cbAdjustAxes";
             this.cbAdjustAxes.Size = new System.Drawing.Size(24, 24);
-            this.cbAdjustAxes.TabIndex = 60;
+            this.cbAdjustAxes.TabIndex = 70;
             this.buttonToolTip.SetToolTip(this.cbAdjustAxes, "Adjust axes");
             this.cbAdjustAxes.UseVisualStyleBackColor = true;
             this.cbAdjustAxes.CheckedChanged += new System.EventHandler(this.cbAdjustAxes_CheckedChanged);
             // 
             // btSave
             // 
-            this.btSave.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btSave.ImageKey = "save";
             this.btSave.ImageList = this.buttonImages;
-            this.btSave.Location = new System.Drawing.Point(383, 149);
+            this.btSave.Location = new System.Drawing.Point(383, 181);
             this.btSave.Name = "btSave";
             this.btSave.Size = new System.Drawing.Size(24, 24);
             this.btSave.TabIndex = 90;
@@ -185,10 +184,10 @@ namespace Mandelbrot.Controls
             this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
             this.cbFullscreen.ImageKey = "fullscreen";
             this.cbFullscreen.ImageList = this.buttonImages;
-            this.cbFullscreen.Location = new System.Drawing.Point(129, 149);
+            this.cbFullscreen.Location = new System.Drawing.Point(9, 181);
             this.cbFullscreen.Name = "cbFullscreen";
             this.cbFullscreen.Size = new System.Drawing.Size(24, 24);
-            this.cbFullscreen.TabIndex = 70;
+            this.cbFullscreen.TabIndex = 60;
             this.cbFullscreen.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.buttonToolTip.SetToolTip(this.cbFullscreen, "Toggle fullscreen mode");
             this.cbFullscreen.UseVisualStyleBackColor = true;
@@ -196,42 +195,42 @@ namespace Mandelbrot.Controls
             // 
             // btNext
             // 
-            this.btNext.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btNext.Enabled = false;
             this.btNext.ImageKey = "next";
             this.btNext.ImageList = this.buttonImages;
-            this.btNext.Location = new System.Drawing.Point(69, 149);
+            this.btNext.Location = new System.Drawing.Point(413, 108);
             this.btNext.Name = "btNext";
             this.btNext.Size = new System.Drawing.Size(24, 24);
-            this.btNext.TabIndex = 50;
+            this.btNext.TabIndex = 40;
             this.buttonToolTip.SetToolTip(this.btNext, "Next scope");
             this.btNext.UseVisualStyleBackColor = true;
             this.btNext.Click += new System.EventHandler(this.btNext_Click);
             // 
             // btPrevioius
             // 
-            this.btPrevioius.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btPrevioius.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btPrevioius.Enabled = false;
             this.btPrevioius.ImageKey = "previous";
             this.btPrevioius.ImageList = this.buttonImages;
-            this.btPrevioius.Location = new System.Drawing.Point(38, 149);
+            this.btPrevioius.Location = new System.Drawing.Point(413, 78);
             this.btPrevioius.Name = "btPrevioius";
             this.btPrevioius.Size = new System.Drawing.Size(24, 24);
-            this.btPrevioius.TabIndex = 40;
+            this.btPrevioius.TabIndex = 30;
             this.buttonToolTip.SetToolTip(this.btPrevioius, "Previous scope");
             this.btPrevioius.UseVisualStyleBackColor = true;
             this.btPrevioius.Click += new System.EventHandler(this.btPrevioius_Click);
             // 
             // btStartScreen
             // 
-            this.btStartScreen.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btStartScreen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btStartScreen.AutoSize = true;
             this.btStartScreen.ImageKey = "Mandelbrot";
             this.btStartScreen.ImageList = this.buttonImages;
-            this.btStartScreen.Location = new System.Drawing.Point(9, 149);
+            this.btStartScreen.Location = new System.Drawing.Point(413, 138);
             this.btStartScreen.Name = "btStartScreen";
             this.btStartScreen.Size = new System.Drawing.Size(24, 24);
-            this.btStartScreen.TabIndex = 30;
+            this.btStartScreen.TabIndex = 50;
             this.buttonToolTip.SetToolTip(this.btStartScreen, "Total view");
             this.btStartScreen.UseVisualStyleBackColor = true;
             this.btStartScreen.Click += new System.EventHandler(this.btStartScreen_Click);
@@ -244,7 +243,7 @@ namespace Mandelbrot.Controls
             this.gbCurrentSelection.Controls.Add(this.lbSelectionReal);
             this.gbCurrentSelection.Controls.Add(this.label5);
             this.gbCurrentSelection.Controls.Add(this.label6);
-            this.gbCurrentSelection.Location = new System.Drawing.Point(12, 496);
+            this.gbCurrentSelection.Location = new System.Drawing.Point(12, 412);
             this.gbCurrentSelection.Name = "gbCurrentSelection";
             this.gbCurrentSelection.Size = new System.Drawing.Size(442, 63);
             this.gbCurrentSelection.TabIndex = 40;
@@ -403,22 +402,11 @@ namespace Mandelbrot.Controls
             this.btApplyCalculationSettings.UseVisualStyleBackColor = true;
             this.btApplyCalculationSettings.Click += new System.EventHandler(this.btApplyCalculationSettings_Click);
             // 
-            // gbBookmarks
-            // 
-            this.gbBookmarks.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbBookmarks.Location = new System.Drawing.Point(12, 390);
-            this.gbBookmarks.Name = "gbBookmarks";
-            this.gbBookmarks.Size = new System.Drawing.Size(442, 100);
-            this.gbBookmarks.TabIndex = 30;
-            this.gbBookmarks.TabStop = false;
-            this.gbBookmarks.Text = "Bookmarked scopes";
-            // 
             // btExit
             // 
             this.btExit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btExit.Location = new System.Drawing.Point(12, 567);
+            this.btExit.Location = new System.Drawing.Point(12, 484);
             this.btExit.Name = "btExit";
             this.btExit.Size = new System.Drawing.Size(442, 23);
             this.btExit.TabIndex = 50;
@@ -428,20 +416,20 @@ namespace Mandelbrot.Controls
             // 
             // cmbImageFormat
             // 
+            this.cmbImageFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbImageFormat.FormattingEnabled = true;
-            this.cmbImageFormat.Location = new System.Drawing.Point(314, 150);
+            this.cmbImageFormat.Location = new System.Drawing.Point(326, 182);
             this.cmbImageFormat.Name = "cmbImageFormat";
-            this.cmbImageFormat.Size = new System.Drawing.Size(63, 21);
+            this.cmbImageFormat.Size = new System.Drawing.Size(51, 21);
             this.cmbImageFormat.TabIndex = 80;
             // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(467, 602);
+            this.ClientSize = new System.Drawing.Size(467, 519);
             this.Controls.Add(this.btExit);
-            this.Controls.Add(this.gbBookmarks);
             this.Controls.Add(this.gbCalculationSettings);
             this.Controls.Add(this.gbCalculationProgress);
             this.Controls.Add(this.gbCurrentSelection);
@@ -490,7 +478,6 @@ namespace Mandelbrot.Controls
         private System.Windows.Forms.PropertyGrid pgCalculationSettings;
         private System.Windows.Forms.ImageList buttonImages;
         private System.Windows.Forms.ToolTip buttonToolTip;
-        private System.Windows.Forms.GroupBox gbBookmarks;
         private System.Windows.Forms.Button btExit;
         private System.Windows.Forms.PropertyGrid pgCurrentScope;
         private System.Windows.Forms.Button btResetScope;
