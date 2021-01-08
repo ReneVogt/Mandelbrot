@@ -131,11 +131,11 @@ namespace Mandelbrot.Controls
             this.buttonImages.Images.SetKeyName(0, "apply");
             this.buttonImages.Images.SetKeyName(1, "cancel");
             this.buttonImages.Images.SetKeyName(2, "Mandelbrot");
-            this.buttonImages.Images.SetKeyName(3, "next");
-            this.buttonImages.Images.SetKeyName(4, "previous");
-            this.buttonImages.Images.SetKeyName(5, "fullscreen");
-            this.buttonImages.Images.SetKeyName(6, "adjustaxes");
-            this.buttonImages.Images.SetKeyName(7, "save");
+            this.buttonImages.Images.SetKeyName(3, "fullscreen");
+            this.buttonImages.Images.SetKeyName(4, "adjustaxes");
+            this.buttonImages.Images.SetKeyName(5, "save");
+            this.buttonImages.Images.SetKeyName(6, "next");
+            this.buttonImages.Images.SetKeyName(7, "previous");
             // 
             // btApplyScope
             // 
