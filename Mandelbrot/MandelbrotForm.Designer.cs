@@ -30,25 +30,8 @@ namespace Mandelbrot
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.pbView = new System.Windows.Forms.Panel();
             this.progroessTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
-            // 
-            // pbView
-            // 
-            this.pbView.BackColor = System.Drawing.Color.Black;
-            this.pbView.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pbView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pbView.Location = new System.Drawing.Point(0, 0);
-            this.pbView.Name = "pbView";
-            this.pbView.Size = new System.Drawing.Size(788, 575);
-            this.pbView.TabIndex = 0;
-            this.pbView.SizeChanged += new System.EventHandler(this.pbView_SizeChanged);
-            this.pbView.Paint += new System.Windows.Forms.PaintEventHandler(this.pbView_Paint);
-            this.pbView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pbView_MouseClick);
-            this.pbView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbView_MouseDoubleClick);
-            this.pbView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbView_MouseMove);
-            this.pbView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbView_MouseUp);
             // 
             // progroessTimer
             // 
@@ -60,8 +43,9 @@ namespace Mandelbrot
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Black;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(788, 575);
-            this.Controls.Add(this.pbView);
             this.DoubleBuffered = true;
             this.Name = "MandelbrotForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -71,8 +55,6 @@ namespace Mandelbrot
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel pbView;
         private System.Windows.Forms.Timer progroessTimer;
     }
 }
