@@ -61,9 +61,8 @@ namespace Mandelbrot.Controls
             public Colorizers Colorizer { get; set; }
             [DisplayName("Resolution")]
             [Category("Calculation settings")]
-            public Size Resolution { get; private set; }
-
-            public void SetResolution(Size r) => Resolution = r;
+            [ReadOnly(true)]
+            public Size Resolution { get; set; }
         }
     }
 }

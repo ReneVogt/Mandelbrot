@@ -58,7 +58,7 @@ namespace Mandelbrot.Controls
             get => calculationSettings.Resolution;
             set
             {
-                calculationSettings.SetResolution(value);
+                calculationSettings.Resolution = value;
                 pgCalculationSettings.Refresh();
             }
         }

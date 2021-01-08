@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Drawing;
 using System.Numerics;
 
 #nullable enable
@@ -27,6 +28,10 @@ namespace Mandelbrot.Controls
             [DefaultValue(typeof(ComplexViewModel), "(-2, -2")]
             [TypeConverter(typeof(ExpandableObjectConverter))]
             public ComplexViewModel UpperRight { get; } = new ComplexViewModel();
+            [DisplayName("Resolution")]
+            [Category("Complex rectangle")]
+            [ReadOnly(true)]
+            public Size Resolution { get; set; }
         }
     }
 }
