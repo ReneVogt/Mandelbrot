@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -52,9 +51,6 @@ namespace Mandelbrot
             Icon = Resources.Mandelbrot;
             InitializeComponent();
 
-            //typeof(Panel).InvokeMember(nameof(DoubleBuffered), BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null,
-            //                           pbView, new object[] {true});
-
             currentScope = AdjustScope(ComplexScope.Mandelbrot);
 
             controlForm.RecalculationRequested += (sender, e) => _ = RunCalculationAsync(currentScope, UpdateStackButtons);
@@ -81,21 +77,17 @@ namespace Mandelbrot
         }
         protected override void OnResizeBegin(EventArgs e)
         {
-            Debug.WriteLine($"ONRESIZEBEGIN");
             resizing = true;
             base.OnResizeBegin(e);
         }
         protected override void OnClientSizeChanged(EventArgs e)
         {
-            Debug.WriteLine($"ONCLIENTSIZECHANGED pre base with {resizing}.");
             base.OnClientSizeChanged(e);
-            Debug.WriteLine($"ONCLIENTSIZECHANGED post base with {resizing}.");
             CancelCalculation();
             CurrentImage = null;
         }
         protected override void OnResizeEnd(EventArgs e)
         {
-            Debug.WriteLine($"ONRESIZEEND");
             resizing = false;
             base.OnResizeEnd(e);
             _ = RunCalculationAsync(AdjustScope(currentScope), UpdateStackButtons);
@@ -123,7 +115,6 @@ namespace Mandelbrot
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            Debug.WriteLine($"ONMOUSEMOVE {e.Location}");
             if (e.Button != MouseButtons.Left)
             {
                 mouseStartingPoint = null;
@@ -215,89 +206,6 @@ namespace Mandelbrot
             progressToDraw = p;
             InvalidateView();
         }
-        #endregion
-        #region PictureBox event handlers
-        //private void pbView_SizeChanged(object sender, EventArgs e)
-        //{
-        //    CancelCalculation();
-        //    CurrentImage = null;
-        //}
-        //private void pbView_MouseMove(object sender, MouseEventArgs e)
-        //{
-        //    if (e.Button != MouseButtons.Left)
-        //    {
-        //        mouseStartingPoint = null;
-        //        mouseSelection = null;
-        //    }
-        //    else
-        //    {
-        //        mouseStartingPoint ??= e.Location;
-        //        Point topLeft = new Point(Math.Min(mouseStartingPoint.Value.X, e.Location.X), Math.Min(e.Location.Y, mouseStartingPoint.Value.Y));
-        //        Size width = new Size(Math.Abs(e.Location.X - mouseStartingPoint.Value.X), Math.Abs(e.Location.Y - mouseStartingPoint.Value.Y));
-        //        mouseSelection = new Rectangle(topLeft, width);
-        //        InvalidateView();
-        //    }
-
-        //    if (mouseSelection?.Height > 0 && mouseSelection?.Width > 0)
-        //        controlForm.SetCurrentSelection(GetScopeFromRect(mouseSelection.Value));
-        //    else
-        //        controlForm.SetCurrentSelection(GetComplexFromPoint(e.Location));
-        //}
-        //private void pbView_MouseUp(object sender, MouseEventArgs e)
-        //{
-        //    if (e.Button == MouseButtons.Left && mouseSelection.HasValue && mouseSelection.Value.Width > 0 && mouseSelection.Value.Height > 0)
-        //    {
-        //        _ = RunCalculationAsync(AdjustScope(GetScopeFromRect(mouseSelection.Value)), InsertToStack);
-        //    }
-
-        //    mouseSelection = null;
-        //    mouseStartingPoint = null;
-        //    InvalidateView();
-        //}
-        //private void pbView_MouseClick(object sender, MouseEventArgs e)
-        //{
-        //    if (e.Button == MouseButtons.Right)
-        //    {
-        //        controlForm.Location = PointToScreen(e.Location);
-        //        if (!controlForm.Visible)
-        //        {
-        //            controlForm.Show(this);
-        //            controlForm.BringToFront();
-        //        }
-        //    }
-        //}
-        //private void pbView_MouseDoubleClick(object sender, MouseEventArgs e)
-        //{
-        //    if (e.Button == MouseButtons.Left)
-        //        ReturnToTotalView();
-        //}
-        //private void pbView_Paint(object sender, PaintEventArgs e)
-        //{
-        //    if (CurrentImage == null && currentGenerator?.IsCancelled != false && !resizing)
-        //        _ = RunCalculationAsync(AdjustScope(currentScope), UpdateStackButtons);
-
-        //    if (mouseSelection != null)
-        //        e.Graphics.DrawRectangle(Pens.White, mouseSelection.Value);
-
-        //    if (calculatingRect != null) 
-        //        e.Graphics.DrawRectangle(calculationRectanglePen, calculatingRect.Value);
-
-        //    if (progressToDraw > -1)
-        //        DrawProgress(e.Graphics);
-        //}
-        //void DrawProgress(Graphics graphics)
-        //{
-        //    var text = $"{progressToDraw}%";
-        //    var textSize = graphics.MeasureString(text, progressFont);
-        //    var textRect = new RectangleF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2, textSize.Width, textSize.Height);
-        //    var s = Math.Max(textSize.Width, textSize.Height) + 50;
-        //    var backRect = new Rectangle((int)(textRect.Left + textRect.Width / 2 - s / 2), (int)(textRect.Top + textRect.Height / 2 - s / 2), (int)s,
-        //                                 (int)s);
-        //    graphics.DrawEllipse(progressWheelPen, backRect);
-        //    graphics.FillPie(progressBackBrush, backRect, 3.6f * progressToDraw - 90, 3.6f * (100 - progressToDraw));
-        //    graphics.FillPie(Brushes.Green, backRect, -90, 3.6f * progressToDraw);
-        //    graphics.DrawString(text, progressFont, Brushes.White, textRect);
-        //}
         #endregion
         #region Calculation
         async Task RunCalculationAsync(ComplexScope scope, Action stackAction)
