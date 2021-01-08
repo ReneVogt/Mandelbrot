@@ -30,7 +30,7 @@ namespace Mandelbrot.Controls
         protected virtual void OnFullscreenChanged(EventArgs e) => FullscreenChanged?.Invoke(this, e);
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.F11)
+            if (e.KeyCode == Keys.F11 && e.Modifiers == Keys.None)
             {
                 e.Handled = true;
                 Fullscreen = !Fullscreen;

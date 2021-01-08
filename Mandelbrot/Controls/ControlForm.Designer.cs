@@ -60,6 +60,7 @@ namespace Mandelbrot.Controls
             this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.gbBookmarks = new System.Windows.Forms.GroupBox();
             this.btExit = new System.Windows.Forms.Button();
+            this.cmbImageFormat = new System.Windows.Forms.ComboBox();
             this.gbCurrentView.SuspendLayout();
             this.gbCurrentSelection.SuspendLayout();
             this.gbCalculationProgress.SuspendLayout();
@@ -79,6 +80,7 @@ namespace Mandelbrot.Controls
             // 
             this.gbCurrentView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCurrentView.Controls.Add(this.cmbImageFormat);
             this.gbCurrentView.Controls.Add(this.pgCurrentScope);
             this.gbCurrentView.Controls.Add(this.btResetScope);
             this.gbCurrentView.Controls.Add(this.btApplyScope);
@@ -134,6 +136,7 @@ namespace Mandelbrot.Controls
             this.buttonImages.Images.SetKeyName(4, "previous");
             this.buttonImages.Images.SetKeyName(5, "fullscreen");
             this.buttonImages.Images.SetKeyName(6, "adjustaxes");
+            this.buttonImages.Images.SetKeyName(7, "save");
             // 
             // btApplyScope
             // 
@@ -166,11 +169,13 @@ namespace Mandelbrot.Controls
             // btSave
             // 
             this.btSave.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btSave.Location = new System.Drawing.Point(159, 150);
+            this.btSave.ImageKey = "save";
+            this.btSave.ImageList = this.buttonImages;
+            this.btSave.Location = new System.Drawing.Point(383, 149);
             this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(75, 23);
-            this.btSave.TabIndex = 80;
-            this.btSave.Text = "Save...";
+            this.btSave.Size = new System.Drawing.Size(24, 24);
+            this.btSave.TabIndex = 90;
+            this.buttonToolTip.SetToolTip(this.btSave, "Save image with selected format");
             this.btSave.UseVisualStyleBackColor = true;
             this.btSave.Click += new System.EventHandler(this.btSave_Click);
             // 
@@ -421,6 +426,15 @@ namespace Mandelbrot.Controls
             this.btExit.UseVisualStyleBackColor = true;
             this.btExit.Click += new System.EventHandler(this.btExit_Click);
             // 
+            // cmbImageFormat
+            // 
+            this.cmbImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbImageFormat.FormattingEnabled = true;
+            this.cmbImageFormat.Location = new System.Drawing.Point(314, 150);
+            this.cmbImageFormat.Name = "cmbImageFormat";
+            this.cmbImageFormat.Size = new System.Drawing.Size(63, 21);
+            this.cmbImageFormat.TabIndex = 80;
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -433,6 +447,7 @@ namespace Mandelbrot.Controls
             this.Controls.Add(this.gbCurrentSelection);
             this.Controls.Add(this.gbCurrentView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ControlForm";
@@ -481,5 +496,6 @@ namespace Mandelbrot.Controls
         private System.Windows.Forms.Button btResetScope;
         private System.Windows.Forms.Button btApplyScope;
         private System.Windows.Forms.Button btCancel;
+        private System.Windows.Forms.ComboBox cmbImageFormat;
     }
 }

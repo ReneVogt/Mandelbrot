@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
@@ -14,6 +17,20 @@ namespace Mandelbrot.Controls
 {
     public partial class ControlForm : Form
     {
+        #region Constants
+        readonly Dictionary<string, ImageFormat> imageFormats = new Dictionary<string, ImageFormat>
+        {
+            ["Bmp"] = ImageFormat.Bmp,
+            ["Emf"] = ImageFormat.Emf,
+            ["Exif"] = ImageFormat.Exif,
+            ["Gif"] = ImageFormat.Gif,
+            ["Icon"] = ImageFormat.Icon,
+            ["Jpeg"] = ImageFormat.Jpeg,
+            ["Png"] = ImageFormat.Png,
+            ["Tiff"] = ImageFormat.Tiff,
+            ["Wmf"] = ImageFormat.Wmf
+        };
+        #endregion
         #region Fields
         readonly CalculationSettingsViewModel calculationSettings;
         readonly ScopeViewModel currentScopeViewModel = new ScopeViewModel();
@@ -28,7 +45,7 @@ namespace Mandelbrot.Controls
         public event EventHandler? PreviousClicked;
         public event EventHandler? NextClicked;
         public event EventHandler? FullscreenChanged;
-        public event EventHandler? SaveClicked;
+        public event EventHandler<SaveImageClickedEventArgs>? SaveImageClicked;
         #endregion
         #region Properties
         public int MaximumNumberOfIterations { get; private set; }
@@ -79,6 +96,9 @@ namespace Mandelbrot.Controls
 
             pgCurrentScope.SelectedObject = currentScopeViewModel;
             cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
+
+            cmbImageFormat.Items.AddRange(imageFormats.Keys.Cast<object>().ToArray());
+            cmbImageFormat.SelectedItem = "Bmp";
         }
         #endregion
         #region Form event handlers
@@ -90,6 +110,8 @@ namespace Mandelbrot.Controls
             {
                 e.Cancel = true;
                 Hide();
+                ParentForm?.BringToFront();
+                ParentForm?.Focus();
             }
             base.OnFormClosing(e);
         }
@@ -221,7 +243,7 @@ namespace Mandelbrot.Controls
         }
         private void btSave_Click(object sender, EventArgs e)
         {
-            SaveClicked?.Invoke(this, e);
+            SaveImageClicked?.Invoke(this, new SaveImageClickedEventArgs(cmbImageFormat.Text, imageFormats[cmbImageFormat.Text]));
         }
 
         private void btExit_Click(object sender, EventArgs e)

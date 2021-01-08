@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -58,7 +59,7 @@ namespace Mandelbrot.Controls
             controlForm.NextClicked += (sender, e) => GotoNextScope();
             controlForm.TotalClicked += (sender, e) => ReturnToTotalView();
             controlForm.AdjustClicked += (sender, e) => AdjustAxes();
-            controlForm.SaveClicked += (sender, e) => SaveImage();
+            controlForm.SaveImageClicked += (sender, e) => SaveImage(e.ImageFormatName, e.ImageFormat);
             controlForm.FullscreenChanged += (sender, e) => Fullscreen = controlForm.Fullscreen;
         }
         #region Form event handlers
@@ -334,15 +335,10 @@ namespace Mandelbrot.Controls
             var scope = forwardStack.Peek();
             _ = RunCalculationAsync(scope, OnPoppedNext);
         }
-        void SaveImage()
+        void SaveImage(string imageFormatName, ImageFormat imageFormat)
         {
             var bmp = CurrentImage;
             if (bmp == null) return;
-
-            using var imageFormatDialog = new DlgSelectImageFormat();
-            if (imageFormatDialog.ShowDialog(this) != DialogResult.OK) return;
-            var imageFormatName = imageFormatDialog.ImageFormatName;
-            var imageFormat = imageFormatDialog.ImageFormat;
 
             using var saveFileDialog = new SaveFileDialog
             {
