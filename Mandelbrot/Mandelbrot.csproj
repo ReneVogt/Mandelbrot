@@ -139,10 +139,14 @@
     <None Include="Resources\cancel.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\adjustaxes.png" />
-    <Content Include="Resources\fullscreen.png" />
-    <Content Include="Resources\next.png" />
-    <Content Include="Resources\previous.png" />
+    <None Include="Resources\adjustaxes.png" />
+    <None Include="Resources\fullscreen.png" />
+    <None Include="Resources\next.png" />
+    <None Include="Resources\previous.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\favorites.png" />
+    <None Include="Resources\save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

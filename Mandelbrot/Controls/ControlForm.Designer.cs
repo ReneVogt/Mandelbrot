@@ -33,6 +33,7 @@ namespace Mandelbrot.Controls
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlForm));
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
+            this.cmbImageFormat = new System.Windows.Forms.ComboBox();
             this.pgCurrentScope = new System.Windows.Forms.PropertyGrid();
             this.btResetScope = new System.Windows.Forms.Button();
             this.buttonImages = new System.Windows.Forms.ImageList(this.components);
@@ -59,7 +60,7 @@ namespace Mandelbrot.Controls
             this.btApplyCalculationSettings = new System.Windows.Forms.Button();
             this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btExit = new System.Windows.Forms.Button();
-            this.cmbImageFormat = new System.Windows.Forms.ComboBox();
+            this.btManageFavorites = new System.Windows.Forms.Button();
             this.gbCurrentView.SuspendLayout();
             this.gbCurrentSelection.SuspendLayout();
             this.gbCalculationProgress.SuspendLayout();
@@ -79,6 +80,7 @@ namespace Mandelbrot.Controls
             // 
             this.gbCurrentView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCurrentView.Controls.Add(this.btManageFavorites);
             this.gbCurrentView.Controls.Add(this.cmbImageFormat);
             this.gbCurrentView.Controls.Add(this.pgCurrentScope);
             this.gbCurrentView.Controls.Add(this.btResetScope);
@@ -95,6 +97,16 @@ namespace Mandelbrot.Controls
             this.gbCurrentView.TabIndex = 20;
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
+            // 
+            // cmbImageFormat
+            // 
+            this.cmbImageFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbImageFormat.FormattingEnabled = true;
+            this.cmbImageFormat.Location = new System.Drawing.Point(326, 182);
+            this.cmbImageFormat.Name = "cmbImageFormat";
+            this.cmbImageFormat.Size = new System.Drawing.Size(51, 21);
+            this.cmbImageFormat.TabIndex = 90;
             // 
             // pgCurrentScope
             // 
@@ -136,6 +148,7 @@ namespace Mandelbrot.Controls
             this.buttonImages.Images.SetKeyName(5, "save");
             this.buttonImages.Images.SetKeyName(6, "next");
             this.buttonImages.Images.SetKeyName(7, "previous");
+            this.buttonImages.Images.SetKeyName(8, "favorites");
             // 
             // btApplyScope
             // 
@@ -153,7 +166,7 @@ namespace Mandelbrot.Controls
             // 
             // cbAdjustAxes
             // 
-            this.cbAdjustAxes.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cbAdjustAxes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbAdjustAxes.Appearance = System.Windows.Forms.Appearance.Button;
             this.cbAdjustAxes.ImageKey = "adjustaxes";
             this.cbAdjustAxes.ImageList = this.buttonImages;
@@ -173,14 +186,14 @@ namespace Mandelbrot.Controls
             this.btSave.Location = new System.Drawing.Point(383, 181);
             this.btSave.Name = "btSave";
             this.btSave.Size = new System.Drawing.Size(24, 24);
-            this.btSave.TabIndex = 90;
+            this.btSave.TabIndex = 100;
             this.buttonToolTip.SetToolTip(this.btSave, "Save image with selected format");
             this.btSave.UseVisualStyleBackColor = true;
             this.btSave.Click += new System.EventHandler(this.btSave_Click);
             // 
             // cbFullscreen
             // 
-            this.cbFullscreen.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cbFullscreen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
             this.cbFullscreen.ImageKey = "fullscreen";
             this.cbFullscreen.ImageList = this.buttonImages;
@@ -414,15 +427,18 @@ namespace Mandelbrot.Controls
             this.btExit.UseVisualStyleBackColor = true;
             this.btExit.Click += new System.EventHandler(this.btExit_Click);
             // 
-            // cmbImageFormat
+            // btManageFavorites
             // 
-            this.cmbImageFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmbImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbImageFormat.FormattingEnabled = true;
-            this.cmbImageFormat.Location = new System.Drawing.Point(326, 182);
-            this.cmbImageFormat.Name = "cmbImageFormat";
-            this.cmbImageFormat.Size = new System.Drawing.Size(51, 21);
-            this.cmbImageFormat.TabIndex = 80;
+            this.btManageFavorites.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btManageFavorites.ImageKey = "favorites";
+            this.btManageFavorites.ImageList = this.buttonImages;
+            this.btManageFavorites.Location = new System.Drawing.Point(69, 181);
+            this.btManageFavorites.Name = "btManageFavorites";
+            this.btManageFavorites.Size = new System.Drawing.Size(24, 24);
+            this.btManageFavorites.TabIndex = 80;
+            this.buttonToolTip.SetToolTip(this.btManageFavorites, "Favorites...");
+            this.btManageFavorites.UseVisualStyleBackColor = true;
+            this.btManageFavorites.Click += new System.EventHandler(this.btManageFavorites_Click);
             // 
             // ControlForm
             // 
@@ -484,5 +500,6 @@ namespace Mandelbrot.Controls
         private System.Windows.Forms.Button btApplyScope;
         private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.ComboBox cmbImageFormat;
+        private System.Windows.Forms.Button btManageFavorites;
     }
 }

@@ -203,6 +203,9 @@ namespace Mandelbrot.Controls
             pgCurrentScope.Refresh();
             btApplyScope.Enabled = btResetScope.Enabled = false;
         }
+        private void btManageFavorites_Click(object sender, EventArgs e)
+        {
+        }
         #endregion
 
 
