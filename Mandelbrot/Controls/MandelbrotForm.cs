@@ -9,9 +9,8 @@ using Mandelbrot.Properties;
 using MandelbrotGenerator;
 
 #nullable enable
-#pragma warning disable IDE1006 // Benennungsstile
 
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     public partial class MandelbrotForm : FullscreenableForm
     {
@@ -85,6 +84,7 @@ namespace Mandelbrot
             base.OnClientSizeChanged(e);
             CancelCalculation();
             CurrentImage = null;
+            controlForm.CurrentResolution = ClientSize;
         }
         protected override void OnResizeEnd(EventArgs e)
         {

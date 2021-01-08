@@ -64,48 +64,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlForm.CalculationViewModels.cs">
+    <Compile Include="Controls\ControlForm.CalculationViewModels.cs">
       <SubType>Form</SubType>
       <DependentUpon>ControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlForm.cs">
+    <Compile Include="Controls\ControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlForm.Designer.cs">
+    <Compile Include="Controls\ControlForm.Designer.cs">
       <DependentUpon>ControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlForm.ScopeViewModels.cs">
+    <Compile Include="Controls\ControlForm.ScopeViewModels.cs">
       <SubType>Form</SubType>
       <DependentUpon>ControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DlgSelectImageFormat.cs">
+    <Compile Include="Controls\DlgSelectImageFormat.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DlgSelectImageFormat.Designer.cs">
+    <Compile Include="Controls\DlgSelectImageFormat.Designer.cs">
       <DependentUpon>DlgSelectImageFormat.cs</DependentUpon>
     </Compile>
-    <Compile Include="FullscreenableForm.cs">
+    <Compile Include="Controls\FullscreenableForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LogarithmicUpDown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MandelbrotForm.cs">
+    <Compile Include="Controls\MandelbrotForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MandelbrotForm.Designer.cs">
+    <Compile Include="Controls\MandelbrotForm.Designer.cs">
       <DependentUpon>MandelbrotForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SavedScopes.cs" />
-    <EmbeddedResource Include="MandelbrotForm.resx">
+    <EmbeddedResource Include="Controls\MandelbrotForm.resx">
       <DependentUpon>MandelbrotForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ControlForm.resx">
+    <EmbeddedResource Include="Controls\ControlForm.resx">
       <DependentUpon>ControlForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DlgSelectImageFormat.resx">
+    <EmbeddedResource Include="Controls\DlgSelectImageFormat.resx">
       <DependentUpon>DlgSelectImageFormat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -149,6 +146,7 @@
     <None Include="Resources\apply.png" />
     <None Include="Resources\cancel.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

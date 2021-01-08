@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 #nullable enable
 
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     public class FullscreenableForm : Form
     {

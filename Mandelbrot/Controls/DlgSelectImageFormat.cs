@@ -3,7 +3,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     public partial class DlgSelectImageFormat : Form
     {

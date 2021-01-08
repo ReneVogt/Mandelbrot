@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.Numerics;
 using System.Windows.Forms;
@@ -9,7 +10,7 @@ using MandelbrotGenerator.Colorizer;
 #nullable enable
 #pragma warning disable IDE1006 // Benennungsstile
 
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     public partial class ControlForm : Form
     {
@@ -51,6 +52,15 @@ namespace Mandelbrot
         {
             get => cbFullscreen.Checked;
             set => cbFullscreen.Checked = value;
+        }
+        public Size CurrentResolution
+        {
+            get => calculationSettings.Resolution;
+            set
+            {
+                calculationSettings.SetResolution(value);
+                pgCalculationSettings.Refresh();
+            }
         }
         #endregion
         #region Construction

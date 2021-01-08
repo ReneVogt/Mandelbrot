@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Mandelbrot.Controls;
 using Mandelbrot.Properties;
 
 namespace Mandelbrot

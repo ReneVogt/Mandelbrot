@@ -3,7 +3,7 @@ using System.Numerics;
 
 #nullable enable
 
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     public partial class ControlForm
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     partial class MandelbrotForm
     {

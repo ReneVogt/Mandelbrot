@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
+
+// ReSharper disable MemberCanBePrivate.Local
 
 #nullable enable
 
-namespace Mandelbrot
+namespace Mandelbrot.Controls
 {
     public partial class ControlForm
     {
@@ -56,6 +59,11 @@ namespace Mandelbrot
             [DefaultValue(Colorizers.BlackAndWhite)]
             [TypeConverter(typeof(ColorizersTypeConverter))]
             public Colorizers Colorizer { get; set; }
+            [DisplayName("Resolution")]
+            [Category("Calculation settings")]
+            public Size Resolution { get; private set; }
+
+            public void SetResolution(Size r) => Resolution = r;
         }
     }
 }
