@@ -30,13 +30,21 @@ namespace Mandelbrot.Controls
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ToolStripMenuItem bmpToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem exifToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem gifToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem iconToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem emfToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem jpegToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem pngToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem tiffToolStripMenuItem;
+            System.Windows.Forms.ToolStripMenuItem wmfToolStripMenuItem;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlForm));
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.gbCurrentView = new System.Windows.Forms.GroupBox();
-            this.cmbImageFormat = new System.Windows.Forms.ComboBox();
+            this.buttonImages = new System.Windows.Forms.ImageList(this.components);
             this.pgCurrentScope = new System.Windows.Forms.PropertyGrid();
             this.btResetScope = new System.Windows.Forms.Button();
-            this.buttonImages = new System.Windows.Forms.ImageList(this.components);
             this.btApplyScope = new System.Windows.Forms.Button();
             this.cbAdjustAxes = new System.Windows.Forms.CheckBox();
             this.btSave = new System.Windows.Forms.Button();
@@ -60,12 +68,85 @@ namespace Mandelbrot.Controls
             this.btApplyCalculationSettings = new System.Windows.Forms.Button();
             this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btExit = new System.Windows.Forms.Button();
-            this.btManageFavorites = new System.Windows.Forms.Button();
+            this.imageFormatsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            bmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            gifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            iconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            emfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            jpegToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            pngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            tiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            wmfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbCurrentView.SuspendLayout();
             this.gbCurrentSelection.SuspendLayout();
             this.gbCalculationProgress.SuspendLayout();
             this.gbCalculationSettings.SuspendLayout();
+            this.imageFormatsMenu.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // bmpToolStripMenuItem
+            // 
+            bmpToolStripMenuItem.Name = "bmpToolStripMenuItem";
+            bmpToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            bmpToolStripMenuItem.Text = "Bmp";
+            bmpToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // exifToolStripMenuItem
+            // 
+            exifToolStripMenuItem.Name = "exifToolStripMenuItem";
+            exifToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            exifToolStripMenuItem.Text = "Exif";
+            exifToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // gifToolStripMenuItem
+            // 
+            gifToolStripMenuItem.Name = "gifToolStripMenuItem";
+            gifToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            gifToolStripMenuItem.Text = "Gif";
+            gifToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // iconToolStripMenuItem
+            // 
+            iconToolStripMenuItem.Name = "iconToolStripMenuItem";
+            iconToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            iconToolStripMenuItem.Text = "Icon";
+            iconToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // emfToolStripMenuItem
+            // 
+            emfToolStripMenuItem.Name = "emfToolStripMenuItem";
+            emfToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            emfToolStripMenuItem.Text = "Emf";
+            emfToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // jpegToolStripMenuItem
+            // 
+            jpegToolStripMenuItem.Name = "jpegToolStripMenuItem";
+            jpegToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            jpegToolStripMenuItem.Text = "Jpeg";
+            jpegToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // pngToolStripMenuItem
+            // 
+            pngToolStripMenuItem.Name = "pngToolStripMenuItem";
+            pngToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            pngToolStripMenuItem.Text = "Png";
+            pngToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // tiffToolStripMenuItem
+            // 
+            tiffToolStripMenuItem.Name = "tiffToolStripMenuItem";
+            tiffToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            tiffToolStripMenuItem.Text = "Tiff";
+            tiffToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
+            // 
+            // wmfToolStripMenuItem
+            // 
+            wmfToolStripMenuItem.Name = "wmfToolStripMenuItem";
+            wmfToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            wmfToolStripMenuItem.Text = "Wmf";
+            wmfToolStripMenuItem.Click += new System.EventHandler(this.OnImageFormatClicked);
             // 
             // pbProgress
             // 
@@ -80,8 +161,6 @@ namespace Mandelbrot.Controls
             // 
             this.gbCurrentView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbCurrentView.Controls.Add(this.btManageFavorites);
-            this.gbCurrentView.Controls.Add(this.cmbImageFormat);
             this.gbCurrentView.Controls.Add(this.pgCurrentScope);
             this.gbCurrentView.Controls.Add(this.btResetScope);
             this.gbCurrentView.Controls.Add(this.btApplyScope);
@@ -98,15 +177,19 @@ namespace Mandelbrot.Controls
             this.gbCurrentView.TabStop = false;
             this.gbCurrentView.Text = "Current scope";
             // 
-            // cmbImageFormat
+            // buttonImages
             // 
-            this.cmbImageFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmbImageFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbImageFormat.FormattingEnabled = true;
-            this.cmbImageFormat.Location = new System.Drawing.Point(326, 182);
-            this.cmbImageFormat.Name = "cmbImageFormat";
-            this.cmbImageFormat.Size = new System.Drawing.Size(51, 21);
-            this.cmbImageFormat.TabIndex = 90;
+            this.buttonImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("buttonImages.ImageStream")));
+            this.buttonImages.TransparentColor = System.Drawing.Color.Transparent;
+            this.buttonImages.Images.SetKeyName(0, "apply");
+            this.buttonImages.Images.SetKeyName(1, "cancel");
+            this.buttonImages.Images.SetKeyName(2, "Mandelbrot");
+            this.buttonImages.Images.SetKeyName(3, "fullscreen");
+            this.buttonImages.Images.SetKeyName(4, "adjustaxes");
+            this.buttonImages.Images.SetKeyName(5, "save");
+            this.buttonImages.Images.SetKeyName(6, "next");
+            this.buttonImages.Images.SetKeyName(7, "previous");
+            this.buttonImages.Images.SetKeyName(8, "favorites");
             // 
             // pgCurrentScope
             // 
@@ -135,20 +218,6 @@ namespace Mandelbrot.Controls
             this.buttonToolTip.SetToolTip(this.btResetScope, "Reset changes");
             this.btResetScope.UseVisualStyleBackColor = true;
             this.btResetScope.Click += new System.EventHandler(this.btResetScope_Click);
-            // 
-            // buttonImages
-            // 
-            this.buttonImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("buttonImages.ImageStream")));
-            this.buttonImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.buttonImages.Images.SetKeyName(0, "apply");
-            this.buttonImages.Images.SetKeyName(1, "cancel");
-            this.buttonImages.Images.SetKeyName(2, "Mandelbrot");
-            this.buttonImages.Images.SetKeyName(3, "fullscreen");
-            this.buttonImages.Images.SetKeyName(4, "adjustaxes");
-            this.buttonImages.Images.SetKeyName(5, "save");
-            this.buttonImages.Images.SetKeyName(6, "next");
-            this.buttonImages.Images.SetKeyName(7, "previous");
-            this.buttonImages.Images.SetKeyName(8, "favorites");
             // 
             // btApplyScope
             // 
@@ -183,7 +252,7 @@ namespace Mandelbrot.Controls
             this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btSave.ImageKey = "save";
             this.btSave.ImageList = this.buttonImages;
-            this.btSave.Location = new System.Drawing.Point(383, 181);
+            this.btSave.Location = new System.Drawing.Point(69, 181);
             this.btSave.Name = "btSave";
             this.btSave.Size = new System.Drawing.Size(24, 24);
             this.btSave.TabIndex = 100;
@@ -427,18 +496,20 @@ namespace Mandelbrot.Controls
             this.btExit.UseVisualStyleBackColor = true;
             this.btExit.Click += new System.EventHandler(this.btExit_Click);
             // 
-            // btManageFavorites
+            // imageFormatsMenu
             // 
-            this.btManageFavorites.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btManageFavorites.ImageKey = "favorites";
-            this.btManageFavorites.ImageList = this.buttonImages;
-            this.btManageFavorites.Location = new System.Drawing.Point(69, 181);
-            this.btManageFavorites.Name = "btManageFavorites";
-            this.btManageFavorites.Size = new System.Drawing.Size(24, 24);
-            this.btManageFavorites.TabIndex = 80;
-            this.buttonToolTip.SetToolTip(this.btManageFavorites, "Favorites...");
-            this.btManageFavorites.UseVisualStyleBackColor = true;
-            this.btManageFavorites.Click += new System.EventHandler(this.btManageFavorites_Click);
+            this.imageFormatsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            bmpToolStripMenuItem,
+            emfToolStripMenuItem,
+            exifToolStripMenuItem,
+            gifToolStripMenuItem,
+            iconToolStripMenuItem,
+            jpegToolStripMenuItem,
+            pngToolStripMenuItem,
+            tiffToolStripMenuItem,
+            wmfToolStripMenuItem});
+            this.imageFormatsMenu.Name = "imageFormatsMenu";
+            this.imageFormatsMenu.Size = new System.Drawing.Size(101, 202);
             // 
             // ControlForm
             // 
@@ -466,6 +537,7 @@ namespace Mandelbrot.Controls
             this.gbCalculationProgress.ResumeLayout(false);
             this.gbCalculationProgress.PerformLayout();
             this.gbCalculationSettings.ResumeLayout(false);
+            this.imageFormatsMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -499,7 +571,6 @@ namespace Mandelbrot.Controls
         private System.Windows.Forms.Button btResetScope;
         private System.Windows.Forms.Button btApplyScope;
         private System.Windows.Forms.Button btCancel;
-        private System.Windows.Forms.ComboBox cmbImageFormat;
-        private System.Windows.Forms.Button btManageFavorites;
+        private System.Windows.Forms.ContextMenuStrip imageFormatsMenu;
     }
 }

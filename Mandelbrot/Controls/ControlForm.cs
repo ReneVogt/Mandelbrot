@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
-using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
@@ -96,9 +95,6 @@ namespace Mandelbrot.Controls
 
             pgCurrentScope.SelectedObject = currentScopeViewModel;
             cbAdjustAxes.Checked = Settings.Default.AdjustAxesd;
-
-            cmbImageFormat.Items.AddRange(imageFormats.Keys.Cast<object>().ToArray());
-            cmbImageFormat.SelectedItem = "Bmp";
         }
         #endregion
         #region Form event handlers
@@ -203,9 +199,6 @@ namespace Mandelbrot.Controls
             pgCurrentScope.Refresh();
             btApplyScope.Enabled = btResetScope.Enabled = false;
         }
-        private void btManageFavorites_Click(object sender, EventArgs e)
-        {
-        }
         #endregion
 
 
@@ -246,7 +239,13 @@ namespace Mandelbrot.Controls
         }
         private void btSave_Click(object sender, EventArgs e)
         {
-            SaveImageClicked?.Invoke(this, new SaveImageClickedEventArgs(cmbImageFormat.Text, imageFormats[cmbImageFormat.Text]));
+            imageFormatsMenu.Show(btSave, 0, btSave.Height);
+        }
+        private void OnImageFormatClicked(object sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem {Text: var formatName} && imageFormats.TryGetValue(formatName, out var format))
+                SaveImageClicked?.Invoke(this, new SaveImageClickedEventArgs(formatName, format));
+
         }
 
         private void btExit_Click(object sender, EventArgs e)
