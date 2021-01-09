@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using Mandelbrot.Properties;
@@ -33,7 +33,7 @@ namespace Mandelbrot.Controls
         #region Fields
         readonly CalculationSettingsViewModel calculationSettings;
         readonly ScopeViewModel currentScopeViewModel = new ScopeViewModel();
-
+        readonly HashSet<string> expandedSelectionProperties = new HashSet<string>();
         ComplexScope currentScope = ComplexScope.Mandelbrot;
         #endregion
         #region Events
@@ -202,19 +202,60 @@ namespace Mandelbrot.Controls
         #endregion
 
 
-        public void SetCurrentSelection(ComplexScope scope)
+        public void SetCurrentSelection(ComplexScope scope, Rectangle mouseSelection)
         {
-            lbSelectionReal.Text = CreateAxisString(scope.LowerLeft.Real, scope.UpperRight.Real);
-            lbSelectionImaginary.Text = CreateAxisString(scope.LowerLeft.Imaginary, scope.UpperRight.Imaginary);
+            var model = new SelectionViewModel
+            {
+                Pixels = mouseSelection,
+                UpperRight = new ComplexViewModel
+                {
+                    Imaginary = scope.UpperRight.Imaginary,
+                    Real = scope.UpperRight.Real
+                },
+                LowerLeft = new ComplexViewModel
+                {
+                    Imaginary = scope.LowerLeft.Imaginary, 
+                    Real = scope.LowerLeft.Real
+                }
+            };
+
+            SaveExpandedSelectionProperties();
+            pgCurrentSelction.SelectedObject = model;
+            ExpandSelectionProperties();
         }
-        public void SetCurrentSelection(Complex point)
+        public void SetCurrentSelection(Complex point, Point mouseLocation)
         {
-            lbSelectionReal.Text = point.Real.ToString("G20");
-            lbSelectionImaginary.Text = point.Imaginary.ToString("G20");
+            var complex = new ComplexViewModel {Real = point.Real, Imaginary = point.Imaginary};
+            var model = new SelectionViewModel
+            {
+                Pixels = new Rectangle(mouseLocation, Size.Empty),
+                UpperRight = complex,
+                LowerLeft = complex
+            };
+
+            SaveExpandedSelectionProperties();
+            pgCurrentSelction.SelectedObject = model;
+            ExpandSelectionProperties();
         }
-        static string CreateAxisString(double min, double max) => min.Equals(max) ? FormatDouble(min) : $"{FormatDouble(min)} to {FormatDouble(max)}";
-        static string FormatDouble(double d) =>
-            d.ToString("G17").TrimEnd('0').TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToCharArray());
+        void SaveExpandedSelectionProperties()
+        {
+            var root = pgCurrentSelction.SelectedGridItem;
+            if (root is null) return;
+            while (root.Parent is {}) root = root.Parent;
+
+            expandedSelectionProperties.Clear();
+            foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expanded))
+                expandedSelectionProperties.Add(item.Label);
+        }
+        void ExpandSelectionProperties()
+        {
+            var root = pgCurrentSelction.SelectedGridItem;
+            if (root is null) return;
+            while (root.Parent is { }) root = root.Parent;
+
+            foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expandable && expandedSelectionProperties.Contains(item.Label)))
+                item.Expanded = true;
+        }
 
         private void btPrevioius_Click(object sender, EventArgs e)
         {

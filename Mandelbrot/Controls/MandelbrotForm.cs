@@ -131,9 +131,9 @@ namespace Mandelbrot.Controls
             }
 
             if (mouseSelection?.Height > 0 && mouseSelection?.Width > 0)
-                controlForm.SetCurrentSelection(GetScopeFromRect(mouseSelection.Value));
+                controlForm.SetCurrentSelection(GetScopeFromRect(mouseSelection.Value), mouseSelection.Value);
             else
-                controlForm.SetCurrentSelection(GetComplexFromPoint(e.Location));
+                controlForm.SetCurrentSelection(GetComplexFromPoint(e.Location), e.Location);
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
@@ -258,7 +258,7 @@ namespace Mandelbrot.Controls
             {
                 currentScope = scope;
                 controlForm.SetCurrentScope(scope, Pixels);
-                controlForm.SetCurrentSelection(scope);
+                controlForm.SetCurrentSelection(GetComplexFromPoint(MousePosition), MousePosition);
             }
 
             controlForm.SetProgress(-1, elapsed);

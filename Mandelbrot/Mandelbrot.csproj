@@ -78,6 +78,10 @@
       <SubType>Form</SubType>
       <DependentUpon>ControlForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ControlForm.SelectionViewModels.cs">
+      <SubType>Form</SubType>
+      <DependentUpon>ControlForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FullscreenableForm.cs">
       <SubType>Form</SubType>
     </Compile>
