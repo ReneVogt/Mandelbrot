@@ -182,6 +182,33 @@ namespace Mandelbrot.Controls
             ResetCurrentScope();
         }
         private void btResetScope_Click(object sender, EventArgs e) => ResetCurrentScope();
+        private void btPrevioius_Click(object sender, EventArgs e)
+        {
+            PreviousClicked?.Invoke(this, e);
+        }
+        private void btNext_Click(object sender, EventArgs e)
+        {
+            NextClicked?.Invoke(this, e);
+        }
+        private void btStartScreen_Click(object sender, EventArgs e)
+        {
+            TotalClicked?.Invoke(this, e);
+        }
+        private void cbFullscreen_CheckedChanged(object sender, EventArgs e)
+        {
+            FullscreenChanged?.Invoke(this, e);
+        }
+        private void cbAdjustAxes_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbAdjustAxes.Checked)
+                AdjustClicked?.Invoke(this, e);
+        }
+        private void OnImageFormatClicked(object sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem { Text: var formatName } && imageFormats.TryGetValue(formatName, out var format))
+                SaveImageClicked?.Invoke(this, new SaveImageClickedEventArgs(formatName, format));
+
+        }
         public void SetCurrentScope(ComplexScope scope, Size resolution)
         {
             currentScope = new ComplexScope(scope.LowerLeft, scope.UpperRight);
@@ -200,8 +227,7 @@ namespace Mandelbrot.Controls
             btApplyScope.Enabled = btResetScope.Enabled = false;
         }
         #endregion
-
-
+        #region Current selection
         public void SetCurrentSelection(ComplexScope scope, Rectangle mouseSelection)
         {
             var model = new SelectionViewModel
@@ -256,38 +282,7 @@ namespace Mandelbrot.Controls
             foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expandable && expandedSelectionProperties.Contains(item.Label)))
                 item.Expanded = true;
         }
-
-        private void btPrevioius_Click(object sender, EventArgs e)
-        {
-            PreviousClicked?.Invoke(this, e);
-        }
-        private void btNext_Click(object sender, EventArgs e)
-        {
-            NextClicked?.Invoke(this, e);
-        }
-        private void cbAdjustAxes_CheckedChanged(object sender, EventArgs e)
-        {
-            if (cbAdjustAxes.Checked)
-                AdjustClicked?.Invoke(this, e);
-        }
-        private void btStartScreen_Click(object sender, EventArgs e)
-        {
-            TotalClicked?.Invoke(this, e);
-        }
-        private void cbFullscreen_CheckedChanged(object sender, EventArgs e)
-        {
-            FullscreenChanged?.Invoke(this, e);
-        }
-        private void btSave_Click(object sender, EventArgs e)
-        {
-            imageFormatsMenu.Show(btSave, 0, btSave.Height);
-        }
-        private void OnImageFormatClicked(object sender, EventArgs e)
-        {
-            if (sender is ToolStripMenuItem {Text: var formatName} && imageFormats.TryGetValue(formatName, out var format))
-                SaveImageClicked?.Invoke(this, new SaveImageClickedEventArgs(formatName, format));
-
-        }
+        #endregion
 
         private void btExit_Click(object sender, EventArgs e)
         {

@@ -47,7 +47,6 @@ namespace Mandelbrot.Controls
             this.buttonImages = new System.Windows.Forms.ImageList(this.components);
             this.btApplyScope = new System.Windows.Forms.Button();
             this.cbAdjustAxes = new System.Windows.Forms.CheckBox();
-            this.btSave = new System.Windows.Forms.Button();
             this.cbFullscreen = new System.Windows.Forms.CheckBox();
             this.btNext = new System.Windows.Forms.Button();
             this.btPrevioius = new System.Windows.Forms.Button();
@@ -66,6 +65,8 @@ namespace Mandelbrot.Controls
             this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btExit = new System.Windows.Forms.Button();
             this.imageFormatsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.btSave = new Mandelbrot.Controls.DropDownButton();
+            this.btFavorites = new Mandelbrot.Controls.DropDownButton();
             bmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             gifToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -158,11 +159,12 @@ namespace Mandelbrot.Controls
             // 
             this.gbCurrentView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbCurrentView.Controls.Add(this.btFavorites);
+            this.gbCurrentView.Controls.Add(this.btSave);
             this.gbCurrentView.Controls.Add(this.pgCurrentScope);
             this.gbCurrentView.Controls.Add(this.btResetScope);
             this.gbCurrentView.Controls.Add(this.btApplyScope);
             this.gbCurrentView.Controls.Add(this.cbAdjustAxes);
-            this.gbCurrentView.Controls.Add(this.btSave);
             this.gbCurrentView.Controls.Add(this.cbFullscreen);
             this.gbCurrentView.Controls.Add(this.btNext);
             this.gbCurrentView.Controls.Add(this.btPrevioius);
@@ -234,6 +236,7 @@ namespace Mandelbrot.Controls
             // 
             this.cbAdjustAxes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbAdjustAxes.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cbAdjustAxes.ContextMenuStrip = this.imageFormatsMenu;
             this.cbAdjustAxes.ImageKey = "adjustaxes";
             this.cbAdjustAxes.ImageList = this.buttonImages;
             this.cbAdjustAxes.Location = new System.Drawing.Point(39, 181);
@@ -243,19 +246,6 @@ namespace Mandelbrot.Controls
             this.buttonToolTip.SetToolTip(this.cbAdjustAxes, "Adjust axes");
             this.cbAdjustAxes.UseVisualStyleBackColor = true;
             this.cbAdjustAxes.CheckedChanged += new System.EventHandler(this.cbAdjustAxes_CheckedChanged);
-            // 
-            // btSave
-            // 
-            this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btSave.ImageKey = "save";
-            this.btSave.ImageList = this.buttonImages;
-            this.btSave.Location = new System.Drawing.Point(69, 181);
-            this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(24, 24);
-            this.btSave.TabIndex = 100;
-            this.buttonToolTip.SetToolTip(this.btSave, "Save image with selected format");
-            this.btSave.UseVisualStyleBackColor = true;
-            this.btSave.Click += new System.EventHandler(this.btSave_Click);
             // 
             // cbFullscreen
             // 
@@ -482,6 +472,30 @@ namespace Mandelbrot.Controls
             this.imageFormatsMenu.Name = "imageFormatsMenu";
             this.imageFormatsMenu.Size = new System.Drawing.Size(101, 202);
             // 
+            // btSave
+            // 
+            this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btSave.DropDownMenu = this.imageFormatsMenu;
+            this.btSave.ImageKey = "save";
+            this.btSave.ImageList = this.buttonImages;
+            this.btSave.Location = new System.Drawing.Point(99, 181);
+            this.btSave.Name = "btSave";
+            this.btSave.Size = new System.Drawing.Size(24, 24);
+            this.btSave.TabIndex = 90;
+            this.buttonToolTip.SetToolTip(this.btSave, "Save current image as...");
+            this.btSave.UseVisualStyleBackColor = true;
+            // 
+            // btFavorites
+            // 
+            this.btFavorites.ImageKey = "favorites";
+            this.btFavorites.ImageList = this.buttonImages;
+            this.btFavorites.Location = new System.Drawing.Point(69, 181);
+            this.btFavorites.Name = "btFavorites";
+            this.btFavorites.Size = new System.Drawing.Size(24, 24);
+            this.btFavorites.TabIndex = 80;
+            this.buttonToolTip.SetToolTip(this.btFavorites, "Bookmarks...");
+            this.btFavorites.UseVisualStyleBackColor = true;
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -520,7 +534,6 @@ namespace Mandelbrot.Controls
         private System.Windows.Forms.CheckBox cbFullscreen;
         private System.Windows.Forms.Button btPrevioius;
         private System.Windows.Forms.Button btNext;
-        private System.Windows.Forms.Button btSave;
         private System.Windows.Forms.ProgressBar pbProgress;
         private System.Windows.Forms.CheckBox cbAdjustAxes;
         private System.Windows.Forms.GroupBox gbCalculationProgress;
@@ -540,5 +553,7 @@ namespace Mandelbrot.Controls
         private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.ContextMenuStrip imageFormatsMenu;
         private System.Windows.Forms.PropertyGrid pgCurrentSelction;
+        private DropDownButton btFavorites;
+        private DropDownButton btSave;
     }
 }
