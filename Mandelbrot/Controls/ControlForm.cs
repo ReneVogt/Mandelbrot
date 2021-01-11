@@ -226,6 +226,17 @@ namespace Mandelbrot.Controls
             pgCurrentScope.Refresh();
             btApplyScope.Enabled = btResetScope.Enabled = false;
         }
+        #region Favorites
+        private void cmbFavorites_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
+        private void menuItemAddToFavorites_Click(object sender, EventArgs e)
+        {
+        }
+        private void menuItemManageFavorites_Click(object sender, EventArgs e)
+        {
+        }
+        #endregion
         #endregion
         #region Current selection
         public void SetCurrentSelection(ComplexScope scope, Rectangle mouseSelection)
