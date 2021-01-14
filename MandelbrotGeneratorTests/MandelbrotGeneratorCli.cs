@@ -9,7 +9,7 @@ namespace MandelbrotGeneratorTests
     {
         static void Main()
         {
-            Complex c = new Complex(2.1, 3.5);
+            Complex c = new(2.1, 3.5);
             Console.WriteLine(c);
         }
     }

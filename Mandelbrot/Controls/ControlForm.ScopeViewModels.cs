@@ -24,12 +24,12 @@ namespace Mandelbrot.Controls
             [Category("Complex rectangle")]
             [DefaultValue(typeof(ComplexViewModel), "(-2, -2")]
             [TypeConverter(typeof(ExpandableObjectConverter))]
-            public ComplexViewModel LowerLeft { get; } = new ComplexViewModel();
+            public ComplexViewModel LowerLeft { get; } = new();
             [DisplayName("Upper right corner")]
             [Category("Complex rectangle")]
             [DefaultValue(typeof(ComplexViewModel), "(-2, -2")]
             [TypeConverter(typeof(ExpandableObjectConverter))]
-            public ComplexViewModel UpperRight { get; } = new ComplexViewModel();
+            public ComplexViewModel UpperRight { get; } = new();
             [DisplayName("Resolution")]
             [Category("Complex rectangle")]
             [ReadOnly(true)]

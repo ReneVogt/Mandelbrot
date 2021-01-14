@@ -15,12 +15,12 @@ namespace Mandelbrot.Controls
 {
     public partial class MandelbrotForm : FullscreenableForm
     {
-        readonly ControlForm controlForm = new ControlForm();
-        readonly Stack<ComplexScope> rewindStack = new Stack<ComplexScope>(), forwardStack = new Stack<ComplexScope>();
-        readonly Font progressFont = new Font(FontFamily.GenericMonospace, 30, FontStyle.Bold);
-        readonly Pen progressWheelPen = new Pen(Brushes.Green, 2);
+        readonly ControlForm controlForm = new();
+        readonly Stack<ComplexScope> rewindStack = new(), forwardStack = new();
+        readonly Font progressFont = new(FontFamily.GenericMonospace, 30, FontStyle.Bold);
+        readonly Pen progressWheelPen = new(Brushes.Green, 2);
         readonly Brush progressBackBrush = new SolidBrush(Color.FromArgb(96, Color.Black));
-        readonly Pen calculationRectanglePen = new Pen(new SolidBrush(Color.LightGreen), 3);
+        readonly Pen calculationRectanglePen = new(new SolidBrush(Color.LightGreen), 3);
 
         int progressToDraw = -1;
         bool resizing;
@@ -54,13 +54,13 @@ namespace Mandelbrot.Controls
             currentScope = AdjustScope(ComplexScope.Mandelbrot);
 
             controlForm.RecalculationRequested += (sender, e) => _ = RunCalculationAsync(currentScope, UpdateStackButtons);
-            controlForm.CancelClicked += (sender, e) => CancelCalculation();
-            controlForm.PreviousClicked += (sender, e) => GotoPreviousScope();
-            controlForm.NextClicked += (sender, e) => GotoNextScope();
-            controlForm.TotalClicked += (sender, e) => ReturnToTotalView();
-            controlForm.AdjustClicked += (sender, e) => AdjustAxes();
-            controlForm.SaveImageClicked += (sender, e) => SaveImage(e.ImageFormatName, e.ImageFormat);
-            controlForm.FullscreenChanged += (sender, e) => Fullscreen = controlForm.Fullscreen;
+            controlForm.CancelClicked += (_, _) => CancelCalculation();
+            controlForm.PreviousClicked += (_, _) => GotoPreviousScope();
+            controlForm.NextClicked += (_, _) => GotoNextScope();
+            controlForm.TotalClicked += (_, _) => ReturnToTotalView();
+            controlForm.AdjustClicked += (_, _) => AdjustAxes();
+            controlForm.SaveImageClicked += (_, e) => SaveImage(e.ImageFormatName, e.ImageFormat);
+            controlForm.FullscreenChanged += (_, _) => Fullscreen = controlForm.Fullscreen;
         }
         #region Form event handlers
         protected override void OnLoad(EventArgs e)
@@ -124,8 +124,8 @@ namespace Mandelbrot.Controls
             else
             {
                 mouseStartingPoint ??= e.Location;
-                Point topLeft = new Point(Math.Min(mouseStartingPoint.Value.X, e.Location.X), Math.Min(e.Location.Y, mouseStartingPoint.Value.Y));
-                Size width = new Size(Math.Abs(e.Location.X - mouseStartingPoint.Value.X), Math.Abs(e.Location.Y - mouseStartingPoint.Value.Y));
+                Point topLeft = new(Math.Min(mouseStartingPoint.Value.X, e.Location.X), Math.Min(e.Location.Y, mouseStartingPoint.Value.Y));
+                Size width = new(Math.Abs(e.Location.X - mouseStartingPoint.Value.X), Math.Abs(e.Location.Y - mouseStartingPoint.Value.Y));
                 mouseSelection = new Rectangle(topLeft, width);
                 InvalidateView();
             }
@@ -138,7 +138,7 @@ namespace Mandelbrot.Controls
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-            if (e.Button == MouseButtons.Left && mouseSelection.HasValue && mouseSelection.Value.Width > 0 && mouseSelection.Value.Height > 0)
+            if (e.Button == MouseButtons.Left && mouseSelection?.Width > 0 && mouseSelection.Value.Height > 0)
             {
                 _ = RunCalculationAsync(AdjustScope(GetScopeFromRect(mouseSelection.Value)), InsertToStack);
             }
@@ -307,8 +307,8 @@ namespace Mandelbrot.Controls
             var lowerRight = GetComplexFromPoint(rect.Location + rect.Size);
             return ((upperLeft.Real, lowerRight.Imaginary), (lowerRight.Real, upperLeft.Imaginary));
         }
-        Complex GetComplexFromPoint(Point p) => new Complex(currentScope.LowerLeft.Real + currentScope.Real * p.X / Pixels.Width,
-                                                            currentScope.UpperRight.Imaginary - currentScope.Imaginary * p.Y / Pixels.Height);
+        Complex GetComplexFromPoint(Point p) => new(currentScope.LowerLeft.Real + currentScope.Real * p.X / Pixels.Width,
+                                                    currentScope.UpperRight.Imaginary - currentScope.Imaginary * p.Y / Pixels.Height);
         #endregion
         #region ControlForm handlers
         void ReturnToTotalView()

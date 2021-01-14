@@ -52,7 +52,7 @@ namespace MandelbrotGenerator
                 c
             };
 
-            Complex squareCache = new Complex(c.Real * c.Real, c.Imaginary * c.Imaginary);
+            Complex squareCache = new(c.Real * c.Real, c.Imaginary * c.Imaginary);
             var z = c;
             for (int iteration = 1; iteration <= maxIterations; iteration++)
             {

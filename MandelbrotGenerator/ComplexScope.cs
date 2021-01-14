@@ -15,7 +15,7 @@ namespace MandelbrotGenerator
     public sealed class ComplexScope : IEquatable<ComplexScope>
     {
         #region Constants
-        static readonly ArgumentException invalidScopeException = new ArgumentException("The specified scope coordinates are invalid. They must define a non-empty positive finite rectangle in the complex plane.");
+        static readonly ArgumentException invalidScopeException = new("The specified scope coordinates are invalid. They must define a non-empty positive finite rectangle in the complex plane.");
         #endregion
         #region Static properties
         /// <summary>

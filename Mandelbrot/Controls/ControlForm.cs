@@ -17,7 +17,7 @@ namespace Mandelbrot.Controls
     public partial class ControlForm : Form
     {
         #region Constants
-        readonly Dictionary<string, ImageFormat> imageFormats = new Dictionary<string, ImageFormat>
+        readonly Dictionary<string, ImageFormat> imageFormats = new()
         {
             ["Bmp"] = ImageFormat.Bmp,
             ["Emf"] = ImageFormat.Emf,
@@ -32,8 +32,8 @@ namespace Mandelbrot.Controls
         #endregion
         #region Fields
         readonly CalculationSettingsViewModel calculationSettings;
-        readonly ScopeViewModel currentScopeViewModel = new ScopeViewModel();
-        readonly HashSet<string> expandedSelectionProperties = new HashSet<string>();
+        readonly ScopeViewModel currentScopeViewModel = new();
+        readonly HashSet<string> expandedSelectionProperties = new();
         ComplexScope currentScope = ComplexScope.Mandelbrot;
         #endregion
         #region Events
@@ -278,7 +278,7 @@ namespace Mandelbrot.Controls
         {
             var root = pgCurrentSelction.SelectedGridItem;
             if (root is null) return;
-            while (root.Parent is {}) root = root.Parent;
+            while (!(root.Parent is null)) root = root.Parent;
 
             expandedSelectionProperties.Clear();
             foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expanded))

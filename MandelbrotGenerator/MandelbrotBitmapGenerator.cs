@@ -19,11 +19,11 @@ namespace MandelbrotGenerator
     public sealed class MandelbrotBitmapGenerator : IDisposable
     {
         #region Constants
-        static readonly ArgumentNullException colorizerNullException = new ArgumentNullException("colorizer");
-        static readonly ArgumentNullException scopeNullException = new ArgumentNullException("scope");
+        static readonly ArgumentNullException colorizerNullException = new("colorizer");
+        static readonly ArgumentNullException scopeNullException = new("scope");
         static readonly ArgumentException invalidResolutionException =
-            new ArgumentException("The resolution must have positive width and height!", "resolution");
-        static readonly ArgumentException implementationNotPreciseEnoughException = new ArgumentException("The desired scope and resolution cannot be calculated precisely enough by the current implementation.");
+            new("The resolution must have positive width and height!", "resolution");
+        static readonly ArgumentException implementationNotPreciseEnoughException = new("The desired scope and resolution cannot be calculated precisely enough by the current implementation.");
         #endregion
 
         readonly int maxDegreeOfParallelism, maximumNumberOfIterations;
@@ -31,8 +31,8 @@ namespace MandelbrotGenerator
         readonly ComplexScope scope;
         readonly Size resolution;
         readonly (Point pixel, int index, Complex c)[] pixelSource;
-        readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        readonly Stopwatch stopWatch = new Stopwatch();
+        readonly CancellationTokenSource cancellationTokenSource = new();
+        readonly Stopwatch stopWatch = new();
 
         int started, disposed;
         int iteratingProgress, colorizingProgress;
