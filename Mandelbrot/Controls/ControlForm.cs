@@ -86,7 +86,7 @@ namespace Mandelbrot.Controls
 
             MaximumNumberOfIterations = Settings.Default.MaximumNumberOfIterations;
             Colorizer = GetColorizer((Colorizers)Settings.Default.Colorizer);
-            calculationSettings = new CalculationSettingsViewModel
+            calculationSettings = new()
             {
                 MaximumNumberOfIterations = MaximumNumberOfIterations,
                 Colorizer = (Colorizers)Settings.Default.Colorizer
@@ -206,12 +206,12 @@ namespace Mandelbrot.Controls
         private void OnImageFormatClicked(object sender, EventArgs e)
         {
             if (sender is ToolStripMenuItem { Text: var formatName } && imageFormats.TryGetValue(formatName, out var format))
-                SaveImageClicked?.Invoke(this, new SaveImageClickedEventArgs(formatName, format));
+                SaveImageClicked?.Invoke(this, new(formatName, format));
 
         }
         public void SetCurrentScope(ComplexScope scope, Size resolution)
         {
-            currentScope = new ComplexScope(scope.LowerLeft, scope.UpperRight);
+            currentScope = new(scope.LowerLeft, scope.UpperRight);
             currentScopeViewModel.Resolution = resolution;
             pgCurrentScope.Refresh();
             if (!btApplyScope.Enabled)
@@ -244,12 +244,12 @@ namespace Mandelbrot.Controls
             var model = new SelectionViewModel
             {
                 Pixels = mouseSelection,
-                UpperRight = new ComplexViewModel
+                UpperRight = new()
                 {
                     Imaginary = scope.UpperRight.Imaginary,
                     Real = scope.UpperRight.Real
                 },
-                LowerLeft = new ComplexViewModel
+                LowerLeft = new()
                 {
                     Imaginary = scope.LowerLeft.Imaginary, 
                     Real = scope.LowerLeft.Real
@@ -265,7 +265,7 @@ namespace Mandelbrot.Controls
             var complex = new ComplexViewModel {Real = point.Real, Imaginary = point.Imaginary};
             var model = new SelectionViewModel
             {
-                Pixels = new Rectangle(mouseLocation, Size.Empty),
+                Pixels = new(mouseLocation, Size.Empty),
                 UpperRight = complex,
                 LowerLeft = complex
             };

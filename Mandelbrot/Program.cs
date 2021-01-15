@@ -20,7 +20,7 @@ namespace Mandelbrot
                 Settings.Default.Save();
             }
 
-            Settings.Default.SavedScopes ??= new SavedScopes();
+            Settings.Default.SavedScopes ??= new();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

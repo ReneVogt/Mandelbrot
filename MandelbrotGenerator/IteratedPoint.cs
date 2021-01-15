@@ -45,7 +45,7 @@ namespace MandelbrotGenerator
         internal static IteratedPoint Iterate(Complex c, int maxIterations, CancellationToken cancellationToken = default)
         {
             if (c.Magnitude > 2)
-                return new IteratedPoint(c);
+                return new(c);
 
             var knownPoints = new HashSet<Complex>
             {
@@ -60,14 +60,14 @@ namespace MandelbrotGenerator
                 z = new Complex(squareCache.Real - squareCache.Imaginary, 2 * z.Real * z.Imaginary) + c;
 
                 if (!knownPoints.Add(z))
-                    return new IteratedPoint(z);
+                    return new(z);
 
-                squareCache = new Complex(z.Real * z.Real, z.Imaginary * z.Imaginary);
+                squareCache = new(z.Real * z.Real, z.Imaginary * z.Imaginary);
                 if (squareCache.Real + squareCache.Imaginary > 4)
-                    return new IteratedPoint(c, z, iteration);
+                    return new(c, z, iteration);
             }
 
-            return new IteratedPoint(c, z, maxIterations);
+            return new(c, z, maxIterations);
         }
     }
 }

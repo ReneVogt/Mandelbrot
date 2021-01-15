@@ -147,7 +147,7 @@ namespace MandelbrotGenerator
         {
             var ll = new Complex(scope.lowerLeft.real, scope.lowerLeft.imaginary);
             var ur = new Complex(scope.upperRight.real, scope.upperRight.imaginary);
-            return new ComplexScope(ll, ur);
+            return new(ll, ur);
         }
         /// <summary>
         /// Compares two <see cref="ComplexScope"/> instances for equality.

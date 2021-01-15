@@ -66,10 +66,10 @@ namespace Mandelbrot.Controls
             this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.btExit = new System.Windows.Forms.Button();
             this.exCalculationProgress = new WindowsFormsExpander.Expander();
+            this.lbElapsed = new System.Windows.Forms.Label();
             this.exCalculationSettings = new WindowsFormsExpander.Expander();
             this.exCurrentScope = new WindowsFormsExpander.Expander();
             this.exCurrentSelection = new WindowsFormsExpander.Expander();
-            this.lbElapsed = new System.Windows.Forms.Label();
             this.btFavorites = new Mandelbrot.Controls.DropDownButton();
             this.btSave = new Mandelbrot.Controls.DropDownButton();
             bmpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -239,10 +239,10 @@ namespace Mandelbrot.Controls
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pgCurrentScope.HelpVisible = false;
-            this.pgCurrentScope.Location = new System.Drawing.Point(23, 33);
+            this.pgCurrentScope.Location = new System.Drawing.Point(19, 33);
             this.pgCurrentScope.Name = "pgCurrentScope";
             this.pgCurrentScope.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.pgCurrentScope.Size = new System.Drawing.Size(339, 185);
+            this.pgCurrentScope.Size = new System.Drawing.Size(343, 185);
             this.pgCurrentScope.TabIndex = 0;
             this.pgCurrentScope.ToolbarVisible = false;
             this.pgCurrentScope.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.pgCurrentScope_PropertyValueChanged);
@@ -282,7 +282,7 @@ namespace Mandelbrot.Controls
             this.cbAdjustAxes.ContextMenuStrip = this.imageFormatsMenu;
             this.cbAdjustAxes.ImageKey = "adjustaxes";
             this.cbAdjustAxes.ImageList = this.buttonImages;
-            this.cbAdjustAxes.Location = new System.Drawing.Point(53, 224);
+            this.cbAdjustAxes.Location = new System.Drawing.Point(49, 224);
             this.cbAdjustAxes.Name = "cbAdjustAxes";
             this.cbAdjustAxes.Size = new System.Drawing.Size(24, 24);
             this.cbAdjustAxes.TabIndex = 70;
@@ -296,7 +296,7 @@ namespace Mandelbrot.Controls
             this.cbFullscreen.Appearance = System.Windows.Forms.Appearance.Button;
             this.cbFullscreen.ImageKey = "fullscreen";
             this.cbFullscreen.ImageList = this.buttonImages;
-            this.cbFullscreen.Location = new System.Drawing.Point(23, 224);
+            this.cbFullscreen.Location = new System.Drawing.Point(19, 224);
             this.cbFullscreen.Name = "cbFullscreen";
             this.cbFullscreen.Size = new System.Drawing.Size(24, 24);
             this.cbFullscreen.TabIndex = 60;
@@ -442,7 +442,7 @@ namespace Mandelbrot.Controls
             this.btExit.Location = new System.Drawing.Point(0, 627);
             this.btExit.Name = "btExit";
             this.btExit.Size = new System.Drawing.Size(398, 23);
-            this.btExit.TabIndex = 50;
+            this.btExit.TabIndex = 40;
             this.btExit.Text = "Exit Mandelbrot viewer";
             this.btExit.UseVisualStyleBackColor = true;
             this.btExit.Click += new System.EventHandler(this.btExit_Click);
@@ -457,10 +457,21 @@ namespace Mandelbrot.Controls
             this.exCalculationProgress.Dock = System.Windows.Forms.DockStyle.Top;
             this.exCalculationProgress.ExpandedHeight = 90;
             this.exCalculationProgress.Location = new System.Drawing.Point(0, 0);
+            this.exCalculationProgress.Margin = new System.Windows.Forms.Padding(0);
             this.exCalculationProgress.Name = "exCalculationProgress";
+            this.exCalculationProgress.Padding = new System.Windows.Forms.Padding(0);
             this.exCalculationProgress.Size = new System.Drawing.Size(398, 90);
-            this.exCalculationProgress.TabIndex = 51;
+            this.exCalculationProgress.TabIndex = 0;
             this.exCalculationProgress.Text = "Calculation progress";
+            // 
+            // lbElapsed
+            // 
+            this.lbElapsed.AutoSize = true;
+            this.lbElapsed.Location = new System.Drawing.Point(92, 33);
+            this.lbElapsed.Name = "lbElapsed";
+            this.lbElapsed.Size = new System.Drawing.Size(10, 13);
+            this.lbElapsed.TabIndex = 36;
+            this.lbElapsed.Text = "-";
             // 
             // exCalculationSettings
             // 
@@ -470,9 +481,11 @@ namespace Mandelbrot.Controls
             this.exCalculationSettings.Dock = System.Windows.Forms.DockStyle.Top;
             this.exCalculationSettings.ExpandedHeight = 123;
             this.exCalculationSettings.Location = new System.Drawing.Point(0, 90);
+            this.exCalculationSettings.Margin = new System.Windows.Forms.Padding(0);
             this.exCalculationSettings.Name = "exCalculationSettings";
+            this.exCalculationSettings.Padding = new System.Windows.Forms.Padding(0);
             this.exCalculationSettings.Size = new System.Drawing.Size(398, 123);
-            this.exCalculationSettings.TabIndex = 52;
+            this.exCalculationSettings.TabIndex = 10;
             this.exCalculationSettings.Text = "Calculation settings";
             // 
             // exCurrentScope
@@ -490,9 +503,11 @@ namespace Mandelbrot.Controls
             this.exCurrentScope.Dock = System.Windows.Forms.DockStyle.Top;
             this.exCurrentScope.ExpandedHeight = 256;
             this.exCurrentScope.Location = new System.Drawing.Point(0, 213);
+            this.exCurrentScope.Margin = new System.Windows.Forms.Padding(0);
             this.exCurrentScope.Name = "exCurrentScope";
+            this.exCurrentScope.Padding = new System.Windows.Forms.Padding(0);
             this.exCurrentScope.Size = new System.Drawing.Size(398, 256);
-            this.exCurrentScope.TabIndex = 53;
+            this.exCurrentScope.TabIndex = 20;
             this.exCurrentScope.Text = "Current scope";
             // 
             // exCurrentSelection
@@ -501,26 +516,19 @@ namespace Mandelbrot.Controls
             this.exCurrentSelection.Dock = System.Windows.Forms.DockStyle.Top;
             this.exCurrentSelection.ExpandedHeight = 158;
             this.exCurrentSelection.Location = new System.Drawing.Point(0, 469);
+            this.exCurrentSelection.Margin = new System.Windows.Forms.Padding(0);
             this.exCurrentSelection.Name = "exCurrentSelection";
+            this.exCurrentSelection.Padding = new System.Windows.Forms.Padding(0);
             this.exCurrentSelection.Size = new System.Drawing.Size(398, 158);
-            this.exCurrentSelection.TabIndex = 54;
+            this.exCurrentSelection.TabIndex = 30;
             this.exCurrentSelection.Text = "Current selection";
-            // 
-            // lbElapsed
-            // 
-            this.lbElapsed.AutoSize = true;
-            this.lbElapsed.Location = new System.Drawing.Point(92, 33);
-            this.lbElapsed.Name = "lbElapsed";
-            this.lbElapsed.Size = new System.Drawing.Size(10, 13);
-            this.lbElapsed.TabIndex = 36;
-            this.lbElapsed.Text = "-";
             // 
             // btFavorites
             // 
             this.btFavorites.DropDownMenu = this.favoritesMenu;
             this.btFavorites.ImageKey = "favorites";
             this.btFavorites.ImageList = this.buttonImages;
-            this.btFavorites.Location = new System.Drawing.Point(83, 224);
+            this.btFavorites.Location = new System.Drawing.Point(79, 224);
             this.btFavorites.Name = "btFavorites";
             this.btFavorites.Size = new System.Drawing.Size(24, 24);
             this.btFavorites.TabIndex = 80;
@@ -533,7 +541,7 @@ namespace Mandelbrot.Controls
             this.btSave.DropDownMenu = this.imageFormatsMenu;
             this.btSave.ImageKey = "save";
             this.btSave.ImageList = this.buttonImages;
-            this.btSave.Location = new System.Drawing.Point(113, 224);
+            this.btSave.Location = new System.Drawing.Point(109, 224);
             this.btSave.Name = "btSave";
             this.btSave.Size = new System.Drawing.Size(24, 24);
             this.btSave.TabIndex = 90;

@@ -205,7 +205,7 @@ namespace MandelbrotGenerator
                 }
 
                 var bitmap = new Bitmap(resolution.Width, resolution.Height, PixelFormat.Format32bppArgb);
-                var lockBits = bitmap.LockBits(new Rectangle(0, 0, resolution.Width, resolution.Height), ImageLockMode.WriteOnly,
+                var lockBits = bitmap.LockBits(new(0, 0, resolution.Width, resolution.Height), ImageLockMode.WriteOnly,
                                                PixelFormat.Format32bppArgb);
                 for (int i = 0; i < colors.Length; i++)
                     Marshal.WriteInt32(lockBits.Scan0, i * 4, colors[i].ToArgb());

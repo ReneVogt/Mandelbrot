@@ -62,8 +62,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsFormsExpander, Version=0.1.7684.35936, Culture=neutral, PublicKeyToken=0c748459a7cbda03, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsFormsExpander.0.5.0-preview-2\lib\net472\WindowsFormsExpander.dll</HintPath>
+    <Reference Include="WindowsFormsExpander, Version=0.5.7685.20652, Culture=neutral, PublicKeyToken=0c748459a7cbda03, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsFormsExpander.0.5.0-preview-4\lib\net472\WindowsFormsExpander.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

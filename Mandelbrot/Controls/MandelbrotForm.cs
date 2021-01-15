@@ -67,7 +67,7 @@ namespace Mandelbrot.Controls
         {
             base.OnLoad(e);
             Text += $" v{Application.ProductVersion}";
-            controlForm.Location = PointToScreen(new Point((Width - controlForm.Width) / 2, (Height - controlForm.Height) / 2));
+            controlForm.Location = PointToScreen(new((Width - controlForm.Width) / 2, (Height - controlForm.Height) / 2));
             controlForm.Show(this);
         }
         protected override void OnClosing(CancelEventArgs e)
@@ -126,7 +126,7 @@ namespace Mandelbrot.Controls
                 mouseStartingPoint ??= e.Location;
                 Point topLeft = new(Math.Min(mouseStartingPoint.Value.X, e.Location.X), Math.Min(e.Location.Y, mouseStartingPoint.Value.Y));
                 Size width = new(Math.Abs(e.Location.X - mouseStartingPoint.Value.X), Math.Abs(e.Location.Y - mouseStartingPoint.Value.Y));
-                mouseSelection = new Rectangle(topLeft, width);
+                mouseSelection = new(topLeft, width);
                 InvalidateView();
             }
 
@@ -220,7 +220,7 @@ namespace Mandelbrot.Controls
 
                 calculatingRect = GetRectFromScope(scope);
                 generator = currentGenerator =
-                                new MandelbrotBitmapGenerator(controlForm.Colorizer, pixels, scope, controlForm.MaximumNumberOfIterations);
+                                new(controlForm.Colorizer, pixels, scope, controlForm.MaximumNumberOfIterations);
                 Cursor = Cursors.AppStarting;
                 var bmp = await generator.CreateBitmapParallel();
                 if (generator.IsCancelled) return;
@@ -299,7 +299,7 @@ namespace Mandelbrot.Controls
             var y = (int)((currentScope.UpperRight.Imaginary - scope.UpperRight.Imaginary) * dy);
             var width = (int)(scope.Real * dx);
             var height = (int)(scope.Imaginary * dy);
-            return new Rectangle(x, y, width, height);
+            return new(x, y, width, height);
         }
         ComplexScope GetScopeFromRect(Rectangle rect)
         {
