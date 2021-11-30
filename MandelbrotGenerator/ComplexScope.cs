@@ -104,15 +104,7 @@ namespace MandelbrotGenerator
         /// <inheritdoc />
         public override bool Equals(object? obj) => obj is ComplexScope other && Equals(other);
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = LowerLeft.GetHashCode();
-                hashCode = (hashCode * 397) ^ UpperRight.GetHashCode();
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(LowerLeft, UpperRight);
         #endregion
         #region ToString
         /// <inheritdoc />

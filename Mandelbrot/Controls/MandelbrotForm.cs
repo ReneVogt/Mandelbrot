@@ -11,6 +11,7 @@ using Mandelbrot.Properties;
 using MandelbrotGenerator;
 
 #nullable enable
+#pragma warning disable CA2007,CA2213
 
 namespace Mandelbrot.Controls
 {
@@ -101,6 +102,7 @@ namespace Mandelbrot.Controls
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             base.OnKeyDown(e);
             switch (e.KeyCode)
             {
@@ -116,6 +118,7 @@ namespace Mandelbrot.Controls
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             base.OnMouseMove(e);
             if (e.Button != MouseButtons.Left)
             {
@@ -138,6 +141,7 @@ namespace Mandelbrot.Controls
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             base.OnMouseUp(e);
             if (e.Button == MouseButtons.Left && mouseSelection?.Width > 0 && mouseSelection.Value.Height > 0)
             {
@@ -150,6 +154,7 @@ namespace Mandelbrot.Controls
         }
         protected override void OnMouseClick(MouseEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             base.OnMouseClick(e);
             if (e.Button == MouseButtons.Right)
             {
@@ -163,6 +168,7 @@ namespace Mandelbrot.Controls
         }
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             base.OnMouseDoubleClick(e);
             if (e.Button == MouseButtons.Left)
                 ReturnToTotalView();
@@ -172,6 +178,7 @@ namespace Mandelbrot.Controls
         }
         protected override void OnPaint(PaintEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             base.OnPaint(e);
             if (CurrentImage is {} img)
                 e.Graphics.DrawImageUnscaled(img, ClientRectangle);

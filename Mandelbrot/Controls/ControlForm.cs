@@ -100,6 +100,7 @@ namespace Mandelbrot.Controls
         #region Form event handlers
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            _ = e ?? throw new ArgumentNullException(nameof(e));
             Settings.Default.AdjustAxesd = cbAdjustAxes.Checked;
             Settings.Default.Save();
             if (e.CloseReason == CloseReason.UserClosing)
@@ -211,6 +212,7 @@ namespace Mandelbrot.Controls
         }
         public void SetCurrentScope(ComplexScope scope, Size resolution)
         {
+            _ = scope ?? throw new ArgumentNullException(nameof(scope));
             currentScope = new(scope.LowerLeft, scope.UpperRight);
             currentScopeViewModel.Resolution = resolution;
             pgCurrentScope.Refresh();
@@ -241,6 +243,7 @@ namespace Mandelbrot.Controls
         #region Current selection
         public void SetCurrentSelection(ComplexScope scope, Rectangle mouseSelection)
         {
+            _ = scope ?? throw new ArgumentNullException(nameof(scope));
             var model = new SelectionViewModel
             {
                 Pixels = mouseSelection,
@@ -290,7 +293,7 @@ namespace Mandelbrot.Controls
             if (root is null) return;
             while (root.Parent is { }) root = root.Parent;
 
-            foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expandable && expandedSelectionProperties.Contains(item.Label)))
+            foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expandable && expandedSelectionProperties.Contains(item.Label ?? string.Empty)))
                 item.Expanded = true;
         }
         #endregion

@@ -23,9 +23,9 @@ namespace Mandelbrot.Controls
                     throw new ArgumentException($"The {nameof(ColorizersTypeConverter)} is only for use with {nameof(Colorizers)} enum type!");
             }
 
-            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
-            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
-            public override object? ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) => value switch
+            public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType) => sourceType == typeof(string);
+            public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType) => destinationType == typeof(string);
+            public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value) => value switch
             {
                 BlackAndWhite => Colorizers.BlackAndWhite,
                 IterationRatio => Colorizers.IterationRatio,
@@ -33,7 +33,7 @@ namespace Mandelbrot.Controls
                 _ => base.ConvertFrom(context, culture, value)
 
             };
-            public override object? ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) => value switch
+            public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType) => value switch
             {
                 Colorizers.BlackAndWhite => BlackAndWhite,
                 Colorizers.IterationModulo => IterationModulo,

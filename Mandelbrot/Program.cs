@@ -25,7 +25,8 @@ namespace Mandelbrot
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MandelbrotForm());
+            using var form = new MandelbrotForm();
+            Application.Run(form);
         }
     }
 }

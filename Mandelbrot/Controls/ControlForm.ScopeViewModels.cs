@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using System.Numerics;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
@@ -16,6 +18,8 @@ namespace Mandelbrot.Controls
             public double Real { get; set; }
             [NotifyParentProperty(true)]
             public double Imaginary { get; set; }
+
+            [SuppressMessage("Globalization", "CA1305:IFormatProvider angeben", Justification = "This is a view model and ToString() is intented to be culture dependent.")]
             public override string ToString() => new Complex(Real, Imaginary).ToString();
         }
         sealed class ScopeViewModel
