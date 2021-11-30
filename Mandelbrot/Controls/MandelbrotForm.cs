@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Numerics;
@@ -335,6 +336,8 @@ namespace Mandelbrot.Controls
             var scope = forwardStack.Peek();
             _ = RunCalculationAsync(scope, OnPoppedNext);
         }
+
+        [SuppressMessage("Design", "CA1031:Keine allgemeinen Ausnahmetypen abfangen", Justification = "<Ausstehend>")]
         void SaveImage(string imageFormatName, ImageFormat imageFormat)
         {
             var bmp = CurrentImage;
@@ -349,7 +352,7 @@ namespace Mandelbrot.Controls
                 FilterIndex = 1,
                 OverwritePrompt = true,
                 RestoreDirectory = true,
-                Title = "Save Mandelbrot image"
+                Title = Resources.SaveImageDialogTitle
             };
             if (saveFileDialog.ShowDialog(this) != DialogResult.OK) return;
 

@@ -278,11 +278,11 @@ namespace Mandelbrot.Controls
         {
             var root = pgCurrentSelction.SelectedGridItem;
             if (root is null) return;
-            while (!(root.Parent is null)) root = root.Parent;
+            while (root.Parent is not null) root = root.Parent;
 
             expandedSelectionProperties.Clear();
             foreach (var item in root.GridItems.Cast<GridItem>().Where(item => item.Expanded))
-                expandedSelectionProperties.Add(item.Label);
+                expandedSelectionProperties.Add(item.Label ?? string.Empty);
         }
         void ExpandSelectionProperties()
         {

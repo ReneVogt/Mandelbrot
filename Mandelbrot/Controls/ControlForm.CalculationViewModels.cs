@@ -4,8 +4,7 @@ using System.Drawing;
 using System.Globalization;
 
 // ReSharper disable MemberCanBePrivate.Local
-
-#nullable enable
+#pragma warning disable CA1812
 
 namespace Mandelbrot.Controls
 {

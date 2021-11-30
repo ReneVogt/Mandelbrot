@@ -23,6 +23,7 @@ namespace Mandelbrot
             Settings.Default.SavedScopes ??= new();
 
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MandelbrotForm());
         }
