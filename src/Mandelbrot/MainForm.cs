@@ -24,6 +24,8 @@ public partial class MainForm : FullscreenableForm
 
     INativeInput? _nativeInput;
 
+    CancellationTokenSource? _animationCancellation;
+
     public MainForm()
     {
         InitializeComponent();
@@ -53,6 +55,7 @@ public partial class MainForm : FullscreenableForm
         _nativeInput.KeyDown += OnKeyDownGL;
         _nativeInput.MouseMove += OnMouseMoveGL;
         _nativeInput.MouseWheel += OnMouseWheelGL;
+        _nativeInput.MouseUp += OnMouseUpGL;
     }
 
     void OnPreviewKeyDownGL(object sender, PreviewKeyDownEventArgs e)
@@ -67,35 +70,50 @@ public partial class MainForm : FullscreenableForm
                 Fullscreen = !Fullscreen;
                 break;
             case Keys.Escape:
-                _zoom = totalZoom;
-                _center = new(centerX, centerY);
-                glControl.Invalidate();
+                ResetView();                
                 break;
             case Keys.F1:
                 infoPanel.Visible = !infoPanel.Visible;
                 break;
             case Keys.Up:
-                Translate(new Vector2(0, translateStep));
+                TransformView(translateY: -translateStep);
                 break;
             case Keys.Down:
-                Translate(new Vector2(0, -translateStep));
+                TransformView(translateY: translateStep);
                 break;
             case Keys.Left:
-                Translate(new Vector2(translateStep, 0));
+                TransformView(translateX: translateStep);
                 break;
             case Keys.Right:
-                Translate(new Vector2(-translateStep, 0));
+                TransformView(translateX: -translateStep);
                 break;
             case Keys.PageUp:
-                Zoom(-1);
+                TransformView(zoomFactor: -1);
                 break;
             case Keys.PageDown:
-                Zoom(1);
+                TransformView(zoomFactor: 1);
                 break;
         }
     }
 
-    void OnMouseWheelGL(MouseWheelEventArgs args) => Zoom(-args.OffsetY);
+
+    DateTime _lastMouseUpTime = DateTime.MinValue;
+    Vector2 _lastMouseUpPoint = new (-100, -100);
+
+    void OnMouseUpGL(MouseButtonEventArgs args)
+    {
+        if (args.Button != MouseButton.Left) return;
+        
+        if (DateTime.Now - _lastMouseUpTime > SystemSettings.DoubleClickTime || !_nativeInput!.MousePosition.IsInDoubleClickDistance(_lastMouseUpPoint))
+        {
+            _lastMouseUpPoint = _nativeInput!.MousePosition;
+            _lastMouseUpTime = DateTime.Now;
+            return;
+        }
+
+        _ = ZoomCenterAsync(GetCoordsFromPixel(_nativeInput.MousePosition));
+    }
+    void OnMouseWheelGL(MouseWheelEventArgs args) => TransformView(zoomFactor: -args.OffsetY);
     void OnMouseMoveGL(MouseMoveEventArgs args)
     {
         if (!_nativeInput!.IsMouseButtonDown(MouseButton.Left))
@@ -103,8 +121,9 @@ public partial class MainForm : FullscreenableForm
             UpdateInfoPanel();
             return;
         }
-        Translate(args.Delta);
+        TransformView(translateX: -args.DeltaX, translateY: args.DeltaY);
     }
+
     void OnResizeGL(object sender, EventArgs e)
     {
         GL.Viewport(0, 0, glControl.Width, glControl.Height);
@@ -135,17 +154,60 @@ public partial class MainForm : FullscreenableForm
         UpdateInfoPanel();
     }
 
-    void Translate(Vector2 delta)
+
+    void TransformView(float translateX = 0, float translateY = 0, float zoomFactor = 0, float zoomTarget = 0)
     {
-        _center += new Vector2(-1, 1) * _zoom * delta / glControl.ClientSize.Height;
+        _animationCancellation?.Cancel();
+        if (zoomTarget > 0)
+            _zoom = zoomTarget;
+        else if (zoomFactor != 0)
+        {
+            _zoom *= MathF.Pow(zoomStep, zoomFactor);
+            _zoom = Math.Clamp(_zoom, 1e-15f, totalZoom);
+        }
+
+        if (translateX != 0 || translateY != 0)
+        {
+            var delta = new Vector2(translateX, translateY);
+            _center += _zoom * delta / glControl.ClientSize.Height;
+        }
         glControl.Invalidate();
     }
-    void Zoom(float factor)
+    void ResetView()
     {
-        _zoom *= MathF.Pow(zoomStep, factor);
-        _zoom = Math.Clamp(_zoom, 1e-15f, totalZoom);
+        _animationCancellation?.Cancel();
+        _center = new(centerX, centerY);
+        _zoom = totalZoom;
         glControl.Invalidate();
     }
+    async Task ZoomCenterAsync(Vector2d targetCenter)
+    {
+        const int animationSteps = 20;
+        const float zoomTarget = 0.2f;
+
+        _animationCancellation?.Cancel();
+        _animationCancellation = new();
+        var cancellationToken = _animationCancellation.Token;
+
+        var initialZoom = _zoom;
+        var distance = targetCenter - _center;
+        var step = distance/animationSteps;
+        var x = MathF.Pow(zoomTarget, 1f / animationSteps);
+        for (var i=0; i<animationSteps; i++)
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            _center += step;
+            _zoom *= x;
+            glControl.Invalidate();
+            await Task.Delay(5);
+        }
+
+        if (cancellationToken.IsCancellationRequested) return;
+        _center = targetCenter;
+        _zoom = initialZoom * zoomTarget;
+        glControl.Invalidate();
+    }
+
     void UpdateInfoPanel()
     {
         if (!infoPanel.Visible) return;
@@ -153,12 +215,9 @@ public partial class MainForm : FullscreenableForm
         labelCenterX.Text = _center.X.ToString();
         labelCenterY.Text = _center.Y.ToString();
 
-        var x = (_nativeInput!.MousePosition.X - 0.5d * glControl.ClientSize.Width) / glControl.ClientSize.Height;
-        x = x * _zoom + _center.X;
-        var y = ((glControl.ClientSize.Height - _nativeInput?.MousePosition.Y) - 0.5d * glControl.ClientSize.Height) / glControl.ClientSize.Height;
-        y = y * _zoom + _center.Y;
-        labelMouseX.Text = x.ToString();
-        labelMouseY.Text = y.ToString();
+        var mouseCoords = GetCoordsFromPixel(_nativeInput!.MousePosition);
+        labelMouseX.Text = mouseCoords.X.ToString();
+        labelMouseY.Text = mouseCoords.Y.ToString();
 
         labelZoom.Text = _zoom.ToString();
         labelIterations.Text = _maxIterations.ToString();
@@ -166,5 +225,14 @@ public partial class MainForm : FullscreenableForm
         labelGPU.Text = GL.GetString(StringName.Renderer);
 
         infoPanel.ResumeLayout();
+    }
+
+    Vector2d GetCoordsFromPixel(Vector2 pixelPosition)
+    {
+        var x = (pixelPosition.X - 0.5d * glControl.ClientSize.Width) / glControl.ClientSize.Height;
+        x = x * _zoom + _center.X;
+        var y = ((glControl.ClientSize.Height - pixelPosition.Y) - 0.5d * glControl.ClientSize.Height) / glControl.ClientSize.Height;
+        y = y * _zoom + _center.Y;
+        return new Vector2d(x, y);
     }
 }
