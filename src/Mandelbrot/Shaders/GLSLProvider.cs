@@ -5,10 +5,12 @@ namespace Mandelbrot.Shaders;
 
 static class GLSLProvider
 {
-    public static int CreateShaderProgram()
+    public static int CreateMandelbrotShader() => CreateShaderProgram(GLSLProvider.GetVertexShaderCode(), GLSLProvider.GetMandelbrotShaderCode());
+    public static int CreatePerturbationShader() => CreateShaderProgram(GLSLProvider.GetVertexShaderCode(), GLSLProvider.GetPerturbationShaderCode());
+    static int CreateShaderProgram(string vertexShaderCode, string fragmentShaderCode)
     {
-        int vertex = CompileShader(ShaderType.VertexShader, GLSLProvider.GetVertexShaderCode());
-        int fragment = CompileShader(ShaderType.FragmentShader, GLSLProvider.GetFragmentShaderCode());
+        int vertex = CompileShader(ShaderType.VertexShader, vertexShaderCode);
+        int fragment = CompileShader(ShaderType.FragmentShader, fragmentShaderCode);
 
         int program = GL.CreateProgram();
         GL.AttachShader(program, vertex);
@@ -44,8 +46,9 @@ static class GLSLProvider
         return shader;
     }
 
-    public static string GetVertexShaderCode() => ReadEmbeddedResource("Mandelbrot.Shaders.fullscreen.vert");
-    public static string GetFragmentShaderCode() => ReadEmbeddedResource("Mandelbrot.Shaders.mandelbrot.frag");
+    static string GetVertexShaderCode() => ReadEmbeddedResource("Mandelbrot.Shaders.fullscreen.vert");
+    static string GetMandelbrotShaderCode() => ReadEmbeddedResource("Mandelbrot.Shaders.mandelbrot.frag");
+    static string GetPerturbationShaderCode() => ReadEmbeddedResource("Mandelbrot.Shaders.perturbation.frag");
     static string ReadEmbeddedResource(string resourceName)
     {
         var assembly = Assembly.GetExecutingAssembly();

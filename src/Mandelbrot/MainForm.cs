@@ -3,28 +3,37 @@ using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-
+using System.Numerics;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
+using Vector2 = OpenTK.Mathematics.Vector2;
 
 namespace Mandelbrot;
 
 public partial class MainForm : FullscreenableForm
 {
     const float totalZoom = 5f;
-    const double centerX = -0.5f;
-    const double centerY = 0f;
+    const double initialCenterX = -0.5f;
+    const double initialCenterY = 0f;
     const float zoomStep = 1.1f;
     const float translateStep = 10f;
+    const int iterationLimit = 2000;
+    const float perturbationThreshold = 1e-7f;
 
-    int _vao, _vbo, _shaderProgram;
-    Vector2d _center = new(centerX, centerY);
+    int _vao, _vbo, _mandelbrotShader, _perturbationShader, _z0Texture;
+    Vector2d _center = new(initialCenterX, initialCenterY);
+    Vector2d _lastTextureCenter;
+    int _lastTextureIterations;
     float _zoom = totalZoom;
+    
     int _maxIterations;
+    readonly float[] _z0Data = new float[iterationLimit * 2];
 
     INativeInput? _nativeInput;
 
     CancellationTokenSource? _animationCancellation;
+
+    bool UsePerturbation => perturbationThreshold * glControl.ClientSize.Height > _zoom;
 
     public MainForm()
     {
@@ -49,7 +58,15 @@ public partial class MainForm : FullscreenableForm
         GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
 
-        _shaderProgram = GLSLProvider.CreateShaderProgram();
+        _mandelbrotShader = GLSLProvider.CreateMandelbrotShader();
+        _perturbationShader = GLSLProvider.CreatePerturbationShader();
+
+        _z0Texture = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture1D, _z0Texture);
+        GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+        GL.BindTexture(TextureTarget.Texture1D, 0);
 
         _nativeInput = glControl.EnableNativeInput();
         _nativeInput.KeyDown += OnKeyDownGL;
@@ -96,7 +113,6 @@ public partial class MainForm : FullscreenableForm
         }
     }
 
-
     DateTime _lastMouseUpTime = DateTime.MinValue;
     Vector2 _lastMouseUpPoint = new (-100, -100);
 
@@ -131,29 +147,73 @@ public partial class MainForm : FullscreenableForm
     void OnPaintGL(object sender, PaintEventArgs e)
     {
         _maxIterations = (int)(100.0f + 50.0f * Math.Log2(1.0 / _zoom));
-        _maxIterations = Math.Clamp(_maxIterations, 100, 5000);
-
+        _maxIterations = Math.Clamp(_maxIterations, 100, iterationLimit);
+        
         GL.Clear(ClearBufferMask.ColorBufferBit);
 
-        var centerxh = (float)_center.X;
-        var centerxl = (float)(_center.X - centerxh);
-        var centeryh = (float)_center.Y;
-        var centeryl = (float)(_center.Y - centeryh);
+        if (UsePerturbation)
+        {
+            PrepareTexture();
+            GL.BindTexture(TextureTarget.Texture1D, _z0Texture);
+            GL.TexImage1D(TextureTarget.Texture1D, 0, PixelInternalFormat.Rg32f, _maxIterations, 0, PixelFormat.Rg, PixelType.Float, _z0Data);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
 
-        GL.UseProgram(_shaderProgram);
-        GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
-        GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uCenterHigh"), centerxh, centeryh);
-        GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uCenterLow"), centerxl, centeryl);
-        GL.Uniform1(GL.GetUniformLocation(_shaderProgram, "uZoom"), _zoom);
-        GL.Uniform1(GL.GetUniformLocation(_shaderProgram, "uMaxIterations"), _maxIterations);
+            GL.UseProgram(_perturbationShader);
+            GL.Uniform2(GL.GetUniformLocation(_perturbationShader, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
+            GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uZoom"), _zoom);
+            GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uMaxIterations"), _maxIterations);
+            GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uZ0Tex"), 0);
+        }
+        else 
+        {
+            var centerxh = (float)_center.X;
+            var centerxl = (float)(_center.X - centerxh);
+            var centeryh = (float)_center.Y;
+            var centeryl = (float)(_center.Y - centeryh);
+
+            GL.UseProgram(_mandelbrotShader);
+            GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
+            GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uCenterHigh"), centerxh, centeryh);
+            GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uCenterLow"), centerxl, centeryl); 
+            GL.Uniform1(GL.GetUniformLocation(_mandelbrotShader, "uZoom"), _zoom);
+            GL.Uniform1(GL.GetUniformLocation(_mandelbrotShader, "uMaxIterations"), _maxIterations);
+        }
 
         GL.BindVertexArray(_vao);
+
         GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
         glControl.SwapBuffers();
+
         UpdateInfoPanel();
     }
 
+    void PrepareTexture()
+    {
+        var start = 1;
+        var z0 = Complex.Zero;
+
+        if (_center == _lastTextureCenter)
+        {
+            if (_maxIterations <= _lastTextureIterations) return;
+            z0 = _z0Data[_lastTextureIterations-1];
+            start = _lastTextureIterations;
+            _lastTextureIterations = _maxIterations;
+            _lastTextureCenter = _center;
+        }
+
+        var c0 = new Complex(_center.X, _center.Y);
+        for (int i = start; i < _maxIterations; i++)
+        {
+            var z = z0 * z0 + c0;
+            _z0Data[i*2] = (float)z.Real;
+            _z0Data[i*2+1] = (float)z.Imaginary;
+            z0 = z;
+        }
+    }
 
     void TransformView(float translateX = 0, float translateY = 0, float zoomFactor = 0, float zoomTarget = 0)
     {
@@ -176,7 +236,7 @@ public partial class MainForm : FullscreenableForm
     void ResetView()
     {
         _animationCancellation?.Cancel();
-        _center = new(centerX, centerY);
+        _center = new(initialCenterX, initialCenterY);
         _zoom = totalZoom;
         glControl.Invalidate();
     }
@@ -221,6 +281,11 @@ public partial class MainForm : FullscreenableForm
 
         labelZoom.Text = _zoom.ToString();
         labelIterations.Text = _maxIterations.ToString();
+
+        labelWindowW.Text = glControl.ClientSize.Width.ToString();
+        labelWindowH.Text = glControl.ClientSize.Height.ToString();
+
+        labelPerturbation.Text = UsePerturbation ? "yes" : "no";
 
         labelGPU.Text = GL.GetString(StringName.Renderer);
 

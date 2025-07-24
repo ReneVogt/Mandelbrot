@@ -45,6 +45,12 @@
             label2 = new Label();
             labelCenterX = new Label();
             labelCenterY = new Label();
+            label8 = new Label();
+            label9 = new Label();
+            labelWindowW = new Label();
+            labelWindowH = new Label();
+            label10 = new Label();
+            labelPerturbation = new Label();
             infoPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -71,6 +77,12 @@
             infoPanel.AutoSize = true;
             infoPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             infoPanel.BackColor = Color.Black;
+            infoPanel.Controls.Add(label10);
+            infoPanel.Controls.Add(labelPerturbation);
+            infoPanel.Controls.Add(label8);
+            infoPanel.Controls.Add(label9);
+            infoPanel.Controls.Add(labelWindowW);
+            infoPanel.Controls.Add(labelWindowH);
             infoPanel.Controls.Add(label7);
             infoPanel.Controls.Add(labelGPU);
             infoPanel.Controls.Add(label5);
@@ -89,7 +101,7 @@
             infoPanel.Margin = new Padding(10, 10, 0, 0);
             infoPanel.Name = "infoPanel";
             infoPanel.Padding = new Padding(0, 0, 30, 30);
-            infoPanel.Size = new Size(254, 246);
+            infoPanel.Size = new Size(271, 350);
             infoPanel.TabIndex = 1;
             infoPanel.Visible = false;
             // 
@@ -99,7 +111,7 @@
             label7.BackColor = Color.Black;
             label7.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label7.ForeColor = Color.LimeGreen;
-            label7.Location = new Point(30, 193);
+            label7.Location = new Point(30, 297);
             label7.Name = "label7";
             label7.Size = new Size(54, 23);
             label7.TabIndex = 15;
@@ -111,7 +123,7 @@
             labelGPU.BackColor = Color.Black;
             labelGPU.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelGPU.ForeColor = Color.LimeGreen;
-            labelGPU.Location = new Point(167, 193);
+            labelGPU.Location = new Point(184, 297);
             labelGPU.Name = "labelGPU";
             labelGPU.Size = new Size(21, 23);
             labelGPU.TabIndex = 16;
@@ -147,7 +159,7 @@
             labelZoom.BackColor = Color.Black;
             labelZoom.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelZoom.ForeColor = Color.LimeGreen;
-            labelZoom.Location = new Point(167, 133);
+            labelZoom.Location = new Point(184, 133);
             labelZoom.Name = "labelZoom";
             labelZoom.Size = new Size(54, 23);
             labelZoom.TabIndex = 13;
@@ -159,7 +171,7 @@
             labelIterations.BackColor = Color.Black;
             labelIterations.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelIterations.ForeColor = Color.LimeGreen;
-            labelIterations.Location = new Point(167, 156);
+            labelIterations.Location = new Point(184, 156);
             labelIterations.Name = "labelIterations";
             labelIterations.Size = new Size(21, 23);
             labelIterations.TabIndex = 14;
@@ -195,7 +207,7 @@
             labelMouseX.BackColor = Color.Black;
             labelMouseX.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelMouseX.ForeColor = Color.LimeGreen;
-            labelMouseX.Location = new Point(167, 75);
+            labelMouseX.Location = new Point(184, 75);
             labelMouseX.Name = "labelMouseX";
             labelMouseX.Size = new Size(54, 23);
             labelMouseX.TabIndex = 9;
@@ -207,7 +219,7 @@
             labelMouseY.BackColor = Color.Black;
             labelMouseY.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelMouseY.ForeColor = Color.LimeGreen;
-            labelMouseY.Location = new Point(167, 98);
+            labelMouseY.Location = new Point(184, 98);
             labelMouseY.Name = "labelMouseY";
             labelMouseY.Size = new Size(21, 23);
             labelMouseY.TabIndex = 10;
@@ -243,7 +255,7 @@
             labelCenterX.BackColor = Color.Black;
             labelCenterX.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelCenterX.ForeColor = Color.LimeGreen;
-            labelCenterX.Location = new Point(167, 15);
+            labelCenterX.Location = new Point(184, 15);
             labelCenterX.Name = "labelCenterX";
             labelCenterX.Size = new Size(54, 23);
             labelCenterX.TabIndex = 4;
@@ -255,11 +267,83 @@
             labelCenterY.BackColor = Color.Black;
             labelCenterY.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelCenterY.ForeColor = Color.LimeGreen;
-            labelCenterY.Location = new Point(167, 38);
+            labelCenterY.Location = new Point(184, 38);
             labelCenterY.Name = "labelCenterY";
             labelCenterY.Size = new Size(21, 23);
             labelCenterY.TabIndex = 6;
             labelCenterY.Text = "0";
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.BackColor = Color.Black;
+            label8.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label8.ForeColor = Color.LimeGreen;
+            label8.Location = new Point(30, 194);
+            label8.Name = "label8";
+            label8.Size = new Size(109, 23);
+            label8.TabIndex = 17;
+            label8.Text = "Window W:";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.BackColor = Color.Black;
+            label9.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label9.ForeColor = Color.LimeGreen;
+            label9.Location = new Point(30, 217);
+            label9.Name = "label9";
+            label9.Size = new Size(109, 23);
+            label9.TabIndex = 18;
+            label9.Text = "Window H:";
+            // 
+            // labelWindowW
+            // 
+            labelWindowW.AutoSize = true;
+            labelWindowW.BackColor = Color.Black;
+            labelWindowW.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelWindowW.ForeColor = Color.LimeGreen;
+            labelWindowW.Location = new Point(184, 194);
+            labelWindowW.Name = "labelWindowW";
+            labelWindowW.Size = new Size(54, 23);
+            labelWindowW.TabIndex = 19;
+            labelWindowW.Text = "1024";
+            // 
+            // labelWindowH
+            // 
+            labelWindowH.AutoSize = true;
+            labelWindowH.BackColor = Color.Black;
+            labelWindowH.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelWindowH.ForeColor = Color.LimeGreen;
+            labelWindowH.Location = new Point(184, 217);
+            labelWindowH.Name = "labelWindowH";
+            labelWindowH.Size = new Size(43, 23);
+            labelWindowH.TabIndex = 20;
+            labelWindowH.Text = "768";
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.BackColor = Color.Black;
+            label10.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label10.ForeColor = Color.LimeGreen;
+            label10.Location = new Point(30, 253);
+            label10.Name = "label10";
+            label10.Size = new Size(153, 23);
+            label10.TabIndex = 21;
+            label10.Text = "Perturbation:";
+            // 
+            // labelPerturbation
+            // 
+            labelPerturbation.AutoSize = true;
+            labelPerturbation.BackColor = Color.Black;
+            labelPerturbation.Font = new Font("Consolas", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelPerturbation.ForeColor = Color.LimeGreen;
+            labelPerturbation.Location = new Point(184, 253);
+            labelPerturbation.Name = "labelPerturbation";
+            labelPerturbation.Size = new Size(32, 23);
+            labelPerturbation.TabIndex = 22;
+            labelPerturbation.Text = "No";
             // 
             // MainForm
             // 
@@ -296,5 +380,11 @@
         private Label label4;
         private Label labelMouseX;
         private Label labelMouseY;
+        private Label label8;
+        private Label label9;
+        private Label labelWindowW;
+        private Label labelWindowH;
+        private Label label10;
+        private Label labelPerturbation;
     }
 }
