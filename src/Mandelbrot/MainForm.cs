@@ -12,13 +12,13 @@ namespace Mandelbrot;
 public partial class MainForm : FullscreenableForm
 {
     const float totalZoom = 2f;
-    const float centerX = -0.5f;
-    const float centerY = 0f;
+    const double centerX = -0.5f;
+    const double centerY = 0f;
     const float zoomStep = 1.1f;
     const float translateStep = 10f;
 
     int _vao, _vbo, _shaderProgram;
-    Vector2 _center = new(centerX, centerY);
+    Vector2d _center = new(centerX, centerY);
     float _zoom = totalZoom;
     int _maxIterations;
 
@@ -116,9 +116,15 @@ public partial class MainForm : FullscreenableForm
 
         GL.Clear(ClearBufferMask.ColorBufferBit);
 
+        var centerxh = (float)_center.X;
+        var centerxl = (float)(_center.X - centerxh);
+        var centeryh = (float)_center.Y;
+        var centeryl = (float)(_center.Y - centeryh);
+
         GL.UseProgram(_shaderProgram);
         GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
-        GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uCenter"), _center);
+        GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uCenterHigh"), centerxh, centeryh);
+        GL.Uniform2(GL.GetUniformLocation(_shaderProgram, "uCenterLow"), centerxl, centeryl);
         GL.Uniform1(GL.GetUniformLocation(_shaderProgram, "uZoom"), _zoom);
         GL.Uniform1(GL.GetUniformLocation(_shaderProgram, "uMaxIterations"), _maxIterations);
 
@@ -147,9 +153,9 @@ public partial class MainForm : FullscreenableForm
         labelCenterX.Text = _center.X.ToString();
         labelCenterY.Text = _center.Y.ToString();
 
-        var x = (_nativeInput!.MousePosition.X - 0.5f * glControl.ClientSize.Width) / glControl.ClientSize.Height;
+        var x = (_nativeInput!.MousePosition.X - 0.5d * glControl.ClientSize.Width) / glControl.ClientSize.Height;
         x = x * _zoom + _center.X;
-        var y = ((glControl.ClientSize.Height - _nativeInput?.MousePosition.Y) - 0.5f * glControl.ClientSize.Height) / glControl.ClientSize.Height;
+        var y = ((glControl.ClientSize.Height - _nativeInput?.MousePosition.Y) - 0.5d * glControl.ClientSize.Height) / glControl.ClientSize.Height;
         y = y * _zoom + _center.Y;
         labelMouseX.Text = x.ToString();
         labelMouseY.Text = y.ToString();

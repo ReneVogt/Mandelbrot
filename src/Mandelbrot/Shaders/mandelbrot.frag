@@ -1,7 +1,8 @@
 #version 330 core
 out vec4 FragColor;
 
-uniform vec2 uCenter;
+uniform vec2 uCenterHigh;
+uniform vec2 uCenterLow;
 uniform float uZoom;
 uniform vec2 uResolution;
 uniform int uMaxIterations; 
@@ -35,7 +36,9 @@ vec3 colorPalette(float i)
 void main()
 {
     vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
-    uv = uv * uZoom + uCenter;
+    uv = uv * uZoom;
+    uv = uCenterLow + uv;
+    uv = uCenterHigh + uv;
 
     float i = mandelbrot(uv);
     vec3 color = colorPalette(i);
