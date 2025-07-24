@@ -11,7 +11,7 @@ namespace Mandelbrot;
 
 public partial class MainForm : FullscreenableForm
 {
-    const float totalZoom = 2f;
+    const float totalZoom = 5f;
     const double centerX = -0.5f;
     const double centerY = 0f;
     const float zoomStep = 1.1f;
@@ -143,7 +143,7 @@ public partial class MainForm : FullscreenableForm
     void Zoom(float factor)
     {
         _zoom *= MathF.Pow(zoomStep, factor);
-        _zoom = Math.Clamp(_zoom, 1e-15f, 2f);
+        _zoom = Math.Clamp(_zoom, 1e-15f, totalZoom);
         glControl.Invalidate();
     }
     void UpdateInfoPanel()
