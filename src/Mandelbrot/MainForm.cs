@@ -17,7 +17,7 @@ public partial class MainForm : FullscreenableForm
     const double initialCenterY = 0f;
     const float zoomStep = 1.1f;
     const float translateStep = 10f;
-    const int iterationLimit = 2000;
+    const int iterationLimit = 5000;
     const float perturbationThreshold = 1e-7f;
 
     int _vao, _vbo, _mandelbrotShader, _perturbationShader, _z0Texture;
@@ -281,11 +281,21 @@ public partial class MainForm : FullscreenableForm
 
         labelZoom.Text = _zoom.ToString();
         labelIterations.Text = _maxIterations.ToString();
+        labelIterations.ForeColor = _maxIterations >= iterationLimit ? Color.Red : Color.LimeGreen;
 
         labelWindowW.Text = glControl.ClientSize.Width.ToString();
         labelWindowH.Text = glControl.ClientSize.Height.ToString();
 
-        labelPerturbation.Text = UsePerturbation ? "yes" : "no";
+        if (UsePerturbation)
+        {
+            labelPerturbation.Text = "yes";
+            labelPerturbation.ForeColor = Color.Red;
+        }
+        else
+        {
+            labelPerturbation.Text = "no";
+            labelPerturbation.ForeColor = Color.LimeGreen;
+        }
 
         labelGPU.Text = GL.GetString(StringName.Renderer);
 
