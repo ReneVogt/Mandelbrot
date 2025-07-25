@@ -30,7 +30,7 @@ vec3 colorPalette(float i)
 {
     if (i >= uMaxIterations) return vec3(0.0, 0.0, 0.0);
     float t = i / float(uMaxIterations);
-    return vec3(0.5 + 0.5 * cos(6.2831 * (t + vec3(0.0, 0.33, 0.67))));
+    return vec3(0.5 + 0.5 * cos(6.2831 * (t + vec3(0.25, 0.58, 0.92))));
 }
 
 void main()
