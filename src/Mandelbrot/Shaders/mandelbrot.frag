@@ -15,9 +15,10 @@ float mandelbrot(vec2 c)
     {
         float x = (z.x * z.x - z.y * z.y) + c.x;
         float y = (2.0 * z.x * z.y) + c.y;
-        if ((x * x + y * y) > 4.0) break;
         z = vec2(x, y);
+        if (dot(z, z) > 4.0) break;
     }
+
     if (i == uMaxIterations)
         return float(i);
 

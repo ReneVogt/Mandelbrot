@@ -6,14 +6,14 @@ uniform vec2 uResolution;
 uniform int uMaxIterations; 
 uniform sampler1D uZ0Tex;
 
-float mandelbrot(vec2 c)
+float mandelbrot(vec2 c, int offset)
 {
     vec2 dz = c;
     int i;
     float l = 1.0;
     for (i = 0; i < uMaxIterations; i++)
     {
-        vec2 z0 = texelFetch(uZ0Tex, i, 0).xy;
+        vec2 z0 = texelFetch(uZ0Tex, offset+i, 0).xy;
         vec2 Z = z0 + dz;
         if (dot(Z, Z) > 4.0)
         {
@@ -42,9 +42,31 @@ vec3 colorPalette(float i)
 
 void main()
 {
+    int offset = 0;
     vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
-    uv = uv * uZoom;
-    float i = mandelbrot(uv);
+
+    vec2 min = uv - vec2(-0.25, 0.25);
+    vec2 d = uv - vec2(0.25, 0.25);
+    if (length(d) < length(min))
+    {
+        min = d;
+        offset = uMaxIterations;
+    }
+    d = uv - vec2(-0.25, -0.25);
+    if (length(d) < length(min))
+    {
+        min = d;
+        offset = 2*uMaxIterations;
+    }
+    d = uv - vec2(0.25, -0.25);
+    if (length(d) < length(min))
+    {
+        min = d;
+        offset = 2*uMaxIterations;
+    }    
+
+    uv = min * uZoom;
+    float i = mandelbrot(uv, offset);
     vec3 color = colorPalette(i);
     FragColor = vec4(color, 1.0);
 }

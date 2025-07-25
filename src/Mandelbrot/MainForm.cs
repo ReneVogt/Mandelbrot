@@ -19,15 +19,14 @@ public partial class MainForm : FullscreenableForm
     const float translateStep = 10f;
     const int iterationLimit = 5000;
     const float perturbationThreshold = 1e-7f;
+    const int perturbationPoints = 4;
 
     int _vao, _vbo, _mandelbrotShader, _perturbationShader, _z0Texture;
     Vector2d _center = new(initialCenterX, initialCenterY);
-    Vector2d _lastTextureCenter;
-    int _lastTextureIterations;
     float _zoom = totalZoom;
     
     int _maxIterations;
-    readonly float[] _z0Data = new float[iterationLimit * 2];
+    readonly float[] _z0Data = new float[iterationLimit * 2 * perturbationPoints];
 
     INativeInput? _nativeInput;
 
@@ -155,7 +154,7 @@ public partial class MainForm : FullscreenableForm
         {
             PrepareTexture();
             GL.BindTexture(TextureTarget.Texture1D, _z0Texture);
-            GL.TexImage1D(TextureTarget.Texture1D, 0, PixelInternalFormat.Rg32f, _maxIterations, 0, PixelFormat.Rg, PixelType.Float, _z0Data);
+            GL.TexImage1D(TextureTarget.Texture1D, 0, PixelInternalFormat.Rg32f, _maxIterations * perturbationPoints, 0, PixelFormat.Rg, PixelType.Float, _z0Data);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -193,25 +192,26 @@ public partial class MainForm : FullscreenableForm
 
     void PrepareTexture()
     {
-        var start = 1;
-        var z0 = Complex.Zero;
+        var size = glControl.ClientSize;
+        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.25f, size.Height * 0.25f))), 0);
+        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.75f, size.Height * 0.25f))), 2*_maxIterations);
+        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.25f, size.Height * 0.75f))), 2*_maxIterations*2);
+        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.75f, size.Height * 0.75f))), 2*_maxIterations*3);
 
-        if (_center == _lastTextureCenter)
+        static Complex GetComplex(Vector2d vector) => new(vector.X, vector.Y);
+        void Prepare(Complex c0, int offset)
         {
-            if (_maxIterations <= _lastTextureIterations) return;
-            z0 = _z0Data[_lastTextureIterations-1];
-            start = _lastTextureIterations;
-            _lastTextureIterations = _maxIterations;
-            _lastTextureCenter = _center;
-        }
+            var z0 = Complex.Zero;
 
-        var c0 = new Complex(_center.X, _center.Y);
-        for (int i = start; i < _maxIterations; i++)
-        {
-            var z = z0 * z0 + c0;
-            _z0Data[i*2] = (float)z.Real;
-            _z0Data[i*2+1] = (float)z.Imaginary;
-            z0 = z;
+            _z0Data[offset] = 0;
+            _z0Data[offset+1] = 0;
+            for (var i = 1; i < _maxIterations; i++)
+            {
+                var z = z0 * z0 + c0;
+                _z0Data[offset + i*2] = (float)z.Real;
+                _z0Data[offset + i*2+1] = (float)z.Imaginary;
+                z0 = z;
+            }
         }
     }
 
