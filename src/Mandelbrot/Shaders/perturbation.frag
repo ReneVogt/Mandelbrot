@@ -5,6 +5,8 @@ uniform float uZoom;
 uniform vec2 uResolution;
 uniform int uMaxIterations; 
 uniform sampler1D uZ0Tex;
+uniform int uReferencePointCount;
+uniform vec2 uReferencePoints[64];
 
 float mandelbrot(vec2 c, int offset)
 {
@@ -42,31 +44,21 @@ vec3 colorPalette(float i)
 
 void main()
 {
-    int offset = 0;
     vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
-
-    vec2 min = uv - vec2(-0.25, 0.25);
-    vec2 d = uv - vec2(0.25, 0.25);
-    if (length(d) < length(min))
+    int referencePoint = 0;
+    vec2 min = uv - uReferencePoints[0];
+    float minLength = length(min);
+    for (int i = 1; i < uReferencePointCount; i++)
     {
+        vec2 d = uv - uReferencePoints[i];
+        float l = length(d);
+        if (l >= minLength) continue;
+        minLength = l;
         min = d;
-        offset = uMaxIterations;
+        referencePoint = i;
     }
-    d = uv - vec2(-0.25, -0.25);
-    if (length(d) < length(min))
-    {
-        min = d;
-        offset = 2*uMaxIterations;
-    }
-    d = uv - vec2(0.25, -0.25);
-    if (length(d) < length(min))
-    {
-        min = d;
-        offset = 2*uMaxIterations;
-    }    
 
     uv = min * uZoom;
-    float i = mandelbrot(uv, offset);
-    vec3 color = colorPalette(i);
+    vec3 color = colorPalette(mandelbrot(uv, referencePoint * uMaxIterations));
     FragColor = vec4(color, 1.0);
 }

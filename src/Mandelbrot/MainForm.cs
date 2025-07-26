@@ -17,16 +17,17 @@ public partial class MainForm : FullscreenableForm
     const double initialCenterY = 0f;
     const float zoomStep = 1.1f;
     const float translateStep = 10f;
-    const int iterationLimit = 5000;
+    const int iterationLimit = 2000;
     const float perturbationThreshold = 1e-7f;
-    const int perturbationPoints = 4;
+
+    readonly float[] _z0Data;
+    readonly float[] _referencePoints;
 
     int _vao, _vbo, _mandelbrotShader, _perturbationShader, _z0Texture;
     Vector2d _center = new(initialCenterX, initialCenterY);
     float _zoom = totalZoom;
     
     int _maxIterations;
-    readonly float[] _z0Data = new float[iterationLimit * 2 * perturbationPoints];
 
     INativeInput? _nativeInput;
 
@@ -36,10 +37,32 @@ public partial class MainForm : FullscreenableForm
 
     public MainForm()
     {
+        _referencePoints = [.. GenerateReferencePoints()];
+        _z0Data = new float[iterationLimit * _referencePoints.Length];
         InitializeComponent();
     }
 
-    private void OnLoadGL(object sender, EventArgs e)
+    static IEnumerable<float> GenerateReferencePoints()
+    {
+        const int rows = 5;
+        const int columns = 5;
+
+        var w = 1f / columns;
+        var ws = w / 2;
+        var h = 1f / rows;
+        var hs = h / 2;
+
+        for(var x = 0; x < columns; x++)
+        {
+            for (var y = 0; y < rows; y++)
+            {
+                yield return ws + x * w;
+                yield return hs + y * h;
+            }
+        }
+    }
+
+    void OnLoadGL(object sender, EventArgs e)
     {
         GL.ClearColor(Color4.Black);
 
@@ -151,35 +174,9 @@ public partial class MainForm : FullscreenableForm
         GL.Clear(ClearBufferMask.ColorBufferBit);
 
         if (UsePerturbation)
-        {
-            PrepareTexture();
-            GL.BindTexture(TextureTarget.Texture1D, _z0Texture);
-            GL.TexImage1D(TextureTarget.Texture1D, 0, PixelInternalFormat.Rg32f, _maxIterations * perturbationPoints, 0, PixelFormat.Rg, PixelType.Float, _z0Data);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-
-            GL.UseProgram(_perturbationShader);
-            GL.Uniform2(GL.GetUniformLocation(_perturbationShader, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
-            GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uZoom"), _zoom);
-            GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uMaxIterations"), _maxIterations);
-            GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uZ0Tex"), 0);
-        }
-        else 
-        {
-            var centerxh = (float)_center.X;
-            var centerxl = (float)(_center.X - centerxh);
-            var centeryh = (float)_center.Y;
-            var centeryl = (float)(_center.Y - centeryh);
-
-            GL.UseProgram(_mandelbrotShader);
-            GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
-            GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uCenterHigh"), centerxh, centeryh);
-            GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uCenterLow"), centerxl, centeryl); 
-            GL.Uniform1(GL.GetUniformLocation(_mandelbrotShader, "uZoom"), _zoom);
-            GL.Uniform1(GL.GetUniformLocation(_mandelbrotShader, "uMaxIterations"), _maxIterations);
-        }
+            PreparePerturbationRendering();
+        else
+            PrepareMandelbrotRendering();
 
         GL.BindVertexArray(_vao);
 
@@ -189,16 +186,52 @@ public partial class MainForm : FullscreenableForm
 
         UpdateInfoPanel();
     }
+    void PrepareMandelbrotRendering()
+    {
+        var centerxh = (float)_center.X;
+        var centerxl = (float)(_center.X - centerxh);
+        var centeryh = (float)_center.Y;
+        var centeryl = (float)(_center.Y - centeryh);
 
+        GL.UseProgram(_mandelbrotShader);
+        GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
+        GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uCenterHigh"), centerxh, centeryh);
+        GL.Uniform2(GL.GetUniformLocation(_mandelbrotShader, "uCenterLow"), centerxl, centeryl);
+        GL.Uniform1(GL.GetUniformLocation(_mandelbrotShader, "uZoom"), _zoom);
+        GL.Uniform1(GL.GetUniformLocation(_mandelbrotShader, "uMaxIterations"), _maxIterations);
+    }
+    void PreparePerturbationRendering()
+    {
+        PrepareTexture();
+        GL.BindTexture(TextureTarget.Texture1D, _z0Texture);
+        GL.TexImage1D(TextureTarget.Texture1D, 0, PixelInternalFormat.Rg32f, _maxIterations * _referencePoints.Length / 2, 0, PixelFormat.Rg, PixelType.Float, _z0Data);
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture1D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+
+        GL.UseProgram(_perturbationShader);
+        GL.Uniform2(GL.GetUniformLocation(_perturbationShader, "uResolution"), (float)glControl.ClientSize.Width, (float)glControl.ClientSize.Height);
+        GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uZoom"), _zoom);
+        GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uMaxIterations"), _maxIterations);
+        GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uZ0Tex"), 0);
+        var referenceCount = _referencePoints.Length / 2;
+        GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "uReferencePointCount"), referenceCount);
+        GL.Uniform2(GL.GetUniformLocation(_perturbationShader, "uReferencePoints"), referenceCount, _referencePoints);
+    }
     void PrepareTexture()
     {
         var size = glControl.ClientSize;
-        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.25f, size.Height * 0.25f))), 0);
-        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.75f, size.Height * 0.25f))), 2*_maxIterations);
-        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.25f, size.Height * 0.75f))), 2*_maxIterations*2);
-        Prepare(GetComplex(GetCoordsFromPixel(new Vector2(size.Width * 0.75f, size.Height * 0.75f))), 2*_maxIterations*3);
+        for (var i = 0; i < _referencePoints.Length/2; i++)
+        {
+            var offset = 2 * i;
+            var x = size.Width * _referencePoints[offset];
+            var y = size.Height * (1 - _referencePoints[offset+1]);
+            var coords = GetCoordsFromPixel(new Vector2(x, y));
+            var c = new Complex(coords.X, coords.Y);
+            Prepare(c, offset * _maxIterations);
+        }
 
-        static Complex GetComplex(Vector2d vector) => new(vector.X, vector.Y);
         void Prepare(Complex c0, int offset)
         {
             var z0 = Complex.Zero;
@@ -221,10 +254,7 @@ public partial class MainForm : FullscreenableForm
         if (zoomTarget > 0)
             _zoom = zoomTarget;
         else if (zoomFactor != 0)
-        {
             _zoom *= MathF.Pow(zoomStep, zoomFactor);
-            _zoom = Math.Clamp(_zoom, 1e-15f, totalZoom);
-        }
 
         if (translateX != 0 || translateY != 0)
         {
