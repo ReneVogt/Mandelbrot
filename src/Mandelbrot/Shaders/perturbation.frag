@@ -1,21 +1,20 @@
 ﻿#version 330 core
-out vec4 FragColor;
+out vec4 outputColor;
 
-uniform float uZoom;
-uniform vec2 uResolution;
-uniform int uMaxIterations; 
-uniform sampler1D uZ0Tex;
-uniform int uReferencePointCount;
-uniform vec2 uReferencePoints[64];
+uniform float _zoom;
+uniform vec2 _resolution;
+uniform int _maxIterations; 
+uniform sampler2D _referenceTexture;
+uniform int _referenceCount;
 
-float mandelbrot(vec2 c, int offset)
+float iterate(vec2 c, int referencePoint)
 {
     vec2 dz = c;
     int i;
     float l = 1.0;
-    for (i = 0; i < uMaxIterations; i++)
+    for (i = 0; i < _maxIterations; i++)
     {
-        vec2 z0 = texelFetch(uZ0Tex, offset+i, 0).xy;
+        vec2 z0 = texelFetch(_referenceTexture, ivec2(i, referencePoint), 0).xy;
         vec2 Z = z0 + dz;
         if (dot(Z, Z) > 4.0)
         {
@@ -28,29 +27,29 @@ float mandelbrot(vec2 c, int offset)
         dz = twoZ0dz + dz2 + c;
     }
    
-    if (i == uMaxIterations)
+    if (i >= _maxIterations)
         return float(i);
 
     if (l < 1.000001) l = 1.000001;
     return float(i) + 1.0 - log(log(l)) / log(2.0);
 }
 
-vec3 colorPalette(float i)
+vec3 calculateColor(float i)
 {
-    if (i >= uMaxIterations) return vec3(0.0, 0.0, 0.0);
-    float t = i / float(uMaxIterations);
+    if (i >= _maxIterations) return vec3(0.0, 0.0, 0.0);
+    float t = i / float(_maxIterations);
     return vec3(0.5 + 0.5 * cos(6.2831 * (t + vec3(0.25, 0.58, 0.92))));
 }
 
 void main()
 {
-    vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
+    vec2 normalizedPixel = (gl_FragCoord.xy - 0.5 * _resolution) / _resolution.y;
     int referencePoint = 0;
-    vec2 min = uv - uReferencePoints[0];
+    vec2 min = normalizedPixel - texelFetch(_referenceTexture, ivec2(_maxIterations, 0), 0).xy;
     float minLength = length(min);
-    for (int i = 1; i < uReferencePointCount; i++)
+    for (int i = 1; i < _referenceCount; i++)
     {
-        vec2 d = uv - uReferencePoints[i];
+        vec2 d = normalizedPixel - texelFetch(_referenceTexture, ivec2(_maxIterations, i), 0).xy;
         float l = length(d);
         if (l >= minLength) continue;
         minLength = l;
@@ -58,7 +57,7 @@ void main()
         referencePoint = i;
     }
 
-    uv = min * uZoom;
-    vec3 color = colorPalette(mandelbrot(uv, referencePoint * uMaxIterations));
-    FragColor = vec4(color, 1.0);
+    vec2 offset = min * _zoom;
+    vec3 color = calculateColor(iterate(offset, referencePoint));
+    outputColor = vec4(color, 1.0);
 }
