@@ -302,7 +302,11 @@ public partial class MainForm : FullscreenableForm
 
         infoPanel.ResumeLayout();
     }
-    void CopyStateToClipboard() => Clipboard.SetText(JsonSerializer.Serialize(new Dictionary<string, object> 
+
+    readonly JsonSerializerOptions _jsonClipboardOptions = new() { WriteIndented = true };
+    void CopyStateToClipboard()
+    {
+        Clipboard.SetText(JsonSerializer.Serialize(new Dictionary<string, object>
         {
             ["Center X"] = _center.X,
             ["Center Y"] = _center.Y,
@@ -312,7 +316,8 @@ public partial class MainForm : FullscreenableForm
             ["Window H"] = glControl.ClientSize.Height,
             ["Perturbation"] = UsePerturbation ? "yes" : "no",
             ["Renderer"] = GL.GetString(StringName.Renderer)
-        }));
+        }, options: _jsonClipboardOptions));
+    }
 
     Vector2d GetCoordsFromPixel(Vector2 pixelPosition)
     {
