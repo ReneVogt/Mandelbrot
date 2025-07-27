@@ -4,9 +4,6 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using System.Diagnostics;
-using System.Numerics;
-using System.Text;
-using System.Text.Json;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 using Vector2 = OpenTK.Mathematics.Vector2;
@@ -23,10 +20,13 @@ public partial class MainForm : FullscreenableForm
     const int iterationLimit = 8000;
     
     const float perturbationThreshold = 1e-7f;
-    const int referencePointRows = 3;
-    const int referencePointColumns = 3;
+    const int referencePointRows = 2;
+    const int referencePointColumns = 2;    
 
     readonly float[] _z0Data;
+
+    InfoForm? _infoForm;
+    string _renderer = "-";
 
     int _vao, _vbo, _mandelbrotShader, _perturbationShader, _z0Texture;
     Vector2d _center = new(initialCenterX, initialCenterY);
@@ -80,6 +80,8 @@ public partial class MainForm : FullscreenableForm
         _nativeInput.MouseMove += OnMouseMoveGL;
         _nativeInput.MouseWheel += OnMouseWheelGL;
         _nativeInput.MouseUp += OnMouseUpGL;
+
+        _renderer = GL.GetString(StringName.Renderer);
     }
 
     void OnPreviewKeyDownGL(object sender, PreviewKeyDownEventArgs e)
@@ -97,7 +99,17 @@ public partial class MainForm : FullscreenableForm
                 ResetView();
                 break;
             case Keys.F1:
-                infoPanel.Visible = !infoPanel.Visible;
+                if (_infoForm?.IsDisposed != false)
+                {
+                    _infoForm = new();
+                    _infoForm.Renderer = _renderer;
+                    _infoForm.Show(this);
+                }
+                else
+                {
+                    _infoForm.Close();
+                    _infoForm = null;
+                }
                 break;
             case Keys.Up:
                 TransformView(translateY: -translateStep);
@@ -116,9 +128,6 @@ public partial class MainForm : FullscreenableForm
                 break;
             case Keys.PageDown:
                 TransformView(zoomFactor: 1);
-                break;
-            case Keys.C:
-                CopyStateToClipboard();
                 break;
             case Keys.F12:
                 KeyDrivenTestMethod();
@@ -271,52 +280,24 @@ public partial class MainForm : FullscreenableForm
 
     void UpdateInfoPanel()
     {
-        if (!infoPanel.Visible) return;
-        infoPanel.SuspendLayout();
-        labelCenterX.Text = _center.X.ToString();
-        labelCenterY.Text = _center.Y.ToString();
+        if (_infoForm?.Visible != true) return;
+        _infoForm.SuspendLayout();
+        _infoForm.CenterX = _center.X.ToString();
+        _infoForm.CenterY = _center.Y.ToString();
 
         var mouseCoords = GetCoordsFromPixel(_nativeInput!.MousePosition);
-        labelMouseX.Text = mouseCoords.X.ToString();
-        labelMouseY.Text = mouseCoords.Y.ToString();
+        _infoForm.MouseX = mouseCoords.X.ToString();
+        _infoForm.MouseY = mouseCoords.Y.ToString();
 
-        labelZoom.Text = _zoom.ToString();
-        labelIterations.Text = _maxIterations.ToString();
-        labelIterations.ForeColor = _maxIterations >= iterationLimit ? Color.Red : Color.LimeGreen;
+        _infoForm.Zoom = _zoom.ToString();
+        _infoForm.Iterations = _maxIterations.ToString();
 
-        labelWindowW.Text = glControl.ClientSize.Width.ToString();
-        labelWindowH.Text = glControl.ClientSize.Height.ToString();
+        _infoForm.WindowW = glControl.ClientSize.Width.ToString();
+        _infoForm.WindowH = glControl.ClientSize.Height.ToString();
 
-        if (UsePerturbation)
-        {
-            labelPerturbation.Text = "yes";
-            labelPerturbation.ForeColor = Color.Red;
-        }
-        else
-        {
-            labelPerturbation.Text = "no";
-            labelPerturbation.ForeColor = Color.LimeGreen;
-        }
+        _infoForm.Perturbation = UsePerturbation ? "yes" : "no";
 
-        labelGPU.Text = GL.GetString(StringName.Renderer);
-
-        infoPanel.ResumeLayout();
-    }
-
-    readonly JsonSerializerOptions _jsonClipboardOptions = new() { WriteIndented = true };
-    void CopyStateToClipboard()
-    {
-        Clipboard.SetText(JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            ["Center X"] = _center.X,
-            ["Center Y"] = _center.Y,
-            ["Zoom"] = _zoom,
-            ["Iterations"] = _maxIterations,
-            ["Window W"] = glControl.ClientSize.Width,
-            ["Window H"] = glControl.ClientSize.Height,
-            ["Perturbation"] = UsePerturbation ? "yes" : "no",
-            ["Renderer"] = GL.GetString(StringName.Renderer)
-        }, options: _jsonClipboardOptions));
+        _infoForm.ResumeLayout();
     }
 
     Vector2d GetCoordsFromPixel(Vector2 pixelPosition)

@@ -46,7 +46,7 @@ sealed class ReferenceOrbitGenerator
         var point = new Vector2d(fx, fy);
         point = point * _zoom + _center;
         var c = new Complex(point.X, point.Y);
-        Prepare(c, GetTextureIndex(index, 0));        
+        Prepare(c, GetTextureIndex(index, 0));
 
         void Prepare(Complex c0, int offset)
         {

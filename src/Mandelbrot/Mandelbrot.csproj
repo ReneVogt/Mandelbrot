@@ -9,6 +9,8 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<RootNamespace>Mandelbrot</RootNamespace>
 		<ApplicationIcon>Mandelbrot.ico</ApplicationIcon>
+		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 
 	<ItemGroup>
