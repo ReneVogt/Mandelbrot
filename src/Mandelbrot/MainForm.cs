@@ -21,7 +21,7 @@ public partial class MainForm : FullscreenableForm
     
     const float perturbationThreshold = 1e-7f;
     const int referencePointRows = 2;
-    const int referencePointColumns = 2;    
+    const int referencePointColumns = 2;
 
     readonly float[] _z0Data;
 
@@ -33,6 +33,7 @@ public partial class MainForm : FullscreenableForm
     float _zoom = totalZoom;
 
     int _maxIterations;
+    bool _showReferencePoints;
 
     INativeInput? _nativeInput;
 
@@ -101,8 +102,10 @@ public partial class MainForm : FullscreenableForm
             case Keys.F1:
                 if (_infoForm?.IsDisposed != false)
                 {
-                    _infoForm = new();
-                    _infoForm.Renderer = _renderer;
+                    _infoForm = new()
+                    {
+                        Renderer = _renderer
+                    };
                     _infoForm.Show(this);
                 }
                 else
@@ -131,6 +134,10 @@ public partial class MainForm : FullscreenableForm
                 break;
             case Keys.F12:
                 KeyDrivenTestMethod();
+                break;
+            case Keys.P:
+                _showReferencePoints = !_showReferencePoints;
+                glControl.Invalidate();
                 break;
         }
     }
@@ -226,6 +233,7 @@ public partial class MainForm : FullscreenableForm
         GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "_maxIterations"), _maxIterations);
         GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "_referenceTexture"), 0);
         GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "_referenceCount"), referenceCount);
+        GL.Uniform1(GL.GetUniformLocation(_perturbationShader, "_showReferencePoints"), _showReferencePoints ? 1 : 0);
     }
 
     void TransformView(float translateX = 0, float translateY = 0, float zoomFactor = 0, float zoomTarget = 0)

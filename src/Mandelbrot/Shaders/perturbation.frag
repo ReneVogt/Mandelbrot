@@ -6,6 +6,7 @@ uniform vec2 _resolution;
 uniform int _maxIterations; 
 uniform sampler2D _referenceTexture;
 uniform int _referenceCount;
+uniform bool _showReferencePoints;
 
 float iterate(vec2 c, int referencePoint)
 {
@@ -55,6 +56,12 @@ void main()
         minLength = l;
         min = d;
         referencePoint = i;
+    }
+
+    if (_showReferencePoints && minLength < 0.02)
+    {
+        outputColor = vec4(1.0, 1.0, 1.0, 1.0);
+        return;
     }
 
     vec2 offset = min * _zoom;
